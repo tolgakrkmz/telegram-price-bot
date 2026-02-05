@@ -1,18 +1,13 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ContextTypes
 
-
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [
-        [InlineKeyboardButton("🔥 Оферти днес", callback_data="deals")],
-        [InlineKeyboardButton("🔍 Търси продукт", callback_data="search")],
-        [InlineKeyboardButton("⭐ Любими", callback_data="favorites")],
+        [InlineKeyboardButton("🔍 Търси продукт", callback_data="search_product")]
     ]
-
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     await update.message.reply_text(
-        "🛒 Добре дошъл!\n\n"
-        "С този бот можеш да намираш най-добрите цени и оферти в супермаркетите.",
+        "👋 Здрасти! Натисни бутона, за да търсиш продукт:",
         reply_markup=reply_markup
     )
