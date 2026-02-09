@@ -12,6 +12,7 @@ from handlers.start import start
 from handlers.search import search_start, search_input
 from handlers.clear_chat import clear_chat
 from utils.menu import main_menu_keyboard
+from handlers.favorites import add_to_favorites
 
 async def button_handler(update, context):
     query = update.callback_query
@@ -39,6 +40,10 @@ def main():
         fallbacks=[]
     )
     app.add_handler(search_conv)
+
+    app.add_handler(
+    CallbackQueryHandler(add_to_favorites, pattern="^add_favorite$")
+)
 
     # Callback бутони за другите действия
     app.add_handler(CallbackQueryHandler(button_handler))
