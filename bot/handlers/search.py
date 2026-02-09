@@ -1,11 +1,11 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import ContextTypes, ConversationHandler, MessageHandler, filters
+from telegram.ext import ContextTypes, ConversationHandler
 from api.supermarket import get_product_price
 from utils.menu import main_menu_keyboard
+from utils.helpers import get_product_id
 from utils.message_cache import add_message
 
 SEARCH_INPUT = 1
-
 
 async def search_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     if update.message:
@@ -17,47 +17,43 @@ async def search_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
         add_message(update.effective_user.id, msg.message_id)
     return SEARCH_INPUT
 
-
 async def search_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     user_input = update.message.text.strip()
     products = get_product_price(user_input, multiple=True)
 
-    messages_to_cache = []
-
     if not products:
         msg = await update.message.reply_text("❌ Няма намерен продукт.")
+        add_message(update.effective_user.id, msg.message_id)
+        return ConversationHandler.END
+
+    # Създаваме dict от продукти с уникален hash id
+    search_results = {}
+    messages_to_cache = []
+
+    for p in products:
+        product_id = get_product_id(p)
+        search_results[product_id] = p
+
+        msg_text = (
+            f"🛒 {p['name']}\n"
+            f"💰 Цена: {p['price']} лв / {p['unit']}\n"
+            f"🏬 Магазин: {p['store']}\n"
+        )
+        if p.get("discount"):
+            msg_text += f"💸 Намаление: {p['discount']}%\n"
+
+        keyboard = InlineKeyboardMarkup([
+            [InlineKeyboardButton("⭐ Добави в любими", callback_data=f"add_favorite_{product_id}")]
+        ])
+
+        if p.get("image"):
+            msg = await update.message.reply_photo(p["image"], caption=msg_text, reply_markup=keyboard)
+        else:
+            msg = await update.message.reply_text(msg_text, reply_markup=keyboard)
+
         messages_to_cache.append(msg.message_id)
-    else:
-        for p in products:
-            # ⭐ Запазваме последния продукт за Favorites / Alerts
-            context.user_data["last_product"] = p["name"]
 
-            msg_text = (
-                f"🛒 {p['name']}\n"
-                f"💰 Цена: {p['price']} лв / {p['unit']}\n"
-                f"🏬 Магазин: {p['store']}\n"
-            )
-
-            if p.get("discount"):
-                msg_text += f"💸 Намаление: {p['discount']}%\n"
-
-            keyboard = InlineKeyboardMarkup([
-                [InlineKeyboardButton("⭐ Добави в любими", callback_data="add_favorite")]
-            ])
-
-            if p.get("image"):
-                msg = await update.message.reply_photo(
-                    p["image"],
-                    caption=msg_text,
-                    reply_markup=keyboard
-                )
-            else:
-                msg = await update.message.reply_text(
-                    msg_text,
-                    reply_markup=keyboard
-                )
-
-            messages_to_cache.append(msg.message_id)
+    context.user_data["search_results"] = search_results
 
     final_msg = await update.message.reply_text(
         "✅ Готово! Изберете опция от менюто:",

@@ -1,6 +1,13 @@
 {
-  "1210776920": [
-    "Банани",
-    "PARKSIDE Мултифункционален уред за шлайфане"
-  ]
+  "1210776920": {
+    "Philips Безжични слушалки TAT3509GY/00": {
+      "id": "Philips Безжични слушалки TAT3509GY/00",
+      "name": "Philips Безжични слушалки TAT3509GY/00",
+      "price": 48.88,
+      "unit": "бр.",
+      "store": "Fantastico",
+      "discount": "51",
+      "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/fantastiko/32416/crops/16_crop_1.jpg"
+    }
+  }
 }
