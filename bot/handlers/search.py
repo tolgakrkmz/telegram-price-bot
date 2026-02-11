@@ -43,7 +43,8 @@ async def search_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
             msg_text += f"💸 Намаление: {p['discount']}%\n"
 
         keyboard = InlineKeyboardMarkup([
-            [InlineKeyboardButton("⭐ Добави в любими", callback_data=f"add_favorite_{product_id}")]
+            [InlineKeyboardButton("⭐ Добави в любими", callback_data=f"add_favorite_{product_id}")],
+            [InlineKeyboardButton("🛒 Добави в количката", callback_data=f"add_shopping_{product_id}")]
         ])
 
         if p.get("image"):

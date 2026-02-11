@@ -8,6 +8,16 @@
       "store": "Fantastico",
       "discount": "51",
       "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/fantastiko/32416/crops/16_crop_1.jpg"
+    },
+    "shopping_list": {
+      "null": {
+        "name": "Philips Безжични слушалки TAT3509GY/00",
+        "price": 48.88,
+        "unit": "бр.",
+        "store": "Fantastico",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/fantastiko/32416/crops/16_crop_1.jpg",
+        "discount": "51"
+      }
     }
   }
 }

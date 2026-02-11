@@ -48,3 +48,50 @@ def remove_favorite(user_id, product_id):
 def get_favorites(user_id):
     data = load_data()
     return data.get(str(user_id), {})
+
+
+# =========================
+# SHOPPING LIST FUNCTIONS
+# =========================
+
+def add_to_shopping(user_id, product):
+    data = load_data()
+    user_id = str(user_id)
+
+    if user_id not in data:
+        data[user_id] = {}
+
+    if "shopping_list" not in data[user_id]:
+        data[user_id]["shopping_list"] = {}
+
+    product_id = product.get("id")
+
+    if product_id in data[user_id]["shopping_list"]:
+        return False
+
+    data[user_id]["shopping_list"][product_id] = product
+    save_data(data)
+    return True
+
+
+def get_shopping_list(user_id):
+    data = load_data()
+    user_id = str(user_id)
+
+    return data.get(user_id, {}).get("shopping_list", {})
+
+
+def remove_from_shopping(user_id, product_id):
+    data = load_data()
+    user_id = str(user_id)
+
+    if (
+        user_id not in data
+        or "shopping_list" not in data[user_id]
+        or product_id not in data[user_id]["shopping_list"]
+    ):
+        return False
+
+    del data[user_id]["shopping_list"][product_id]
+    save_data(data)
+    return True

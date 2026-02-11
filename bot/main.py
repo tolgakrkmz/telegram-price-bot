@@ -5,6 +5,12 @@ from handlers.search import search_start, search_input
 from handlers.clear_chat import clear_chat
 from handlers.favorites import list_favorites, add_to_favorite_callback, delete_favorite_callback
 from utils.menu import main_menu_keyboard
+from handlers.shopping import (
+    add_to_shopping_callback,
+    list_shopping,
+    remove_shopping_callback,
+)
+
 
 async def button_handler(update, context):
     query = update.callback_query
@@ -38,6 +44,11 @@ def main():
     app.add_handler(CallbackQueryHandler(add_to_favorite_callback, pattern=r"add_favorite_.*"))
     app.add_handler(CallbackQueryHandler(list_favorites, pattern="list_favorites"))
     app.add_handler(CallbackQueryHandler(delete_favorite_callback, pattern=r"delete_.*"))
+
+    # Shopping cart handlers
+    app.add_handler(CallbackQueryHandler(add_to_shopping_callback, pattern=r"add_shopping_.*"))
+    app.add_handler(CallbackQueryHandler(list_shopping, pattern="shopping_list"))
+    app.add_handler(CallbackQueryHandler(remove_shopping_callback, pattern=r"remove_shopping_.*"))
 
     # Callback бутони за другите действия
     app.add_handler(CallbackQueryHandler(button_handler))
