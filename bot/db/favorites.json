@@ -9,25 +9,6 @@
       "discount": "51",
       "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/fantastiko/32416/crops/16_crop_1.jpg"
     },
-    "shopping_list": [
-      {
-        "name": "Gembird безжични слушалки",
-        "price": 12.99,
-        "unit": "",
-        "store": "Kaufland",
-        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32455/crops/6_crop_3.jpg",
-        "discount": "35",
-        "id": "b406e3a93065a5f0f422e26574b76af5"
-      },
-      {
-        "name": "Био банани Еквадор",
-        "price": 3.31,
-        "unit": "1кг",
-        "store": "Lidl",
-        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32511/crops/31_crop_0.jpg",
-        "discount": "17",
-        "id": "31db4c0c95ead2162bdc8858fed7d6e6"
-      }
-    ]
+    "shopping_list": []
   }
 }

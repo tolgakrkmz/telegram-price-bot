@@ -54,29 +54,34 @@ def get_favorites(user_id):
 # SHOPPING LIST FUNCTIONS
 # =========================
 
-def add_to_shopping(user_id, product):
-    data = load_data()
-    user_id = str(user_id)
-
+def ensure_shopping_schema(data, user_id):
     if user_id not in data:
         data[user_id] = {}
 
     if "shopping_list" not in data[user_id]:
         data[user_id]["shopping_list"] = []
 
+    # Auto migration от стар dict формат
     if isinstance(data[user_id]["shopping_list"], dict):
         data[user_id]["shopping_list"] = list(
-        data[user_id]["shopping_list"].values()
-    )
+            data[user_id]["shopping_list"].values()
+        )
 
-    # ако няма id – генерираме (по същата логика като favorites)
+    return data
+
+
+def add_to_shopping(user_id, product):
+    data = load_data()
+    user_id = str(user_id)
+
+    data = ensure_shopping_schema(data, user_id)
+
     if not product.get("id"):
         from utils.helpers import get_product_id
         product["id"] = get_product_id(product)
 
-    # проверка дали вече съществува
     for item in data[user_id]["shopping_list"]:
-        if item["id"] == product["id"]:
+        if item.get("id") == product["id"]:
             return False
 
     data[user_id]["shopping_list"].append(product)
@@ -88,30 +93,35 @@ def get_shopping_list(user_id):
     data = load_data()
     user_id = str(user_id)
 
-    shopping = data.get(user_id, {}).get("shopping_list", [])
+    data = ensure_shopping_schema(data, user_id)
+    save_data(data)
 
-    # 🔥 AUTO MIGRATION ако е стар dict формат
-    if isinstance(shopping, dict):
-        shopping = list(shopping.values())
-        data[user_id]["shopping_list"] = shopping
-        save_data(data)
-
-    return shopping
+    return data[user_id]["shopping_list"]
 
 
 def remove_from_shopping(user_id, product_id):
     data = load_data()
     user_id = str(user_id)
 
-    if user_id not in data or "shopping_list" not in data[user_id]:
-        return False
+    data = ensure_shopping_schema(data, user_id)
 
-    shopping_list = data[user_id]["shopping_list"]
+    shopping = data[user_id]["shopping_list"]
 
-    for i, item in enumerate(shopping_list):
-        if item["id"] == product_id:
-            shopping_list.pop(i)
+    for i, item in enumerate(shopping):
+        if item.get("id") == product_id:
+            shopping.pop(i)
             save_data(data)
             return True
 
     return False
+
+
+def clear_shopping_list(user_id):
+    data = load_data()
+    user_id = str(user_id)
+
+    data = ensure_shopping_schema(data, user_id)
+
+    data[user_id]["shopping_list"] = []
+    save_data(data)
+    return True

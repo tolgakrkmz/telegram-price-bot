@@ -7,6 +7,8 @@ from handlers.favorites import list_favorites, add_to_favorite_callback, delete_
 from utils.menu import main_menu_keyboard
 from handlers.shopping import (
     add_to_shopping_callback,
+    clear_shopping_callback,
+    confirm_clear_callback,
     list_shopping,
     remove_shopping_callback,
 )
@@ -49,6 +51,17 @@ def main():
     app.add_handler(CallbackQueryHandler(add_to_shopping_callback, pattern=r"add_shopping_.*"))
     app.add_handler(CallbackQueryHandler(list_shopping, pattern="shopping_list"))
     app.add_handler(CallbackQueryHandler(remove_shopping_callback, pattern=r"remove_shopping_.*"))
+
+    app.add_handler(
+    CallbackQueryHandler(remove_shopping_callback, pattern="^remove_shopping_")
+)
+    app.add_handler(
+    CallbackQueryHandler(confirm_clear_callback, pattern="^confirm_clear$")
+)
+    app.add_handler(
+    CallbackQueryHandler(clear_shopping_callback, pattern="^clear_shopping$")
+)
+
 
     # Callback бутони за другите действия
     app.add_handler(CallbackQueryHandler(button_handler))
