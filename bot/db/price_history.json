@@ -1,0 +1,172 @@
+{
+  "349fa982a74fb7714e94a9da65924107": {
+    "name": "КРАДЕ КИСЕЛО МЛЯКО 2% 400г",
+    "store": "Kaufland",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 0.68
+      }
+    ]
+  },
+  "e4da19f1092e45ed64052659813f66cf": {
+    "name": "САЯНА Кисело мляко 2% масленост",
+    "store": "Kaufland",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 0.78
+      }
+    ]
+  },
+  "3888dc4dc7153eca2f0823552560e932": {
+    "name": "Pilos кисело мляко 2%",
+    "store": "Lidl",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 0.82
+      }
+    ]
+  },
+  "1640666a2182dcb75f30d27d3ff9ec47": {
+    "name": "САЯНА Прясно мляко",
+    "store": "Kaufland",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 0.98
+      }
+    ]
+  },
+  "7ad39e5b8c5a7f12ea69968608190d51": {
+    "name": "Българско кисело мляко ЗНП",
+    "store": "Lidl",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 1.1
+      }
+    ]
+  },
+  "068edf4bcefa89ab478b9503a194d5f8": {
+    "name": "Coca-Cola Газирана напитка",
+    "store": "Billa",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 4.99
+      }
+    ]
+  },
+  "88e682a61a323a041db4e10a56994567": {
+    "name": "Coca-Cola различни видове",
+    "store": "Kaufland",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 6.77
+      }
+    ]
+  },
+  "372bcde05ece62a6ddffa63f0920fadd": {
+    "name": "Coca-Cola Газирана безалкохолна напитка",
+    "store": "Lidl",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 8.98
+      }
+    ]
+  },
+  "7a5005b0ddb9fc4dbcf8cf8c9f56741b": {
+    "name": "Coca-Cola",
+    "store": "Kaufland",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 8.98
+      }
+    ]
+  },
+  "c1fdf777d656ccaca3f39013f3d4d29b": {
+    "name": "Coca-Cola /Fanta /Sprite",
+    "store": "Kaufland",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 11.73
+      }
+    ]
+  },
+  "31fee3c0d2847ee1f02630b933c1c599": {
+    "name": "Репички",
+    "store": "Kaufland",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 0.98
+      }
+    ]
+  },
+  "306ac95dc8f9f280f0c166eba1beb2df": {
+    "name": "Репички КЛАС: I 250г",
+    "store": "Kaufland",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 1.19
+      }
+    ]
+  },
+  "23878b10266d2da7bf4de61e536fdcf1": {
+    "name": "Happy Мокри кърпички",
+    "store": "Kaufland",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 1.99
+      }
+    ]
+  },
+  "0f0837f0e1ae1a3b14b7e31f199cc312": {
+    "name": "Мляко MILK МЛЯКО",
+    "store": "Kaufland",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 1.99
+      }
+    ]
+  },
+  "a37ff6f6b4913403c36863ce52999516": {
+    "name": "Кравe мляко К Classic",
+    "store": "Kaufland",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 2.29
+      }
+    ]
+  },
+  "b0918c1867634a1806ee0715c59728d4": {
+    "name": "БАЛКАН Прясно мляко 3%",
+    "store": "Kaufland",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 2.68
+      }
+    ]
+  },
+  "03ec1ef3bf0077e949ab9317bb4f00da": {
+    "name": "Olympus Прясно мляко 1,7%",
+    "store": "Billa",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 2.7
+      }
+    ]
+  }
+}

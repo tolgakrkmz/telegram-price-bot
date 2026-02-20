@@ -12,6 +12,7 @@ from handlers.shopping import (
     list_shopping,
     remove_shopping_callback,
 )
+from handlers.alerts import update_favorites_prices
 
 
 async def button_handler(update, context):
@@ -61,6 +62,8 @@ def main():
     app.add_handler(
     CallbackQueryHandler(clear_shopping_callback, pattern="^clear_shopping$")
 )
+    
+    app.add_handler(CommandHandler("update_prices", update_favorites_prices))
 
 
     # Callback бутони за другите действия

@@ -1,0 +1,171 @@
+{
+  "мляко": {
+    "timestamp": "2026-02-21T00:52:29.907843",
+    "results": [
+      {
+        "name": "КРАДЕ КИСЕЛО МЛЯКО 2% 400г",
+        "price": 0.68,
+        "unit": "400г",
+        "store": "Kaufland",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32573/crops/26_crop_3.jpg",
+        "discount": "33"
+      },
+      {
+        "name": "САЯНА Кисело мляко 2% масленост",
+        "price": 0.78,
+        "unit": "400г",
+        "store": "Kaufland",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32521/crops/2_crop_0.jpg",
+        "discount": "50"
+      },
+      {
+        "name": "Pilos кисело мляко 2%",
+        "price": 0.82,
+        "unit": "400г",
+        "store": "Lidl",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32563/crops/3_crop_0.jpg",
+        "discount": "31"
+      },
+      {
+        "name": "САЯНА Прясно мляко",
+        "price": 0.98,
+        "unit": "500мл",
+        "store": "Kaufland",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32521/crops/2_crop_8.jpg",
+        "discount": "50"
+      },
+      {
+        "name": "Българско кисело мляко ЗНП",
+        "price": 1.1,
+        "unit": "400г",
+        "store": "Lidl",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32565/crops/34_crop_11.jpg",
+        "discount": "24"
+      }
+    ]
+  },
+  "coca-cola": {
+    "timestamp": "2026-02-21T00:57:20.829681",
+    "results": [
+      {
+        "name": "Coca-Cola Газирана напитка",
+        "price": 4.99,
+        "unit": "4 х 0,33 л",
+        "store": "Billa",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa/32554/crops/19_crop_4.jpg",
+        "discount": "23"
+      },
+      {
+        "name": "Coca-Cola различни видове",
+        "price": 6.77,
+        "unit": "3x2л",
+        "store": "Kaufland",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32521/crops/1_crop_4.jpg",
+        "discount": "33"
+      },
+      {
+        "name": "Coca-Cola Газирана безалкохолна напитка",
+        "price": 8.98,
+        "unit": "8 x 330ml",
+        "store": "Lidl",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32511/crops/11_crop_7.jpg",
+        "discount": "33"
+      },
+      {
+        "name": "Coca-Cola",
+        "price": 8.98,
+        "unit": "8 x 0,33л",
+        "store": "Kaufland",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32573/crops/20_crop_7.jpg",
+        "discount": null
+      },
+      {
+        "name": "Coca-Cola /Fanta /Sprite",
+        "price": 11.73,
+        "unit": "6 x 1,5 л",
+        "store": "Kaufland",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32573/crops/20_crop_16.jpg",
+        "discount": "34"
+      }
+    ]
+  },
+  "репички": {
+    "timestamp": "2026-02-21T01:09:46.922812",
+    "results": [
+      {
+        "name": "Репички",
+        "price": 0.98,
+        "unit": "1 връзка",
+        "store": "Kaufland",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32521/crops/6_crop_13.jpg",
+        "discount": "41"
+      },
+      {
+        "name": "Репички КЛАС: I 250г",
+        "price": 1.19,
+        "unit": "250г",
+        "store": "Kaufland",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32573/crops/2_crop_13.jpg",
+        "discount": "33"
+      }
+    ]
+  },
+  "мокри кърпички": {
+    "timestamp": "2026-02-21T01:11:04.542443",
+    "results": [
+      {
+        "name": "Happy Мокри кърпички",
+        "price": 1.99,
+        "unit": "120 бр.",
+        "store": "Kaufland",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32573/crops/22_crop_12.jpg",
+        "discount": null
+      }
+    ]
+  },
+  "прясно мляко": {
+    "timestamp": "2026-02-21T01:13:13.756885",
+    "results": [
+      {
+        "name": "САЯНА Прясно мляко",
+        "price": 0.98,
+        "unit": "500мл",
+        "store": "Kaufland",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32521/crops/2_crop_8.jpg",
+        "discount": "50"
+      },
+      {
+        "name": "Мляко MILK МЛЯКО",
+        "price": 1.99,
+        "unit": "1л",
+        "store": "Kaufland",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32521/crops/19_crop_12.jpg",
+        "discount": "22"
+      },
+      {
+        "name": "Кравe мляко К Classic",
+        "price": 2.29,
+        "unit": "1л",
+        "store": "Kaufland",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32456/crops/1_crop_1.jpg",
+        "discount": "20"
+      },
+      {
+        "name": "БАЛКАН Прясно мляко 3%",
+        "price": 2.68,
+        "unit": "1л",
+        "store": "Kaufland",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32573/crops/4_crop_9.jpg",
+        "discount": "32"
+      },
+      {
+        "name": "Olympus Прясно мляко 1,7%",
+        "price": 2.7,
+        "unit": "1л",
+        "store": "Billa",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa/32554/crops/27_crop_0.jpg",
+        "discount": "19"
+      }
+    ]
+  }
+}
