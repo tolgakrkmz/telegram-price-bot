@@ -1,39 +1,57 @@
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
+import asyncio
+from typing import Dict, Any, List, Optional
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, constants
 from telegram.ext import ContextTypes
+
 from handlers.start import start
+from api.supermarket import get_product_price
 from db.storage import (
     add_to_shopping,
     get_shopping_list,
     remove_from_shopping,
     clear_shopping_list,
-    load_json,
+    get_cached_search,
+    save_search_to_cache,
+    _load_json as load_json,
     CACHE_FILE
 )
 
-# =============================
-# SMART PRICE COMPARISON
-# =============================
-def get_better_price(product_name, current_price, current_store, current_item):
+CURRENCY = "€"
+
+def get_better_price(
+    product_name: str, 
+    current_price: float, 
+    current_store: str, 
+    current_item: Dict[str, Any]
+) -> Optional[Dict[str, Any]]:
+    """
+    Analyzes all cached data to find better deals for the same product type.
+    """
     cache = load_json(CACHE_FILE)
     better_option = None
     
-    # Вземаме единичната цена на текущия продукт
-    # Ако API-то не дава unit_price, използваме общата като резервен вариант
     curr_unit_price = float(current_item.get('unit_price', current_price))
     min_unit_price = curr_unit_price
+
+    ignore_words = {'pilos', 'саяна', 'lidl', 'kaufland', 'billa', 'боженци', 'vereia', 'верея'}
+    keywords = [w for w in product_name.lower().split() if w not in ignore_words and len(w) > 2]
 
     for query, data in cache.items():
         results = data.get("results", [])
         for p in results:
-            # 1. Проверка за подобно име
-            if product_name.lower() in p['name'].lower() or p['name'].lower() in product_name.lower():
+            p_name_lower = p['name'].lower()
+            match_count = sum(1 for word in keywords if word in p_name_lower)
+            
+            if match_count >= 2:
                 try:
                     p_unit_price = float(p.get('unit_price', p['price']))
-                    p_store = p['store']
-                    
-                    # 2. Сравняваме само ако е различен магазин и единичната цена е по-ниска
-                    if p_store != current_store and p_unit_price < min_unit_price:
-                        # 3. Важна проверка: Дали са еднакви мерни единици (бр. с бр., кг с кг)
+                    if p['store'] != current_store and p_unit_price < min_unit_price:
+                        # Dairy specific check for fat percentage
+                        if "%" in product_name:
+                            percentage = [s for s in product_name.split() if "%" in s]
+                            if percentage and percentage[0] not in p_name_lower:
+                                continue
+                                
                         if p.get('unit') == current_item.get('unit'):
                             min_unit_price = p_unit_price
                             better_option = p
@@ -41,63 +59,50 @@ def get_better_price(product_name, current_price, current_store, current_item):
                     continue
     return better_option
 
-# =============================
-# SAFE EDIT
-# =============================
-async def safe_edit(query, text, reply_markup=None):
-    if query.message and query.message.text:
-        await query.edit_message_text(text, reply_markup=reply_markup, parse_mode="Markdown")
-    elif query.message:
-        await query.edit_message_caption(text, reply_markup=reply_markup, parse_mode="Markdown")
+async def safe_edit(query, text: str, reply_markup: InlineKeyboardMarkup = None) -> None:
+    """Safely updates messages with either text or caption."""
+    params = {
+        "text" if query.message.text else "caption": text,
+        "reply_markup": reply_markup,
+        "parse_mode": constants.ParseMode.MARKDOWN
+    }
+    if query.message.text:
+        await query.edit_message_text(**params)
+    else:
+        await query.edit_message_caption(**params)
 
-
-# =============================
-# ADD TO SHOPPING
-# =============================
-async def add_to_shopping_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def list_shopping(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """
+    Displays the shopping list and automatically fetches 
+    fresh data for items to ensure smart comparison works.
+    """
     query = update.callback_query
-    await query.answer()
-
-    product_id = query.data.replace("add_shopping_", "")
-    search_results = context.user_data.get("search_results", {})
-
-    product = search_results.get(product_id)
-    if not product:
-        await safe_edit(query, "❌ Не може да се добави продукта.")
-        return
-
-    user_id = query.from_user.id
-    added = add_to_shopping(user_id, product)
-
-    text = (
-        f"🛒 „{product['name']}“ е добавен в количката."
-        if added
-        else "ℹ️ Продуктът вече е в количката."
-    )
-    await safe_edit(query, text)
-
-
-# =============================
-# LIST SHOPPING (SMART UX VERSION)
-# =============================
-async def list_shopping(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    query = update.callback_query
-    if query:
-        await query.answer()
-
     user_id = update.effective_user.id
     shopping = get_shopping_list(user_id)
 
     if not shopping:
         if query:
-            await safe_edit(query, "🛒 Количката е празна.")
+            await query.answer()
+            await safe_edit(query, "🛒 Your cart is empty.")
             await start(update, context)
         return
 
-    total_sum = 0
-    potential_savings = 0
-    store_totals = {}
-    text = "🛒 *Твоята количка*\n\n"
+    if query: await query.answer()
+
+    # --- Cache Warmup Logic ---
+    # Fetch data for items that are not in cache yet
+    for item in shopping:
+        name = item.get('name')
+        if name and not get_cached_search(name):
+            new_data = get_product_price(name, multiple=True)
+            if new_data:
+                save_search_to_cache(name, new_data)
+                await asyncio.sleep(0.5) # Protect API limits
+
+    total_sum = 0.0
+    potential_savings = 0.0
+    store_totals: Dict[str, float] = {}
+    report_lines = ["🛒 *Your Shopping List*\n"]
     keyboard = []
 
     for i, product in enumerate(shopping, 1):
@@ -107,82 +112,78 @@ async def list_shopping(update: Update, context: ContextTypes.DEFAULT_TYPE):
         product_id = product.get("id")
 
         total_sum += price
-        store_totals[store] = store_totals.get(store, 0) + price
+        store_totals[store] = store_totals.get(store, 0.0) + price
 
-        # Проверка за по-добра цена
         better = get_better_price(name, price, store, product)
-        
         better_text = ""
         if better:
             savings = price - float(better['price'])
             potential_savings += savings
-            better_text = f"   💡 *По-добре:* {better['price']} лв в {better['store']}\n"
+            better_text = f"   💡 *Better Deal:* {better['price']:.2f}{CURRENCY} at {better['store']}\n"
 
-        text += f"{i}. {name}\n   🏬 {store} | 💶 {price:.2f}лв\n{better_text}\n"
+        report_lines.append(f"{i}. {name}\n   🏬 {store} | **{price:.2f}{CURRENCY}**\n{better_text}")
+        keyboard.append([InlineKeyboardButton(f"🗑 Remove {i}", callback_data=f"remove_shopping_{product_id}")])
 
-        keyboard.append([
-            InlineKeyboardButton(f"🗑 Премахни {i}", callback_data=f"remove_shopping_{product_id}")
-        ])
-
-    text += f"📦 Брой продукти: {len(shopping)}\n"
-    text += f"💰 *Обща сума: {total_sum:.2f}лв*\n"
-    
+    summary = [
+        f"\n📦 Items: {len(shopping)}",
+        f"💰 *Total Sum: {total_sum:.2f}{CURRENCY}*"
+    ]
     if potential_savings > 0:
-        text += f"✨ *Можеш да спестиш: {potential_savings:.2f}лв*\n"
+        summary.append(f"✨ *Potential Savings: {potential_savings:.2f}{CURRENCY}*")
 
-    text += "\n🧾 *По магазини:*\n"
-    for store, store_sum in store_totals.items():
-        text += f"• {store}: {store_sum:.2f}лв\n"
+    summary.append("\n🧾 *By Store:*")
+    for store, s_sum in store_totals.items():
+        summary.append(f"• {store}: {s_sum:.2f}{CURRENCY}")
 
-    keyboard.append([InlineKeyboardButton("🧹 Изчисти количката", callback_data="confirm_clear")])
-    keyboard.append([InlineKeyboardButton("⬅️ Меню", callback_data="main_menu")])
+    report_lines.extend(summary)
+    keyboard.append([InlineKeyboardButton("🧹 Clear Cart", callback_data="confirm_clear")])
+    keyboard.append([InlineKeyboardButton("⬅️ Menu", callback_data="main_menu")])
 
+    final_text = "\n".join(report_lines)
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     if query:
-        await safe_edit(query, text, reply_markup)
+        await safe_edit(query, final_text, reply_markup)
     else:
-        await update.message.reply_text(text, reply_markup=reply_markup, parse_mode="Markdown")
+        await update.message.reply_text(final_text, reply_markup=reply_markup, parse_mode=constants.ParseMode.MARKDOWN)
 
-
-# =============================
-# REMOVE PRODUCT
-# =============================
-async def remove_shopping_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def add_to_shopping_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.callback_query
+    if not query: return
     await query.answer()
 
-    product_id = query.data.replace("remove_shopping_", "")
-    user_id = query.from_user.id
+    product_id = query.data.replace("add_shopping_", "")
+    search_results = context.user_data.get("search_results", {})
+    product = search_results.get(product_id)
+    
+    if not product:
+        await safe_edit(query, "❌ Product not found.")
+        return
 
-    remove_from_shopping(user_id, product_id)
+    added = add_to_shopping(query.from_user.id, product)
+    msg = f"🛒 *{product['name']}* added to cart." if added else "ℹ️ Already in cart."
+    await safe_edit(query, msg)
+
+async def remove_shopping_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    query = update.callback_query
+    if not query: return
+    await query.answer()
+    remove_from_shopping(update.effective_user.id, query.data.replace("remove_shopping_", ""))
     await list_shopping(update, context)
 
-
-# =============================
-# CONFIRM CLEAR
-# =============================
-async def confirm_clear_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def confirm_clear_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.callback_query
+    if not query: return
     await query.answer()
+    keyboard = [[
+        InlineKeyboardButton("✅ Yes", callback_data="clear_shopping"),
+        InlineKeyboardButton("❌ Cancel", callback_data="view_shopping")
+    ]]
+    await safe_edit(query, "⚠️ Clear the entire cart?", InlineKeyboardMarkup(keyboard))
 
-    keyboard = [
-        [
-            InlineKeyboardButton("✅ Да", callback_data="clear_shopping"),
-            InlineKeyboardButton("❌ Отказ", callback_data="view_shopping"),
-        ]
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    await safe_edit(query, "⚠️ Сигурна ли си, че искаш да изчистиш количката?", reply_markup)
-
-
-# =============================
-# CLEAR SHOPPING
-# =============================
-async def clear_shopping_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def clear_shopping_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.callback_query
+    if not query: return
     await query.answer()
-
-    user_id = query.from_user.id
-    clear_shopping_list(user_id)
-    await safe_edit(query, "🧹 Количката беше изчистена.")
+    clear_shopping_list(update.effective_user.id)
+    await safe_edit(query, "🧹 Cart has been cleared.")

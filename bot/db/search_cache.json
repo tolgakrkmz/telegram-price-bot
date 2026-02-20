@@ -167,5 +167,193 @@
         "discount": "19"
       }
     ]
+  },
+  "лейка": {
+    "timestamp": "2026-02-21T01:24:02.480263",
+    "results": [
+      {
+        "name": "Leki Свинска флейка",
+        "price": 9.99,
+        "unit": "1кг",
+        "store": "Kaufland",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32573/crops/4_crop_11.jpg",
+        "discount": "41"
+      },
+      {
+        "name": "Лея Жарена флейка",
+        "price": 10.99,
+        "unit": "1кг",
+        "store": "Kaufland",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32521/crops/2_crop_20.jpg",
+        "discount": null
+      }
+    ]
+  },
+  "лея жарена флейка": {
+    "timestamp": "2026-02-21T01:32:01.320250",
+    "results": [
+      {
+        "name": "Лея Жарена флейка",
+        "price": 10.99,
+        "unit": "1кг",
+        "store": "Kaufland",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32521/crops/2_crop_20.jpg",
+        "discount": null
+      }
+    ]
+  },
+  "leki свинска флейка": {
+    "timestamp": "2026-02-21T01:32:03.436764",
+    "results": [
+      {
+        "name": "Leki Свинска флейка",
+        "price": 9.99,
+        "unit": "1кг",
+        "store": "Kaufland",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32573/crops/4_crop_11.jpg",
+        "discount": "41"
+      }
+    ]
+  },
+  "българско кисело мляко знп": {
+    "timestamp": "2026-02-21T01:32:05.197838",
+    "results": [
+      {
+        "name": "Българско кисело мляко ЗНП",
+        "price": 1.1,
+        "unit": "400г",
+        "store": "Lidl",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32565/crops/34_crop_11.jpg",
+        "discount": "24"
+      }
+    ]
+  },
+  "саяна прясно мляко": {
+    "timestamp": "2026-02-21T01:32:06.939083",
+    "results": [
+      {
+        "name": "САЯНА Прясно мляко",
+        "price": 0.98,
+        "unit": "500мл",
+        "store": "Kaufland",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32521/crops/2_crop_8.jpg",
+        "discount": "50"
+      }
+    ]
+  },
+  "pilos кисело мляко 2%": {
+    "timestamp": "2026-02-21T01:33:20.565445",
+    "results": [
+      {
+        "name": "Pilos кисело мляко 2%",
+        "price": 0.82,
+        "unit": "400г",
+        "store": "Lidl",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32563/crops/3_crop_0.jpg",
+        "discount": "31"
+      }
+    ]
+  },
+  "саяна кисело мляко 2% масленост": {
+    "timestamp": "2026-02-21T01:33:22.209619",
+    "results": [
+      {
+        "name": "САЯНА Кисело мляко 2% масленост",
+        "price": 0.78,
+        "unit": "400г",
+        "store": "Kaufland",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32521/crops/2_crop_0.jpg",
+        "discount": "50"
+      }
+    ]
+  },
+  "краде кисело мляко 2% 400г": {
+    "timestamp": "2026-02-21T01:33:23.944355",
+    "results": [
+      {
+        "name": "КРАДЕ КИСЕЛО МЛЯКО 2% 400г",
+        "price": 0.68,
+        "unit": "400г",
+        "store": "Kaufland",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32573/crops/26_crop_3.jpg",
+        "discount": "33"
+      }
+    ]
+  },
+  "репички клас: i 250г": {
+    "timestamp": "2026-02-21T01:35:07.062154",
+    "results": [
+      {
+        "name": "Репички КЛАС: I 250г",
+        "price": 1.19,
+        "unit": "250г",
+        "store": "Kaufland",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32573/crops/2_crop_13.jpg",
+        "discount": "33"
+      }
+    ]
+  },
+  "шлайф": {
+    "timestamp": "2026-02-21T01:45:59.254340",
+    "results": [
+      {
+        "name": "Parkside Дискове за ъллошлайф",
+        "price": 5.98,
+        "unit": "16 броя",
+        "store": "Lidl",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32511/crops/30_crop_2.jpg",
+        "discount": null
+      },
+      {
+        "name": "Parkside принадлежности за ъглошлайф",
+        "price": 5.98,
+        "unit": "комплект",
+        "store": "Lidl",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32511/crops/30_crop_4.jpg",
+        "discount": null
+      },
+      {
+        "name": "Parkside Акумулаторен прав шлайф",
+        "price": 79.99,
+        "unit": "бр.",
+        "store": "Lidl",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32511/crops/30_crop_7.jpg",
+        "discount": null
+      },
+      {
+        "name": "PARK SIDE PERFORMANCE Акумулаторен ъглошлайф",
+        "price": 149.99,
+        "unit": "бр",
+        "store": "Lidl",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32565/crops/29_crop_1.jpg",
+        "discount": null
+      }
+    ]
+  },
+  "park side performance акумулаторен ъглошлайф": {
+    "timestamp": "2026-02-21T01:46:22.146660",
+    "results": [
+      {
+        "name": "PARK SIDE PERFORMANCE Акумулаторен ъглошлайф",
+        "price": 149.99,
+        "unit": "бр",
+        "store": "Lidl",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32565/crops/29_crop_1.jpg",
+        "discount": null
+      }
+    ]
+  },
+  "parkside акумулаторен прав шлайф": {
+    "timestamp": "2026-02-21T01:46:23.887523",
+    "results": [
+      {
+        "name": "Parkside Акумулаторен прав шлайф",
+        "price": 79.99,
+        "unit": "бр.",
+        "store": "Lidl",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32511/crops/30_crop_7.jpg",
+        "discount": null
+      }
+    ]
   }
 }

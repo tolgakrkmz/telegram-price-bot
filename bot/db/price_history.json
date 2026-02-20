@@ -168,5 +168,65 @@
         "price": 2.7
       }
     ]
+  },
+  "a5689a80972072d0ec6ec7563ac9dadf": {
+    "name": "Leki Свинска флейка",
+    "store": "Kaufland",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 9.99
+      }
+    ]
+  },
+  "b619bb710e792703b39cf86690a92cf9": {
+    "name": "Лея Жарена флейка",
+    "store": "Kaufland",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 10.99
+      }
+    ]
+  },
+  "de7174fedf2c1e2e73b37cc9b168a271": {
+    "name": "Parkside Дискове за ъллошлайф",
+    "store": "Lidl",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 5.98
+      }
+    ]
+  },
+  "dc7d97a2e72498dce230a2b583c34429": {
+    "name": "Parkside принадлежности за ъглошлайф",
+    "store": "Lidl",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 5.98
+      }
+    ]
+  },
+  "696609a32d5998800a2182055568a307": {
+    "name": "Parkside Акумулаторен прав шлайф",
+    "store": "Lidl",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 79.99
+      }
+    ]
+  },
+  "1d9633ad90b1e1248d5ee7cd342fcf8d": {
+    "name": "PARK SIDE PERFORMANCE Акумулаторен ъглошлайф",
+    "store": "Lidl",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 149.99
+      }
+    ]
   }
 }

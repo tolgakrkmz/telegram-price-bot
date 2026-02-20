@@ -1,24 +1,6 @@
 {
   "1210776920": {
-    "shopping_list": [],
-    "7ad39e5b8c5a7f12ea69968608190d51": {
-      "name": "Българско кисело мляко ЗНП",
-      "price": 1.1,
-      "unit": "400г",
-      "store": "Lidl",
-      "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32565/crops/34_crop_11.jpg",
-      "discount": "24",
-      "id": "7ad39e5b8c5a7f12ea69968608190d51"
-    },
-    "c1fdf777d656ccaca3f39013f3d4d29b": {
-      "name": "Coca-Cola /Fanta /Sprite",
-      "price": 11.73,
-      "unit": "6 x 1,5 л",
-      "store": "Kaufland",
-      "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32573/crops/20_crop_16.jpg",
-      "discount": "34",
-      "id": "c1fdf777d656ccaca3f39013f3d4d29b"
-    }
+    "shopping_list": []
   },
   "1129871125": {
     "23878b10266d2da7bf4de61e536fdcf1": {
