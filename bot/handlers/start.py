@@ -10,4 +10,4 @@ async def start(update, context):
         "major supermarkets and save money automatically."
     )
     await update.message.reply_text(welcome_text)
-    await update.message.reply_text("🏠 Main Menu:", reply_markup=main_menu_keyboard())
+    await update.message.reply_text("🏠 Main Menu", reply_markup=main_menu_keyboard())

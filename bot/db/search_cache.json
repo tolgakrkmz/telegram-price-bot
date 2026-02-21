@@ -355,5 +355,277 @@
         "discount": null
       }
     ]
+  },
+  "apple": {
+    "timestamp": "2026-02-21T12:43:03.974606",
+    "results": [
+      {
+        "name": "Solevita ябълков нектар",
+        "price": 3.11,
+        "unit": "5 x 200ml",
+        "store": "Lidl",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32511/crops/3_crop_9.jpg",
+        "discount": "21"
+      },
+      {
+        "name": "BILLA Ананас на резени",
+        "price": 3.99,
+        "unit": "565г",
+        "store": "Billa",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa/32554/crops/16_crop_5.jpg",
+        "discount": "27"
+      }
+    ]
+  },
+  "бира": {
+    "timestamp": "2026-02-21T12:44:58.150577",
+    "results": [
+      {
+        "name": "Argus безалкохолна бира",
+        "price": 0.68,
+        "unit": "0.5л",
+        "store": "Lidl",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32511/crops/32_crop_3.jpg",
+        "discount": "31"
+      },
+      {
+        "name": "ШУМЕНСКО Бира",
+        "price": 0.74,
+        "unit": "0,33 л",
+        "store": "Kaufland",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32573/crops/20_crop_15.jpg",
+        "discount": "46"
+      },
+      {
+        "name": "STEPHANSBRAU Бира",
+        "price": 0.98,
+        "unit": "0,5 л",
+        "store": "Kaufland",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32521/crops/11_crop_13.jpg",
+        "discount": "24"
+      },
+      {
+        "name": "Пиринско светло бира",
+        "price": 1.15,
+        "unit": "0.5л",
+        "store": "Billa",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa/32554/crops/19_crop_16.jpg",
+        "discount": "29"
+      },
+      {
+        "name": "Шуменско Бира",
+        "price": 1.19,
+        "unit": "0.5л",
+        "store": "Lidl",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32565/crops/7_crop_0.jpg",
+        "discount": ""
+      }
+    ]
+  },
+  "чипс": {
+    "timestamp": "2026-02-21T12:45:24.058190",
+    "results": [
+      {
+        "name": "Grivassini царевичен чипс",
+        "price": 1.19,
+        "unit": "60г",
+        "store": "Kaufland",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32521/crops/20_crop_5.jpg",
+        "discount": "29"
+      },
+      {
+        "name": "RICE UP! Оризов чипс 60г",
+        "price": 1.39,
+        "unit": "60г",
+        "store": "Billa",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa/32554/crops/19_crop_1.jpg",
+        "discount": "30"
+      },
+      {
+        "name": "Snack Day Бял чипс",
+        "price": 1.8,
+        "unit": "125г",
+        "store": "Lidl",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32511/crops/32_crop_8.jpg",
+        "discount": "27"
+      },
+      {
+        "name": "K Classic Къдрав чипс",
+        "price": 1.99,
+        "unit": "150г",
+        "store": "Kaufland",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32456/crops/2_crop_11.jpg",
+        "discount": "19"
+      },
+      {
+        "name": "Doritos царевичен чипс",
+        "price": 1.99,
+        "unit": "90г",
+        "store": "Lidl",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32565/crops/8_crop_6.jpg",
+        "discount": null
+      }
+    ]
+  },
+  "сметана": {
+    "timestamp": "2026-02-21T12:46:06.921832",
+    "results": [
+      {
+        "name": "Sterilgarda Сметана за готвене",
+        "price": 2.39,
+        "unit": "200мл",
+        "store": "Billa",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa/32554/crops/13_crop_12.jpg",
+        "discount": "20"
+      },
+      {
+        "name": "Pene Cтpoй Заквасена сметана 20%",
+        "price": 2.8,
+        "unit": "500г",
+        "store": "Lidl",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32565/crops/34_crop_6.jpg",
+        "discount": "23"
+      },
+      {
+        "name": "Заквасена сметана САЯНА",
+        "price": 2.84,
+        "unit": "400г",
+        "store": "Fantastico",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/fantastiko/32553/crops/5_crop_11.jpg",
+        "discount": "33"
+      },
+      {
+        "name": "Olympus Заквасена сметана",
+        "price": 2.99,
+        "unit": "350г",
+        "store": "Kaufland",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32521/crops/19_crop_17.jpg",
+        "discount": "23"
+      },
+      {
+        "name": "Чипс CHIO Intense",
+        "price": 2.99,
+        "unit": "160г/170г",
+        "store": "Fantastico",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/fantastiko/32553/crops/11_crop_0.jpg",
+        "discount": "40"
+      }
+    ]
+  },
+  "doritos царевичен чипс": {
+    "timestamp": "2026-02-21T12:46:46.183439",
+    "results": [
+      {
+        "name": "Doritos царевичен чипс",
+        "price": 1.99,
+        "unit": "90г",
+        "store": "Lidl",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32565/crops/8_crop_6.jpg",
+        "discount": null
+      }
+    ]
+  },
+  "olympus заквасена сметана": {
+    "timestamp": "2026-02-21T12:46:47.925127",
+    "results": [
+      {
+        "name": "Olympus Заквасена сметана",
+        "price": 2.99,
+        "unit": "350г",
+        "store": "Kaufland",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32521/crops/19_crop_17.jpg",
+        "discount": "23"
+      }
+    ]
+  },
+  "хляб": {
+    "timestamp": "2026-02-21T13:06:20.593218",
+    "results": [
+      {
+        "name": "Земел със сусам",
+        "price": 0.1,
+        "unit": "60г",
+        "store": "Kaufland",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32521/crops/1_crop_5.jpg",
+        "discount": "54"
+      },
+      {
+        "name": "Хляб Сомун Опекана",
+        "price": 0.74,
+        "unit": "300г",
+        "store": "Kaufland",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32521/crops/27_crop_13.jpg",
+        "discount": "50"
+      },
+      {
+        "name": "Хляб Сомун По сръбска рецепта",
+        "price": 0.74,
+        "unit": "300г/бр.",
+        "store": "Lidl",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32509/crops/1_crop_2.jpg",
+        "discount": "50"
+      },
+      {
+        "name": "Ръжено-пшеничен хляб",
+        "price": 1.13,
+        "unit": "600г",
+        "store": "Lidl",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32563/crops/1_crop_2.jpg",
+        "discount": "50"
+      },
+      {
+        "name": "Бял хляб нарязан с жива закваска - Мила Закваска",
+        "price": 1.19,
+        "unit": "650г",
+        "store": "Kaufland",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32521/crops/13_crop_0.jpg",
+        "discount": "19"
+      }
+    ]
+  },
+  "вино": {
+    "timestamp": "2026-02-21T13:08:08.336458",
+    "results": [
+      {
+        "name": "Немeя Агиоргитико",
+        "price": 4.99,
+        "unit": "0.7л",
+        "store": "Lidl",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32565/crops/18_crop_7.jpg",
+        "discount": null
+      },
+      {
+        "name": "TARGOVISHTE Червено, Бяло вино или Розе",
+        "price": 5.98,
+        "unit": "0,75л",
+        "store": "Kaufland",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32573/crops/7_crop_0.jpg",
+        "discount": "24"
+      },
+      {
+        "name": "Дорнфелдер",
+        "price": 5.98,
+        "unit": "0.75л",
+        "store": "Lidl",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32565/crops/17_crop_12.jpg",
+        "discount": null
+      },
+      {
+        "name": "Немея Агиоргитико",
+        "price": 6.83,
+        "unit": "0.7 l",
+        "store": "Lidl",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32565/crops/18_crop_9.jpg",
+        "discount": null
+      },
+      {
+        "name": "EMINE Вино",
+        "price": 7.49,
+        "unit": "0,75 л",
+        "store": "Billa",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa/32554/crops/22_crop_8.jpg",
+        "discount": "50"
+      }
+    ]
   }
 }

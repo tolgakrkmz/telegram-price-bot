@@ -30,5 +30,25 @@
       "discount": null,
       "id": "23878b10266d2da7bf4de61e536fdcf1"
     }
+  },
+  "6248530134": {
+    "shopping_list": [
+      {
+        "name": "Doritos царевичен чипс",
+        "price": 1.99,
+        "unit": "90г",
+        "store": "Lidl",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32565/crops/8_crop_6.jpg",
+        "discount": null
+      },
+      {
+        "name": "Olympus Заквасена сметана",
+        "price": 2.99,
+        "unit": "350г",
+        "store": "Kaufland",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32521/crops/19_crop_17.jpg",
+        "discount": "23"
+      }
+    ]
   }
 }

@@ -228,5 +228,275 @@
         "price": 149.99
       }
     ]
+  },
+  "ceb1b10a1a219d2eae4ebfae8eadefb1": {
+    "name": "Solevita ябълков нектар",
+    "store": "Lidl",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 3.11
+      }
+    ]
+  },
+  "986929abe5f8ac33035fe4778296b65b": {
+    "name": "BILLA Ананас на резени",
+    "store": "Billa",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 3.99
+      }
+    ]
+  },
+  "13ea0980c948e57f902305dcb1b6e34b": {
+    "name": "Argus безалкохолна бира",
+    "store": "Lidl",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 0.68
+      }
+    ]
+  },
+  "fbb2e221a58c377ea0b11bd10a1b21b0": {
+    "name": "ШУМЕНСКО Бира",
+    "store": "Kaufland",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 0.74
+      }
+    ]
+  },
+  "ce1faf8e97431de799fcea2243bec26f": {
+    "name": "STEPHANSBRAU Бира",
+    "store": "Kaufland",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 0.98
+      }
+    ]
+  },
+  "9737558df2beaaa80298aec4742d6698": {
+    "name": "Пиринско светло бира",
+    "store": "Billa",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 1.15
+      }
+    ]
+  },
+  "3fa0caed9676f3c0fdfb5c138a97a2da": {
+    "name": "Шуменско Бира",
+    "store": "Lidl",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 1.19
+      }
+    ]
+  },
+  "095e424f31bfaf978a1ba83015dd86a3": {
+    "name": "Grivassini царевичен чипс",
+    "store": "Kaufland",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 1.19
+      }
+    ]
+  },
+  "0330165b6e606f3a8302a81a09bb7e1e": {
+    "name": "RICE UP! Оризов чипс 60г",
+    "store": "Billa",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 1.39
+      }
+    ]
+  },
+  "feac2bcd7dd2d834179e834bb55e954b": {
+    "name": "Snack Day Бял чипс",
+    "store": "Lidl",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 1.8
+      }
+    ]
+  },
+  "249471f1b6475b2b77b0189ce33fdc37": {
+    "name": "K Classic Къдрав чипс",
+    "store": "Kaufland",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 1.99
+      }
+    ]
+  },
+  "542441ba7f38220f03c7b1ad57fee8d5": {
+    "name": "Doritos царевичен чипс",
+    "store": "Lidl",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 1.99
+      }
+    ]
+  },
+  "91248cbbdeb2094c5aa299ede511ecbc": {
+    "name": "Sterilgarda Сметана за готвене",
+    "store": "Billa",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 2.39
+      }
+    ]
+  },
+  "a7adf08f2cc98e2ca75941f35a065671": {
+    "name": "Pene Cтpoй Заквасена сметана 20%",
+    "store": "Lidl",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 2.8
+      }
+    ]
+  },
+  "d85257eebdcb4ec4d86296849532be51": {
+    "name": "Заквасена сметана САЯНА",
+    "store": "Fantastico",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 2.84
+      }
+    ]
+  },
+  "0fdd771ed2a15aa10c06356fe4bbdb39": {
+    "name": "Olympus Заквасена сметана",
+    "store": "Kaufland",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 2.99
+      }
+    ]
+  },
+  "4a1c3331ae306f106f54c548f885f5ce": {
+    "name": "Чипс CHIO Intense",
+    "store": "Fantastico",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 2.99
+      }
+    ]
+  },
+  "c6e4582dcc74656dbf305b43ae7e984a": {
+    "name": "Земел със сусам",
+    "store": "Kaufland",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 0.1
+      }
+    ]
+  },
+  "43b723c08f373133c6b713d4dfd682ab": {
+    "name": "Хляб Сомун Опекана",
+    "store": "Kaufland",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 0.74
+      }
+    ]
+  },
+  "e552cb39d5949acad2c3835ec952eb00": {
+    "name": "Хляб Сомун По сръбска рецепта",
+    "store": "Lidl",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 0.74
+      }
+    ]
+  },
+  "d182edb34de901ba9a0bb8eaadc0ee97": {
+    "name": "Ръжено-пшеничен хляб",
+    "store": "Lidl",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 1.13
+      }
+    ]
+  },
+  "470a173ea5e6d12f2da28dbb97fc1b15": {
+    "name": "Бял хляб нарязан с жива закваска - Мила Закваска",
+    "store": "Kaufland",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 1.19
+      }
+    ]
+  },
+  "7d14a3556721aa06ac62be878183764d": {
+    "name": "Немeя Агиоргитико",
+    "store": "Lidl",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 4.99
+      }
+    ]
+  },
+  "168a6ffae3aff344148524c218bb5fc7": {
+    "name": "TARGOVISHTE Червено, Бяло вино или Розе",
+    "store": "Kaufland",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 5.98
+      }
+    ]
+  },
+  "696f230da11ac518b22b65b10e315493": {
+    "name": "Дорнфелдер",
+    "store": "Lidl",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 5.98
+      }
+    ]
+  },
+  "1f75505528aa3cf3a50fd916a35651e8": {
+    "name": "Немея Агиоргитико",
+    "store": "Lidl",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 6.83
+      }
+    ]
+  },
+  "87a0c6a4dbbf421ea3626e143425f16e": {
+    "name": "EMINE Вино",
+    "store": "Billa",
+    "prices": [
+      {
+        "date": "2026-02-21",
+        "price": 7.49
+      }
+    ]
   }
 }
