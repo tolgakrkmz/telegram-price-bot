@@ -3,7 +3,8 @@ from typing import Dict, Any, List, Optional
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, constants
 from telegram.ext import ContextTypes
 
-from handlers.start import start
+# Добавяме импорта на главното меню
+from utils.menu import main_menu_keyboard
 from api.supermarket import get_product_price
 from db.storage import (
     add_to_shopping,
@@ -46,7 +47,6 @@ def get_better_price(
                 try:
                     p_unit_price = float(p.get('unit_price', p['price']))
                     if p['store'] != current_store and p_unit_price < min_unit_price:
-                        # Dairy specific check for fat percentage
                         if "%" in product_name:
                             percentage = [s for s in product_name.split() if "%" in s]
                             if percentage and percentage[0] not in p_name_lower:
@@ -80,24 +80,27 @@ async def list_shopping(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     user_id = update.effective_user.id
     shopping = get_shopping_list(user_id)
 
+    # ПОПРАВКА: При празна количка показваме текста + Главното Меню
     if not shopping:
+        text = "🛒 Your cart is empty."
+        reply_markup = main_menu_keyboard()
         if query:
             await query.answer()
-            await safe_edit(query, "🛒 Your cart is empty.")
-            await start(update, context)
+            await safe_edit(query, text, reply_markup)
+        else:
+            await update.message.reply_text(text, reply_markup=reply_markup, parse_mode=constants.ParseMode.MARKDOWN)
         return
 
     if query: await query.answer()
 
     # --- Cache Warmup Logic ---
-    # Fetch data for items that are not in cache yet
     for item in shopping:
         name = item.get('name')
         if name and not get_cached_search(name):
             new_data = get_product_price(name, multiple=True)
             if new_data:
                 save_search_to_cache(name, new_data)
-                await asyncio.sleep(0.5) # Protect API limits
+                await asyncio.sleep(0.5) 
 
     total_sum = 0.0
     potential_savings = 0.0
@@ -186,4 +189,5 @@ async def clear_shopping_callback(update: Update, context: ContextTypes.DEFAULT_
     if not query: return
     await query.answer()
     clear_shopping_list(update.effective_user.id)
-    await safe_edit(query, "🧹 Cart has been cleared.")
+    # ПОПРАВКА: При изчистване също връщаме към менюто автоматично
+    await safe_edit(query, "🧹 Cart has been cleared.", reply_markup=main_menu_keyboard())

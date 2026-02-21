@@ -1,7 +1,7 @@
 from telegram import Update
 from telegram.ext import ContextTypes
 from db.storage import add_favorite, remove_favorite, get_favorites
-from utils.menu import main_menu_keyboard, favorites_keyboard  # Импортираме и двете менюта
+from utils.menu import main_menu_keyboard, favorites_keyboard
 
 async def add_to_favorite_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query

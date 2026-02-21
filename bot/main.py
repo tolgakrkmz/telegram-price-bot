@@ -28,6 +28,7 @@ from handlers.shopping import (
 from handlers.alerts import update_favorites_prices, global_price_update
 from utils.menu import main_menu_keyboard
 from utils.message_cache import add_message
+from handlers.info import show_info
 
 # Logging
 logging.basicConfig(
@@ -86,6 +87,8 @@ def main():
     app.add_handler(CallbackQueryHandler(confirm_clear_callback, pattern="^confirm_clear$"))
     app.add_handler(CallbackQueryHandler(clear_shopping_callback, pattern="^clear_shopping$"))
     app.add_handler(CallbackQueryHandler(list_shopping, pattern="^view_shopping$"))
+
+    app.add_handler(CallbackQueryHandler(show_info, pattern="^bot_info$"))
 
     # --- Generic Buttons ---
     app.add_handler(CallbackQueryHandler(button_handler))

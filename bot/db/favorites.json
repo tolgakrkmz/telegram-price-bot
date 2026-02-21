@@ -1,6 +1,24 @@
 {
   "1210776920": {
-    "shopping_list": []
+    "shopping_list": [],
+    "e4da19f1092e45ed64052659813f66cf": {
+      "name": "САЯНА Кисело мляко 2% масленост",
+      "price": 0.78,
+      "unit": "400г",
+      "store": "Kaufland",
+      "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32521/crops/2_crop_0.jpg",
+      "discount": "50",
+      "id": "e4da19f1092e45ed64052659813f66cf"
+    },
+    "7ad39e5b8c5a7f12ea69968608190d51": {
+      "name": "Българско кисело мляко ЗНП",
+      "price": 1.1,
+      "unit": "400г",
+      "store": "Lidl",
+      "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32565/crops/34_crop_11.jpg",
+      "discount": "24",
+      "id": "7ad39e5b8c5a7f12ea69968608190d51"
+    }
   },
   "1129871125": {
     "23878b10266d2da7bf4de61e536fdcf1": {

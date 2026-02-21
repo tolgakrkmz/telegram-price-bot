@@ -1,21 +1,30 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 def main_menu_keyboard():
+    """Main navigation menu."""
     keyboard = [
-        [InlineKeyboardButton("🔍 Търси продукт", callback_data="search")],
-        [InlineKeyboardButton("⭐ Моите любими", callback_data="list_favorites")],
-        [InlineKeyboardButton("🧹 Изчисти чат", callback_data="clear_chat")],
-        [InlineKeyboardButton("📂 Категории", callback_data="categories")],
-        [InlineKeyboardButton("🛒 Количка за пазаруване", callback_data="shopping_list")]
+        [InlineKeyboardButton("🔍 Search Products", callback_data="search")],
+        [
+            InlineKeyboardButton("⭐ Favorites", callback_data="list_favorites"),
+            InlineKeyboardButton("🛒 Cart", callback_data="shopping_list")
+        ],
+        [
+            InlineKeyboardButton("ℹ️ Info & Help", callback_data="bot_info"),
+            InlineKeyboardButton("🧹 Clear Chat", callback_data="clear_chat")
+        ]
     ]
     return InlineKeyboardMarkup(keyboard)
 
-
-def favorites_keyboard(favorites):
+def favorites_keyboard(favorites=None):
+    """
+    Dynamic menu for favorites. 
+    Shows 'Update' button only if there are items to update.
+    """
     keyboard = []
-    for pid, product in favorites.items():
-        keyboard.append([InlineKeyboardButton(f"❌ {product['name']}", callback_data=f"delete_{pid}")])
-
-    keyboard.append([InlineKeyboardButton("⬅️ Върни се в менюто", callback_data="main_menu")])
-
+    
+    if favorites:
+        keyboard.append([InlineKeyboardButton("🔄 Update Prices Now", callback_data="update_prices_manual")])
+    
+    keyboard.append([InlineKeyboardButton("🏠 Main Menu", callback_data="main_menu")])
+    
     return InlineKeyboardMarkup(keyboard)
