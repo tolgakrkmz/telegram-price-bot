@@ -15,10 +15,6 @@ def get_product_price(
 ) -> Union[Optional[Dict[str, Any]], List[Dict[str, Any]], None]:
     """
     Fetches product data from the supermarket API.
-    
-    Args:
-        product_name: The search query string.
-        multiple: If True, returns a list of results. Otherwise, returns the first one.
     """
     url = f"{SUPER_API_BASE}/products"
     headers = {"Authorization": f"Bearer {SUPER_API_KEY}"}
@@ -36,14 +32,19 @@ def get_product_price(
 
         results = []
         for p in data:
-            # Safely extract and format product data
             product_info = {
+                "id": p.get("id"),
                 "name": p.get("name", "Unknown Product"),
                 "price": p.get("price_lev", 0.0),
+                "price_eur": p.get("price_eur", 0.0),
                 "unit": p.get("quantity", "n/a"),
+                "quantity": p.get("quantity"),        
                 "store": p.get("supermarket", {}).get("name", "Unknown Store"),
+                "supermarket": p.get("supermarket"), 
                 "image": p.get("image_url"),
-                "discount": p.get("discount", 0)
+                "image_url": p.get("image_url"),      
+                "discount": p.get("discount"),
+                "brochure": p.get("brochure")
             }
             results.append(product_info)
 
@@ -51,12 +52,5 @@ def get_product_price(
             return results
         return results[0] if results else None
 
-    except requests.exceptions.Timeout:
-        # Logging could be added here
-        return [] if multiple else None
-    except requests.exceptions.RequestException:
-        # Generic handling for connection issues and 4xx/5xx status
-        return [] if multiple else None
-    except (KeyError, ValueError, TypeError):
-        # Handling for unexpected JSON structure
+    except (requests.exceptions.RequestException, KeyError, ValueError, TypeError):
         return [] if multiple else None

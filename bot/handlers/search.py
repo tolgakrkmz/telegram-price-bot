@@ -1,9 +1,11 @@
+from datetime import datetime
+
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, constants
 from telegram.ext import ContextTypes, ConversationHandler
 
 from api.supermarket import get_product_price
 from utils.menu import main_menu_keyboard
-from utils.helpers import get_product_id, calculate_unit_price
+from utils.helpers import get_product_id, calculate_unit_price, format_promo_dates
 from utils.message_cache import add_message
 from db.storage import (
     get_cached_search, 
@@ -36,12 +38,10 @@ async def search_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
     user_input = update.message.text.strip()
     user_id = update.effective_user.id
 
-    # 1. Attempt to retrieve from cache
     products = get_cached_search(user_input)
     is_cached = True
 
     if not products:
-        # 2. Fetch from API if cache is empty
         products = get_product_price(user_input, multiple=True)
         if products:
             save_search_to_cache(user_input, products)
@@ -52,17 +52,14 @@ async def search_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
         add_message(user_id, msg.message_id)
         return ConversationHandler.END
 
-    # 3. Enrich products with unit price data for comparison
     for p in products:
-        u_price, u_unit = calculate_unit_price(p.get('price'), p.get('unit'))
+        price_val = p.get('price_eur') or p.get('price')
+        unit_val = p.get('quantity') or p.get('unit')
+        u_price, u_unit = calculate_unit_price(price_val, unit_val)
         p['calc_unit_price'] = u_price
         p['base_unit'] = u_unit
 
-    # 4. Sort products by unit price (Value for Money)
-    # Products with no valid unit price are sorted to the bottom
     products.sort(key=lambda x: x['calc_unit_price'] if x['calc_unit_price'] is not None else float('inf'))
-
-    # Determine the best value across all results
     cheapest_unit_val = products[0]['calc_unit_price'] if products else None
 
     search_results = {}
@@ -72,41 +69,53 @@ async def search_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
         product_id = get_product_id(p)
         search_results[product_id] = p
         
-        # 5. Persistence: Record fresh data to history
-        if not is_cached:
-            update_price_history(product_id, p['price'], p['name'], p['store'])
+        curr_name = p.get('name', 'N/A')
+        curr_price = p.get('price_eur') or p.get('price', 0)
+        curr_store = p.get('supermarket', {}).get('name') if isinstance(p.get('supermarket'), dict) else p.get('store', 'Unknown')
+        curr_unit = p.get('quantity') or p.get('unit', '')
+        curr_image = p.get('image_url') or p.get('image')
 
-        # 6. Trend Analysis
+        if not is_cached:
+            update_price_history(product_id, curr_price, curr_name, curr_store)
+
         history = get_product_history(product_id)
         trend_text = ""
         if len(history) > 1:
             try:
                 prev_price = float(history[-2]['price'])
-                curr_price = float(p['price'])
-                
-                if curr_price < prev_price:
+                if float(curr_price) < prev_price:
                     trend_text = f"📉 Price drop! (was {prev_price:.2f}{CURRENCY})\n"
-                elif curr_price > prev_price:
-                    trend_text = f"📈 Price increase! (was {prev_price:.2f}{CURRENCY})\n"
-            except (ValueError, KeyError, IndexError):
-                pass
+            except: pass
 
-        # 7. UI Construction with Value Comparison
         unit_price_info = ""
         best_value_tag = ""
-        
         if p.get('calc_unit_price'):
             unit_price_info = f"⚖️ Unit Price: **{p['calc_unit_price']:.2f}{CURRENCY}/{p['base_unit']}**\n"
-            # Tag the most cost-effective option
             if p['calc_unit_price'] == cheapest_unit_val:
                 best_value_tag = "🏆 *BEST VALUE*\n"
 
+        # --- DATES LOGIC ---
+        promo_timer = ""
+        brochure = p.get('brochure')
+        if brochure and isinstance(brochure, dict):
+            from_d = brochure.get('valid_from')
+            until_d = brochure.get('valid_until')
+            if from_d and until_d:
+                try:
+                    f = datetime.strptime(from_d, "%Y-%m-%d").strftime("%d.%m")
+                    u = datetime.strptime(until_d, "%Y-%m-%d").strftime("%d.%m")
+                    promo_timer = f"⏳ {f} - {u}"
+                except:
+                    promo_timer = f"⏳ {from_d} - {until_d}"
+
+        promo_info = f" | {promo_timer}" if promo_timer else ""
+
         caption = (
             f"{best_value_tag}"
-            f"🛒 *{p['name']}*\n"
-            f"💰 Price: **{p['price']:.2f}{CURRENCY}** ({p['unit']})\n"
+            f"🛒 *{curr_name}*\n"
+            f"💰 Price: **{float(curr_price):.2f}{CURRENCY}** ({curr_unit}){promo_info}\n"
             f"{unit_price_info}"
-            f"🏬 Store: {p['store']}\n"
+            f"🏬 Store: {curr_store}\n"
             f"{trend_text}"
         )
         
@@ -119,35 +128,16 @@ async def search_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
         ])
 
         try:
-            if p.get("image"):
-                msg = await update.message.reply_photo(
-                    p["image"], 
-                    caption=caption, 
-                    reply_markup=keyboard,
-                    parse_mode=constants.ParseMode.MARKDOWN
-                )
+            if curr_image:
+                msg = await update.message.reply_photo(curr_image, caption=caption, reply_markup=keyboard, parse_mode=constants.ParseMode.MARKDOWN)
             else:
-                msg = await update.message.reply_text(
-                    caption, 
-                    reply_markup=keyboard,
-                    parse_mode=constants.ParseMode.MARKDOWN
-                )
+                msg = await update.message.reply_text(caption, reply_markup=keyboard, parse_mode=constants.ParseMode.MARKDOWN)
             messages_to_cache.append(msg.message_id)
-        except Exception:
-            continue
+        except: continue
 
     context.user_data["search_results"] = search_results
-
-    # 8. Final UX confirmation
     footer_text = "✅ Search completed!" + (" (cached data)" if is_cached else "")
-    final_msg = await update.message.reply_text(
-        footer_text,
-        reply_markup=main_menu_keyboard()
-    )
+    final_msg = await update.message.reply_text(footer_text, reply_markup=main_menu_keyboard())
     messages_to_cache.append(final_msg.message_id)
-
-    # Cache message IDs for later cleanup
-    for m_id in messages_to_cache:
-        add_message(user_id, m_id)
-
+    for m_id in messages_to_cache: add_message(user_id, m_id)
     return ConversationHandler.END

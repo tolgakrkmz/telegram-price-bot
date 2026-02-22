@@ -5,7 +5,7 @@ from telegram.ext import ContextTypes
 
 from utils.menu import main_menu_keyboard
 from api.supermarket import get_product_price
-from utils.helpers import calculate_unit_price # New import
+from utils.helpers import calculate_unit_price, format_promo_dates # Added format_promo_dates
 from db.storage import (
     add_to_shopping,
     get_shopping_list,
@@ -26,46 +26,51 @@ def get_better_price(
     current_item: Dict[str, Any]
 ) -> Optional[Dict[str, Any]]:
     """
-    Analyzes cached data to find better deals for the same product type
-    using normalized unit prices (price per kg/L).
+    Analyzes cached data to find better deals using EUR prices.
     """
     cache = load_json(CACHE_FILE)
     better_option = None
     
-    # Calculate unit price for the item currently in the cart
-    curr_u_price, _ = calculate_unit_price(current_price, current_item.get('unit'))
+    # Use fallback keys for unit price calculation
+    curr_u_price, _ = calculate_unit_price(current_price, current_item.get('quantity') or current_item.get('unit'))
     
-    # If we cannot normalize the current item, we can't compare accurately
     if curr_u_price is None:
         return None
 
     min_unit_price = curr_u_price
 
-    # Clean keywords to find similar items
     ignore_words = {'pilos', 'саяна', 'lidl', 'kaufland', 'billa', 'боженци', 'vereia', 'верея'}
     keywords = [w for w in product_name.lower().split() if w not in ignore_words and len(w) > 2]
 
     for query, data in cache.items():
-        results = data.get("results", [])
+        # Handle cases where cache structure might vary
+        results = data if isinstance(data, list) else data.get("results", [])
         for p in results:
-            p_name_lower = p['name'].lower()
+            p_name_lower = p.get('name', '').lower()
             match_count = sum(1 for word in keywords if word in p_name_lower)
             
-            # Match if at least 2 keywords overlap
             if match_count >= 2:
                 try:
-                    # Calculate unit price for the potential deal
-                    p_u_price, _ = calculate_unit_price(float(p['price']), p.get('unit'))
+                    # Get prices and stores using fallback mapping
+                    p_price = float(p.get('price_eur') or p.get('price', 0))
+                    p_unit = p.get('quantity') or p.get('unit')
+                    p_store = p.get('supermarket', {}).get('name') if isinstance(p.get('supermarket'), dict) else p.get('store', 'Unknown')
+
+                    p_u_price, _ = calculate_unit_price(p_price, p_unit)
                     
-                    if p_u_price and p['store'] != current_store and p_u_price < min_unit_price:
-                        # Optional: handle specific percentage filters if they exist in name
+                    if p_u_price and p_store != current_store and p_u_price < min_unit_price:
                         if "%" in product_name:
                             percentage = [s for s in product_name.split() if "%" in s]
                             if percentage and percentage[0] not in p_name_lower:
                                 continue
                         
                         min_unit_price = p_u_price
-                        better_option = p
+                        # Create a clean display object for 'better'
+                        better_option = {
+                            'price': p_price,
+                            'unit': p_unit,
+                            'store': p_store
+                        }
                 except (ValueError, TypeError, KeyError):
                     continue
     return better_option
@@ -77,15 +82,17 @@ async def safe_edit(query, text: str, reply_markup: InlineKeyboardMarkup = None)
         "reply_markup": reply_markup,
         "parse_mode": constants.ParseMode.MARKDOWN
     }
-    if query.message.text:
-        await query.edit_message_text(**params)
-    else:
-        await query.edit_message_caption(**params)
+    try:
+        if query.message.text:
+            await query.edit_message_text(**params)
+        else:
+            await query.edit_message_caption(**params)
+    except Exception:
+        # Fallback if message is unchanged
+        pass
 
 async def list_shopping(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """
-    Displays the shopping list with smart unit-price comparisons.
-    """
+    """Displays the shopping list with dates and EUR comparisons."""
     query = update.callback_query
     user_id = update.effective_user.id
     shopping = get_shopping_list(user_id)
@@ -102,43 +109,42 @@ async def list_shopping(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
 
     if query: await query.answer()
 
-    # Cache Warmup: Refresh data for items in cart to get latest prices
-    for item in shopping:
-        name = item.get('name')
-        if name and not get_cached_search(name):
-            new_data = get_product_price(name, multiple=True)
-            if new_data:
-                save_search_to_cache(name, new_data)
-                await asyncio.sleep(0.3) # Slight delay to respect API limits
-
     total_sum = 0.0
     potential_savings = 0.0
     store_totals: Dict[str, float] = {}
     report_lines = ["🛒 *Your Shopping List*\n"]
     keyboard = []
 
-    for i, product in enumerate(shopping, 1):
-        price = float(product.get("price", 0))
-        store = product.get("store", "Unknown")
+    # Iterate through cart
+    # shopping can be dict {pid: p} or list [p1, p2] depending on your storage.py
+    # Assuming list based on your previous shopping.py logic
+    items = shopping.items() if isinstance(shopping, dict) else enumerate(shopping)
+
+    for idx, product in items:
+        # Fallback mapping
+        price = float(product.get("price_eur") or product.get("price", 0))
+        store = product.get("supermarket", {}).get("name") if isinstance(product.get("supermarket"), dict) else product.get("store", "Unknown")
         name = product.get("name", "Unknown")
-        unit = product.get("unit", "N/A")
-        product_id = product.get("id")
+        unit = product.get("quantity") or product.get("unit", "N/A")
+        product_id = product.get("id") or idx
 
         total_sum += price
         store_totals[store] = store_totals.get(store, 0.0) + price
 
-        # Smart Comparison Logic
+        # Extract dates via helper
+        promo_timer = format_promo_dates(product)
+        promo_text = f" | ⏳ {promo_timer}" if promo_timer else ""
+
+        # Smart Comparison
         better = get_better_price(name, price, store, product)
         better_text = ""
         if better:
-            # Note: Savings here are illustrative based on unit price difference
             better_text = f"   💡 *Better Deal:* {better['price']:.2f}{CURRENCY} ({better['unit']}) at {better['store']}\n"
-            # Simple heuristic: if units are identical, calculate raw savings
             if better.get('unit') == unit:
                 potential_savings += (price - float(better['price']))
 
-        report_lines.append(f"{i}. {name}\n   🏬 {store} | **{price:.2f}{CURRENCY}** ({unit})\n{better_text}")
-        keyboard.append([InlineKeyboardButton(f"🗑 Remove {i}", callback_data=f"remove_shopping_{product_id}")])
+        report_lines.append(f"• {name}\n   💰 **{price:.2f}{CURRENCY}** ({unit}){promo_text}\n   🏬 {store}\n{better_text}")
+        keyboard.append([InlineKeyboardButton(f"🗑 Remove {name[:15]}...", callback_data=f"remove_shopping_{product_id}")])
 
     summary = [
         f"\n📦 Items: {len(shopping)}",

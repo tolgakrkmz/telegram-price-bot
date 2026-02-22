@@ -1,5 +1,6 @@
 import hashlib
 import re
+from datetime import datetime
 
 def get_product_id(product: dict) -> str:
     """
@@ -45,3 +46,26 @@ def calculate_unit_price(price, unit_str):
         return round(price / norm_value, 2), base_unit
         
     return None, None
+
+def format_promo_dates(product: dict) -> str:
+    """Extracts valid_until from product['brochure'] and formats it."""
+    brochure = product.get('brochure')
+    if not brochure or not isinstance(brochure, dict):
+        return ""
+    
+    until_date = brochure.get('valid_until')
+    if not until_date:
+        return ""
+
+    try:
+        # Expected format from API: YYYY-MM-DD
+        date_obj = datetime.strptime(until_date, "%Y-%m-%d")
+        
+        # Check if already expired
+        if date_obj.date() < datetime.now().date():
+            return f"⚠️ Expired ({date_obj.strftime('%d.%m')})"
+            
+        return f"⏳ until {date_obj.strftime('%d.%m')}"
+    except (ValueError, TypeError):
+        # Fallback if date format is different
+        return f"⏳ until {until_date}"

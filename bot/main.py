@@ -16,7 +16,8 @@ from handlers.clear_chat import clear_chat
 from handlers.favorites import (
     list_favorites, 
     add_to_favorite_callback, 
-    delete_favorite_callback
+    delete_favorite_callback,
+    view_price_history_callback
 )
 from handlers.shopping import (
     add_to_shopping_callback,
@@ -87,8 +88,10 @@ def main():
     app.add_handler(CallbackQueryHandler(confirm_clear_callback, pattern="^confirm_clear$"))
     app.add_handler(CallbackQueryHandler(clear_shopping_callback, pattern="^clear_shopping$"))
     app.add_handler(CallbackQueryHandler(list_shopping, pattern="^view_shopping$"))
+    app.add_handler(CallbackQueryHandler(view_price_history_callback, pattern="^price_history_"))
 
     app.add_handler(CallbackQueryHandler(show_info, pattern="^bot_info$"))
+
 
     # --- Generic Buttons ---
     app.add_handler(CallbackQueryHandler(button_handler))
