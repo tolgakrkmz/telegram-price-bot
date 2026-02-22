@@ -18,6 +18,17 @@
       "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32565/crops/34_crop_11.jpg",
       "discount": "24",
       "id": "7ad39e5b8c5a7f12ea69968608190d51"
+    },
+    "457fb18bd4355abf3dcff14644203d72": {
+      "name": "Бял ориз ТМ 'Милана'",
+      "price": 2.58,
+      "unit": "1кг",
+      "store": "Lidl",
+      "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32565/crops/34_crop_0.jpg",
+      "discount": "20",
+      "calc_unit_price": 2.58,
+      "base_unit": "kg",
+      "id": "457fb18bd4355abf3dcff14644203d72"
     }
   },
   "1129871125": {

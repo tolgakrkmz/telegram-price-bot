@@ -1,6 +1,6 @@
 {
   "мляко": {
-    "timestamp": "2026-02-21T00:52:29.907843",
+    "timestamp": "2026-02-22T09:28:28.068060",
     "results": [
       {
         "name": "КРАДЕ КИСЕЛО МЛЯКО 2% 400г",
@@ -216,7 +216,7 @@
     ]
   },
   "българско кисело мляко знп": {
-    "timestamp": "2026-02-21T01:32:05.197838",
+    "timestamp": "2026-02-22T09:28:52.336851",
     "results": [
       {
         "name": "Българско кисело мляко ЗНП",
@@ -229,7 +229,7 @@
     ]
   },
   "саяна прясно мляко": {
-    "timestamp": "2026-02-21T01:32:06.939083",
+    "timestamp": "2026-02-22T09:28:55.545419",
     "results": [
       {
         "name": "САЯНА Прясно мляко",
@@ -242,7 +242,7 @@
     ]
   },
   "pilos кисело мляко 2%": {
-    "timestamp": "2026-02-21T01:33:20.565445",
+    "timestamp": "2026-02-22T09:28:54.046912",
     "results": [
       {
         "name": "Pilos кисело мляко 2%",
@@ -255,7 +255,7 @@
     ]
   },
   "саяна кисело мляко 2% масленост": {
-    "timestamp": "2026-02-21T01:33:22.209619",
+    "timestamp": "2026-02-22T09:28:57.260658",
     "results": [
       {
         "name": "САЯНА Кисело мляко 2% масленост",
@@ -625,6 +625,77 @@
         "store": "Billa",
         "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa/32554/crops/22_crop_8.jpg",
         "discount": "50"
+      }
+    ]
+  },
+  "ориз": {
+    "timestamp": "2026-02-22T09:20:53.900788",
+    "results": [
+      {
+        "name": "Sondey Оризови вафли",
+        "price": 1.29,
+        "unit": "120г",
+        "store": "Lidl",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32565/crops/3_crop_3.jpg",
+        "discount": "13"
+      },
+      {
+        "name": "Livity Оризов кейк",
+        "price": 1.29,
+        "unit": "100г",
+        "store": "Billa",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa/32554/crops/17_crop_0.jpg",
+        "discount": "31"
+      },
+      {
+        "name": "КАКИНО ТАНЕ класик; ЛЮТИ - ELiT snacks",
+        "price": 1.35,
+        "unit": "70г",
+        "store": "Fantastico",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/fantastiko/32553/crops/11_crop_13.jpg",
+        "discount": "32"
+      },
+      {
+        "name": "RICE UP! Оризов чипс 60г",
+        "price": 1.39,
+        "unit": "60г",
+        "store": "Billa",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa/32554/crops/19_crop_1.jpg",
+        "discount": "30"
+      },
+      {
+        "name": "Бял ориз ТМ 'Милана'",
+        "price": 2.58,
+        "unit": "1кг",
+        "store": "Lidl",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32565/crops/34_crop_0.jpg",
+        "discount": "20"
+      }
+    ]
+  },
+  "rice up! оризов чипс 60г": {
+    "timestamp": "2026-02-22T09:23:58.037119",
+    "results": [
+      {
+        "name": "RICE UP! Оризов чипс 60г",
+        "price": 1.39,
+        "unit": "60г",
+        "store": "Billa",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa/32554/crops/19_crop_1.jpg",
+        "discount": "30"
+      }
+    ]
+  },
+  "бял ориз тм 'милана'": {
+    "timestamp": "2026-02-22T09:24:54.609951",
+    "results": [
+      {
+        "name": "Бял ориз ТМ 'Милана'",
+        "price": 2.58,
+        "unit": "1кг",
+        "store": "Lidl",
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32565/crops/34_crop_0.jpg",
+        "discount": "20"
       }
     ]
   }
