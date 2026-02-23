@@ -168,5 +168,95 @@
         "price": 1.99
       }
     ]
+  },
+  "986929abe5f8ac33035fe4778296b65b": {
+    "name": "BILLA Ананас на резени",
+    "store": "Billa",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 2.04
+      }
+    ]
+  },
+  "86a25135002a7dd0b2c52822fc17f63c": {
+    "name": "Campese Ананас парченца",
+    "store": "Kaufland",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 2.09
+      }
+    ]
+  },
+  "1c0c55914109d0a9111ae0075f0cd8c2": {
+    "name": "Ананас",
+    "store": "Kaufland",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 1.99
+      }
+    ]
+  },
+  "4e5fc9192a563c4be75228f31d943cd0": {
+    "name": "Ананас без корона Коста Рика",
+    "store": "Lidl",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 2.19
+      }
+    ]
+  },
+  "f1e791ee82657a2e34bfe9640e1d6771": {
+    "name": "Бонбони Лукчета ЗАХАРНИ ЗАВОДИ",
+    "store": "Fantastico",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 0.45
+      }
+    ]
+  },
+  "659601e04aca27011fec4ec711b95af7": {
+    "name": "HARIBO Златни мечета",
+    "store": "Billa",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 1.02
+      }
+    ]
+  },
+  "3d3e8ed7ffbb20f07b2db77c44b68019": {
+    "name": "Toffifee бонбони",
+    "store": "Fantastico",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 1.68
+      }
+    ]
+  },
+  "16aceeaa4404dd5acde905db60096c17": {
+    "name": "Toffifee Бонбони",
+    "store": "Kaufland",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 1.68
+      }
+    ]
+  },
+  "d440557a0dbe2869eea55f25bc65951a": {
+    "name": "J.D. Gross Шоколадови бонбони с фъстъчен крем",
+    "store": "Lidl",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 1.17
+      }
+    ]
   }
 }

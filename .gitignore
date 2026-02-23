@@ -1,6 +1,18 @@
-.env
+# Python
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+
+# Virtual environment
 .venv/
-.idea/
+env/
+
+# Ruff cache
+.ruff_cache/
+
+# IDE
 .vscode/
+
+# Database / local storage
+db/*.json

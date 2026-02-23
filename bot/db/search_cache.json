@@ -373,5 +373,231 @@
         }
       }
     ]
+  },
+  "ананас": {
+    "timestamp": "2026-02-23T13:16:46.398696",
+    "results": [
+      {
+        "id": 29931,
+        "name": "Ананас",
+        "price": 3.89,
+        "price_eur": 1.99,
+        "unit": "бр.",
+        "quantity": "бр.",
+        "store": "Kaufland",
+        "supermarket": {
+          "id": 2,
+          "name": "Kaufland",
+          "slug": "kaufland",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland.png"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32573/crops/2_crop_17.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32573/crops/2_crop_17.jpg",
+        "discount": "21",
+        "brochure": {
+          "id": 106,
+          "code": "32573",
+          "valid_from": "2026-02-23",
+          "valid_until": "2026-03-01"
+        }
+      },
+      {
+        "id": 29354,
+        "name": "BILLA Ананас на резени",
+        "price": 3.99,
+        "price_eur": 2.04,
+        "unit": "565г",
+        "quantity": "565г",
+        "store": "Billa",
+        "supermarket": {
+          "id": 1,
+          "name": "Billa",
+          "slug": "billa",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa.jpg"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa/32554/crops/16_crop_5.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa/32554/crops/16_crop_5.jpg",
+        "discount": "27",
+        "brochure": {
+          "id": 103,
+          "code": "32554",
+          "valid_from": "2026-02-19",
+          "valid_until": "2026-02-25"
+        }
+      },
+      {
+        "id": 30141,
+        "name": "Campese Ананас парченца",
+        "price": 4.09,
+        "price_eur": 2.09,
+        "unit": "567г",
+        "quantity": "567г",
+        "store": "Kaufland",
+        "supermarket": {
+          "id": 2,
+          "name": "Kaufland",
+          "slug": "kaufland",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland.png"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32573/crops/18_crop_1.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32573/crops/18_crop_1.jpg",
+        "discount": "21",
+        "brochure": {
+          "id": 106,
+          "code": "32573",
+          "valid_from": "2026-02-23",
+          "valid_until": "2026-03-01"
+        }
+      },
+      {
+        "id": 29832,
+        "name": "Ананас без корона Коста Рика",
+        "price": 4.28,
+        "price_eur": 2.19,
+        "unit": "бр.",
+        "quantity": "бр.",
+        "store": "Lidl",
+        "supermarket": {
+          "id": 3,
+          "name": "Lidl",
+          "slug": "lidl",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl.png"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32565/crops/33_crop_6.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32565/crops/33_crop_6.jpg",
+        "discount": "21",
+        "brochure": {
+          "id": 104,
+          "code": "32565",
+          "valid_from": "2026-02-23",
+          "valid_until": "2026-03-01"
+        }
+      }
+    ]
+  },
+  "бонбони": {
+    "timestamp": "2026-02-23T13:17:05.551618",
+    "results": [
+      {
+        "id": 29104,
+        "name": "Бонбони Лукчета ЗАХАРНИ ЗАВОДИ",
+        "price": 0.88,
+        "price_eur": 0.45,
+        "unit": "75г",
+        "quantity": "75г",
+        "store": "Fantastico",
+        "supermarket": {
+          "id": 4,
+          "name": "Fantastico",
+          "slug": "fantastiko",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/fantastiko.png"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/fantastiko/32553/crops/9_crop_0.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/fantastiko/32553/crops/9_crop_0.jpg",
+        "discount": "40",
+        "brochure": {
+          "id": 102,
+          "code": "32553",
+          "valid_from": "2026-02-19",
+          "valid_until": "2026-02-25"
+        }
+      },
+      {
+        "id": 29393,
+        "name": "HARIBO Златни мечета",
+        "price": 1.99,
+        "price_eur": 1.02,
+        "unit": "100г",
+        "quantity": "100г",
+        "store": "Billa",
+        "supermarket": {
+          "id": 1,
+          "name": "Billa",
+          "slug": "billa",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa.jpg"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa/32554/crops/18_crop_2.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa/32554/crops/18_crop_2.jpg",
+        "discount": null,
+        "brochure": {
+          "id": 103,
+          "code": "32554",
+          "valid_from": "2026-02-19",
+          "valid_until": "2026-02-25"
+        }
+      },
+      {
+        "id": 29564,
+        "name": "J.D. Gross Шоколадови бонбони с фъстъчен крем",
+        "price": 2.29,
+        "price_eur": 1.17,
+        "unit": "39g",
+        "quantity": "39g",
+        "store": "Lidl",
+        "supermarket": {
+          "id": 3,
+          "name": "Lidl",
+          "slug": "lidl",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl.png"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32565/crops/3_crop_11.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32565/crops/3_crop_11.jpg",
+        "discount": "18",
+        "brochure": {
+          "id": 104,
+          "code": "32565",
+          "valid_from": "2026-02-23",
+          "valid_until": "2026-03-01"
+        }
+      },
+      {
+        "id": 29114,
+        "name": "Toffifee бонбони",
+        "price": 3.29,
+        "price_eur": 1.68,
+        "unit": "125г",
+        "quantity": "125г",
+        "store": "Fantastico",
+        "supermarket": {
+          "id": 4,
+          "name": "Fantastico",
+          "slug": "fantastiko",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/fantastiko.png"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/fantastiko/32553/crops/9_crop_15.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/fantastiko/32553/crops/9_crop_15.jpg",
+        "discount": "30",
+        "brochure": {
+          "id": 102,
+          "code": "32553",
+          "valid_from": "2026-02-19",
+          "valid_until": "2026-02-25"
+        }
+      },
+      {
+        "id": 30193,
+        "name": "Toffifee Бонбони",
+        "price": 3.29,
+        "price_eur": 1.68,
+        "unit": "125г",
+        "quantity": "125г",
+        "store": "Kaufland",
+        "supermarket": {
+          "id": 2,
+          "name": "Kaufland",
+          "slug": "kaufland",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland.png"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32573/crops/19_crop_18.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32573/crops/19_crop_18.jpg",
+        "discount": "26",
+        "brochure": {
+          "id": 106,
+          "code": "32573",
+          "valid_from": "2026-02-23",
+          "valid_until": "2026-03-01"
+        }
+      }
+    ]
   }
 }

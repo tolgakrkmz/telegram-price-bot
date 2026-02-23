@@ -1,9 +1,9 @@
 import json
-from pathlib import Path
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Any
-from utils.helpers import get_product_id
+from pathlib import Path
+from typing import Any
 
+from utils.helpers import get_product_id
 
 # ==============================
 # Paths
@@ -12,31 +12,32 @@ from utils.helpers import get_product_id
 BASE_DIR = Path(__file__).parent
 FAVORITES_FILE = BASE_DIR / "favorites.json"
 HISTORY_FILE = BASE_DIR / "price_history.json"
+
+
 CACHE_FILE = BASE_DIR / "search_cache.json"
-
-
 # ==============================
 # Internal JSON helpers
 # ==============================
 
-def _load_json(file_path: Path) -> Dict[str, Any]:
+
+def _load_json(file_path: Path) -> dict[str, Any]:
     if not file_path.exists():
         return {}
 
     try:
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, encoding="utf-8") as f:
             return json.load(f)
-    except (json.JSONDecodeError, IOError):
+    except (OSError, json.JSONDecodeError):
         return {}
 
 
-def _save_json(file_path: Path, data: Dict[str, Any]) -> None:
+def _save_json(file_path: Path, data: dict[str, Any]) -> None:
     temp_file = file_path.with_suffix(".tmp")
     try:
         with open(temp_file, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
         temp_file.replace(file_path)
-    except IOError:
+    except OSError:
         if temp_file.exists():
             temp_file.unlink()
         raise
@@ -46,28 +47,22 @@ def _save_json(file_path: Path, data: Dict[str, Any]) -> None:
 # PRICE HISTORY
 # ==============================
 
+
 def update_price_history(product_id: str, price: float, name: str, store: str) -> None:
     history = _load_json(HISTORY_FILE)
     date_str = datetime.now().strftime("%Y-%m-%d")
 
     if product_id not in history:
-        history[product_id] = {
-            "name": name,
-            "store": store,
-            "prices": []
-        }
+        history[product_id] = {"name": name, "store": store, "prices": []}
 
     prices = history[product_id]["prices"]
 
     if not prices or prices[-1]["date"] != date_str:
-        prices.append({
-            "date": date_str,
-            "price": float(price)
-        })
+        prices.append({"date": date_str, "price": float(price)})
         _save_json(HISTORY_FILE, history)
 
 
-def get_product_history(product_id: str) -> List[Dict[str, Any]]:
+def get_product_history(product_id: str) -> list[dict[str, Any]]:
     return _load_json(HISTORY_FILE).get(product_id, {}).get("prices", [])
 
 
@@ -75,7 +70,8 @@ def get_product_history(product_id: str) -> List[Dict[str, Any]]:
 # SEARCH CACHE (12h TTL)
 # ==============================
 
-def get_cached_search(query: str) -> Optional[List[Dict[str, Any]]]:
+
+def get_cached_search(query: str) -> list[dict[str, Any]] | None:
     cache = _load_json(CACHE_FILE)
     key = query.lower().strip()
 
@@ -89,11 +85,11 @@ def get_cached_search(query: str) -> Optional[List[Dict[str, Any]]]:
     return None
 
 
-def save_search_to_cache(query: str, results: List[Dict[str, Any]]) -> None:
+def save_search_to_cache(query: str, results: list[dict[str, Any]]) -> None:
     cache = _load_json(CACHE_FILE)
     cache[query.lower().strip()] = {
         "timestamp": datetime.now().isoformat(),
-        "results": results
+        "results": results,
     }
     _save_json(CACHE_FILE, cache)
 
@@ -102,17 +98,19 @@ def save_search_to_cache(query: str, results: List[Dict[str, Any]]) -> None:
 # FAVORITES
 # ==============================
 
-def get_favorites(user_id: Any) -> Dict[str, Dict[str, Any]]:
+
+def get_favorites(user_id: Any) -> dict[str, dict[str, Any]]:
     data = _load_json(FAVORITES_FILE)
     user_data = data.get(str(user_id), {})
 
     return {
-        k: v for k, v in user_data.items()
+        k: v
+        for k, v in user_data.items()
         if k != "shopping_list" and isinstance(v, dict)
     }
 
 
-def add_favorite(user_id: Any, product: Dict[str, Any]) -> bool:
+def add_favorite(user_id: Any, product: dict[str, Any]) -> bool:
     data = _load_json(FAVORITES_FILE)
     uid = str(user_id)
 
@@ -153,7 +151,8 @@ def remove_favorite(user_id: Any, product_id: str) -> bool:
 # SHOPPING LIST
 # ==============================
 
-def _ensure_shopping_schema(data: Dict[str, Any], user_id: str) -> Dict[str, Any]:
+
+def _ensure_shopping_schema(data: dict[str, Any], user_id: str) -> dict[str, Any]:
     if user_id not in data:
         data[user_id] = {}
 
@@ -163,7 +162,7 @@ def _ensure_shopping_schema(data: Dict[str, Any], user_id: str) -> Dict[str, Any
     return data
 
 
-def get_shopping_list(user_id: Any) -> List[Dict[str, Any]]:
+def get_shopping_list(user_id: Any) -> list[dict[str, Any]]:
     data = _load_json(FAVORITES_FILE)
     uid = str(user_id)
 
@@ -172,7 +171,7 @@ def get_shopping_list(user_id: Any) -> List[Dict[str, Any]]:
     return data[uid]["shopping_list"]
 
 
-def add_to_shopping(user_id: Any, product: Dict[str, Any]) -> bool:
+def add_to_shopping(user_id: Any, product: dict[str, Any]) -> bool:
     data = _load_json(FAVORITES_FILE)
     uid = str(user_id)
 
@@ -203,10 +202,7 @@ def remove_from_shopping(user_id: Any, product_id: str) -> bool:
     if uid in data and "shopping_list" in data[uid]:
         original = data[uid]["shopping_list"]
 
-        updated = [
-            item for item in original
-            if str(item.get("id")) != product_id
-        ]
+        updated = [item for item in original if str(item.get("id")) != product_id]
 
         if len(updated) < len(original):
             data[uid]["shopping_list"] = updated
@@ -225,5 +221,5 @@ def clear_shopping_list(user_id: Any) -> None:
         _save_json(FAVORITES_FILE, data)
 
 
-def get_all_favorites() -> Dict[str, Any]:
+def get_all_favorites() -> dict[str, Any]:
     return _load_json(FAVORITES_FILE)

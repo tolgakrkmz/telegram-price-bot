@@ -1,6 +1,8 @@
 from telegram import Update
 from telegram.ext import ContextTypes
+
 from api.supermarket import get_product_price
+
 
 async def price(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not context.args:
@@ -18,5 +20,5 @@ async def price(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"🛒 *{result['name'].title()}*\n"
         f"Цена: {result['price']} лв / {result['unit']}\n"
         f"Магазин: {result['store']}",
-        parse_mode="Markdown"
+        parse_mode="Markdown",        
     )

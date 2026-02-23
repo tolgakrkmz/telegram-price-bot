@@ -2,12 +2,14 @@ import hashlib
 import re
 from datetime import datetime
 
+
 def get_product_id(product: dict) -> str:
     """
     Генерира уникален ID за продукт от неговите ключови данни.
     """
     unique_string = f"{product['name']}_{product['store']}_{product['price']}"
     return hashlib.md5(unique_string.encode()).hexdigest()
+
 
 def calculate_unit_price(price, unit_str):
     """
@@ -24,7 +26,7 @@ def calculate_unit_price(price, unit_str):
         return None, None
 
     try:
-        value = float(match.group(1).replace(',', '.'))
+        value = float(match.group(1).replace(",", "."))
         unit = match.group(2)
     except (ValueError, IndexError):
         return None, None
@@ -32,39 +34,39 @@ def calculate_unit_price(price, unit_str):
     # Normalization mapping
     # Weight: g, гр, г -> kg
     # Volume: ml, мл -> l
-    weight_units = ['g', 'гр', 'г', 'kg', 'кг']
-    volume_units = ['ml', 'мл', 'l', 'л']
-    
+    weight_units = ["g", "гр", "г", "kg", "кг"]
+
     base_unit = "kg" if unit in weight_units else "l"
     norm_value = value
 
     # Convert grams/milliliters to base (kg/l)
-    if unit in ['g', 'гр', 'г', 'ml', 'мл']:
+    if unit in ["g", "гр", "г", "ml", "мл"]:
         norm_value = value / 1000
-    
+
     if norm_value > 0:
         return round(price / norm_value, 2), base_unit
-        
+
     return None, None
+
 
 def format_promo_dates(product: dict) -> str:
     """Extracts valid_until from product['brochure'] and formats it."""
-    brochure = product.get('brochure')
+    brochure = product.get("brochure")
     if not brochure or not isinstance(brochure, dict):
         return ""
-    
-    until_date = brochure.get('valid_until')
+
+    until_date = brochure.get("valid_until")
     if not until_date:
         return ""
 
     try:
         # Expected format from API: YYYY-MM-DD
         date_obj = datetime.strptime(until_date, "%Y-%m-%d")
-        
+
         # Check if already expired
         if date_obj.date() < datetime.now().date():
             return f"⚠️ Expired ({date_obj.strftime('%d.%m')})"
-            
+
         return f"⏳ until {date_obj.strftime('%d.%m')}"
     except (ValueError, TypeError):
         # Fallback if date format is different

@@ -1,6 +1,5 @@
-from telegram.ext import ContextTypes
-from telegram import Update
 from utils.menu import main_menu_keyboard
+
 
 async def start(update, context):
     user_name = update.effective_user.first_name

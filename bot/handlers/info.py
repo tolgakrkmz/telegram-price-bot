@@ -1,6 +1,6 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, constants
 from telegram.ext import ContextTypes
-from utils.menu import main_menu_keyboard
+
 
 async def show_info(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Displays the bot guide and features."""
@@ -15,7 +15,7 @@ async def show_info(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         "4️⃣ **Global Sync:** We update prices efficiently to save your daily API limits and keep data fresh.\n\n"
         "💡 *Tip:* Use the manual 'Update' button in the Favorites menu if you want a real-time check right now!"
     )
-    
+
     keyboard = [[InlineKeyboardButton("⬅️ Back to Menu", callback_data="main_menu")]]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
@@ -23,5 +23,5 @@ async def show_info(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await query.message.edit_text(
         text=info_text,
         reply_markup=reply_markup,
-        parse_mode=constants.ParseMode.MARKDOWN
+        parse_mode=constants.ParseMode.MARKDOWN,
     )
