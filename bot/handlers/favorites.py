@@ -6,7 +6,7 @@ from telegram.ext import ContextTypes
 from api.supermarket import get_product_price
 from db.storage import (
     HISTORY_FILE,
-    _load_json,  # Imported to access the full history object if needed
+    _load_json,
     add_favorite,
     add_to_shopping,
     get_favorites,
@@ -25,7 +25,6 @@ async def render_favorites_text(favorites: dict) -> str:
 
     grouped_favorites = defaultdict(list)
     for pid, p in favorites.items():
-        # Fallback for store name
         store_name = (
             p.get("supermarket", {}).get("name")
             if isinstance(p.get("supermarket"), dict)
@@ -40,11 +39,10 @@ async def render_favorites_text(favorites: dict) -> str:
         text += f"🏪 *{store}*\n"
         for pid, p in products:
             name = p.get("name", "N/A")
-            # Always favor price_eur, fallback to price
             saved_price = float(p.get("price_eur") or p.get("price", 0))
             unit = p.get("quantity") or p.get("unit", "")
 
-            # 1. Live Check via API
+            # Live Check via API
             fresh_results = get_product_price(name, multiple=True) or []
             current_match = next(
                 (
@@ -69,7 +67,6 @@ async def render_favorites_text(favorites: dict) -> str:
                 discount = current_match.get("discount")
                 promo_timer = format_promo_dates(current_match)
 
-                # Compare EUR with EUR
                 if current_price < saved_price:
                     price_alert = f" 🔥 *NOW {current_price:.2f}{CURRENCY}!*"
 
@@ -77,7 +74,6 @@ async def render_favorites_text(favorites: dict) -> str:
                     discount_info = f" (-{discount}%)" if discount else ""
                     price_alert += f"\n   📉 *Promo:* Was {float(api_old_price):.2f}{CURRENCY}{discount_info}"
 
-            # 2. UI Construction
             u_price, u_unit = calculate_unit_price(current_price, unit)
             unit_info = f" | ⚖️ {u_price:.2f}{CURRENCY}/{u_unit}" if u_price else ""
             promo_info = f" | {promo_timer}" if promo_timer else ""
@@ -97,9 +93,10 @@ async def list_favorites(update: Update, context: ContextTypes.DEFAULT_TYPE):
     favorites = get_favorites(user_id)
 
     if not favorites:
+        # FIXED: Added user_id to main_menu_keyboard
         await query.message.edit_text(
             "⭐ Your favorites list is empty.",
-            reply_markup=main_menu_keyboard(),
+            reply_markup=main_menu_keyboard(user_id),
             parse_mode=constants.ParseMode.MARKDOWN,
         )
         return
@@ -115,13 +112,10 @@ async def list_favorites(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def view_price_history_callback(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ):
-    """
-    Shows history by combining API data (up to 30 days) and local records.
-    """
+    """Shows history by combining API data and local records."""
     query = update.callback_query
     product_id = query.data.replace("price_history_", "")
 
-    # 1. Get local history first
     full_history = _load_json(HISTORY_FILE)
     product_entry = full_history.get(product_id)
 
@@ -134,30 +128,21 @@ async def view_price_history_callback(
     product_name = product_entry.get("name", "Product")
     store = product_entry.get("store", "Store")
 
-    # 2. Fetch fresh data from API to get their 30-day historical data
-    # Assuming your get_product_price or a similar function can return historical points
     api_results = get_product_price(product_name, multiple=True) or []
-
-    # Try to find the specific product from this store in the API response
     api_match = next(
         (p for p in api_results if p["store"] == store and p["name"] == product_name),
         None,
     )
 
-    # Build a dictionary to keep unique dates only (prefer API for external data)
     combined_history = {}
 
-    # 3. Add API historical data if available (Assuming API provides 'history' key)
-    # If the API returns a list of history, we map it here:
     if api_match and "history" in api_match:
         for entry in api_match["history"]:
             combined_history[entry["date"]] = float(entry["price"])
 
-    # 4. Merge with our local history (overwrites API if dates overlap)
     for entry in product_entry.get("prices", []):
         combined_history[entry["date"]] = float(entry["price"])
 
-    # 5. Sort by date and format
     sorted_dates = sorted(combined_history.keys())
 
     if not sorted_dates:
@@ -168,11 +153,9 @@ async def view_price_history_callback(
 
     history_lines = [f"📈 *Extended History for {product_name}*:\n"]
 
-    # Display the last 15 points (combination of API and local)
     for date in sorted_dates[-15:]:
         history_lines.append(f"• {date}: **{combined_history[date]:.2f}{CURRENCY}**")
 
-    # Add a note if it's external data
     if api_match and "history" in api_match:
         history_lines.append("\n_Includes data from supermarket archives (30 days)_")
 

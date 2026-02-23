@@ -73,6 +73,27 @@ async def search_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
 
     for p in products:
         product_id = get_product_id(p)
+        
+        # --- DATES LOGIC FOR NOTIFICATIONS ---
+        promo_timer = ""
+        brochure = p.get("brochure")
+        if brochure and isinstance(brochure, dict):
+            from_d = brochure.get("valid_from")
+            until_d = brochure.get("valid_until")
+            
+            # Map valid_until to valid-until for storage consistency
+            if until_d:
+                p["valid-until"] = until_d
+                
+            if from_d and until_d:
+                try:
+                    f = datetime.strptime(from_d, "%Y-%m-%d").strftime("%d.%m")
+                    u = datetime.strptime(until_d, "%Y-%m-%d").strftime("%d.%m")
+                    promo_timer = f"⏳ {f} - {u}"
+                except:
+                    promo_timer = f"⏳ {from_d} - {until_d}"
+
+        # Store product in session results
         search_results[product_id] = p
 
         curr_name = p.get("name", "N/A")
@@ -104,20 +125,6 @@ async def search_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
             unit_price_info = f"⚖️ Unit Price: **{p['calc_unit_price']:.2f}{CURRENCY}/{p['base_unit']}**\n"
             if p["calc_unit_price"] == cheapest_unit_val:
                 best_value_tag = "🏆 *BEST VALUE*\n"
-
-        # --- DATES LOGIC ---
-        promo_timer = ""
-        brochure = p.get("brochure")
-        if brochure and isinstance(brochure, dict):
-            from_d = brochure.get("valid_from")
-            until_d = brochure.get("valid_until")
-            if from_d and until_d:
-                try:
-                    f = datetime.strptime(from_d, "%Y-%m-%d").strftime("%d.%m")
-                    u = datetime.strptime(until_d, "%Y-%m-%d").strftime("%d.%m")
-                    promo_timer = f"⏳ {f} - {u}"
-                except:
-                    promo_timer = f"⏳ {from_d} - {until_d}"
 
         promo_info = f" | {promo_timer}" if promo_timer else ""
 
@@ -169,9 +176,12 @@ async def search_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
 
     context.user_data["search_results"] = search_results
     footer_text = "✅ Search completed!" + (" (cached data)" if is_cached else "")
+    
+    # FIXED: Added user_id to main_menu_keyboard to avoid TypeError
     final_msg = await update.message.reply_text(
-        footer_text, reply_markup=main_menu_keyboard()
+        footer_text, reply_markup=main_menu_keyboard(user_id)
     )
+    
     messages_to_cache.append(final_msg.message_id)
     for m_id in messages_to_cache:
         add_message(user_id, m_id)

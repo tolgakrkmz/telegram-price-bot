@@ -12,7 +12,15 @@ from telegram.ext import (
 )
 
 from config.settings import TELEGRAM_TOKEN
-from handlers.alerts import global_price_update, update_favorites_prices
+
+# Added check_expiring_alerts and handle_toggle_alerts
+from handlers.alerts import (
+    check_expiring_alerts,
+    check_expiring_tomorrow_alerts,
+    global_price_update,
+    handle_toggle_alerts,
+    update_favorites_prices,
+)
 from handlers.clear_chat import clear_chat
 from handlers.favorites import (
     add_to_favorite_callback,
@@ -52,8 +60,9 @@ async def button_handler(update, context):
         msg = await query.message.reply_text("📂 Categories: Coming Soon...")
         add_message(user_id, msg.message_id)
     elif query.data == "main_menu":
+        # Added user_id to correctly show notification status in menu
         await query.message.edit_text(
-            "🏠 Main Menu:", reply_markup=main_menu_keyboard()
+            "🏠 Main Menu:", reply_markup=main_menu_keyboard(user_id)
         )
 
 
@@ -65,15 +74,29 @@ def main():
     job_queue = app.job_queue
     timezone = pytz.timezone("Europe/Sofia")
 
-    # Schedule global update every day at 09:00 AM
+    # Schedule global price sync every day at 09:00 AM
     job_queue.run_daily(
         global_price_update,
         time=datetime.time(hour=9, minute=0, second=0, tzinfo=timezone),
     )
 
+    # Schedule daily check for expiring promotions at 09:30 AM
+    job_queue.run_daily(
+        check_expiring_alerts,
+        time=datetime.time(hour=9, minute=30, second=0, tzinfo=timezone),
+    )
+
+    job_queue.run_daily(
+    check_expiring_tomorrow_alerts,
+    time=datetime.time(hour=18, minute=0, second=0, tzinfo=timezone),
+)
+    
     # --- Core Commands ---
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("update_prices", update_favorites_prices))
+
+    # --- Notification Toggle ---
+    app.add_handler(CallbackQueryHandler(handle_toggle_alerts, pattern="^toggle_alerts$"))
 
     # --- Search Logic ---
     search_conv = ConversationHandler(
