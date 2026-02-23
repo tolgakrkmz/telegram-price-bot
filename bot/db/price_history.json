@@ -288,5 +288,295 @@
         "price": 1.15
       }
     ]
+  },
+  "d267337335852df17dd9fdcc2040ae30": {
+    "name": "Вафли Боровец",
+    "store": "Kaufland",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 1.0
+      }
+    ]
+  },
+  "6c238a48c7a9edb22f2824cf2b20d628": {
+    "name": "ХИПЕР Мини вафли Класик",
+    "store": "Fantastico",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 1.32
+      }
+    ]
+  },
+  "85e65833ce48a455f12175389d1b106e": {
+    "name": "ЦАРЕВЕЦ Обикновени вафли",
+    "store": "Kaufland",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 1.78
+      }
+    ]
+  },
+  "6d08625b2283b4dec1d7be401195dfcd": {
+    "name": "Sondey Оризови вафли",
+    "store": "Lidl",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 0.66
+      }
+    ]
+  },
+  "cbdad9fbd347f51e3f654bc6982f038b": {
+    "name": "НЕЛИС Карамелени или медени вафли",
+    "store": "Billa",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 1.53
+      }
+    ]
+  },
+  "0e56efe1a8fdd24b28101203118d509f": {
+    "name": "Thunfischstucke в спънчогледово олио",
+    "store": "Kaufland",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 1.17
+      }
+    ]
+  },
+  "47b85f82518d7ae2e7a038ce1260ea8f": {
+    "name": "Риба тон късчета The Chefs",
+    "store": "Fantastico",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 1.12
+      }
+    ]
+  },
+  "e1c44fdf400d941d2572e2a7d1272393": {
+    "name": "Nixe риба тон",
+    "store": "Lidl",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 1.24
+      }
+    ]
+  },
+  "5bed072b2b2a7bd53e2da6863f80e0b8": {
+    "name": "Риба тон филе размразено",
+    "store": "Kaufland",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 15.33
+      }
+    ]
+  },
+  "da50928ab0a2b9ba23dbcd7e6e1d51ed": {
+    "name": "Д Хек филе",
+    "store": "Billa",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 6.64
+      }
+    ]
+  },
+  "e8c802e44299f0baf04eba1d283e24d3": {
+    "name": "Хек филе #9оЛВ",
+    "store": "Kaufland",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 6.64
+      }
+    ]
+  },
+  "90836d58fbaf5e13b99b90b8568b1fcf": {
+    "name": "PRIMOFISH Скумрия",
+    "store": "Kaufland",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 2.55
+      }
+    ]
+  },
+  "6c68d8ab67e335f5e32bc662df486548": {
+    "name": "Скумрия изчистена с глава размразена",
+    "store": "Kaufland",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 5.11
+      }
+    ]
+  },
+  "be4123e94cbf03f24512e574f850246d": {
+    "name": "Ловмийт Скумрия или Рибна салата",
+    "store": "Kaufland",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 0.91
+      }
+    ]
+  },
+  "7c19f2f7c10e6c4c0b95e0f573ad42bd": {
+    "name": "Пилешко мляно месо",
+    "store": "Lidl",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 2.04
+      }
+    ]
+  },
+  "4ad9b16086f50670b413d98f6487c9c7": {
+    "name": "BILLA Дива сьомга филе замразена",
+    "store": "Billa",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 2.49
+      }
+    ]
+  },
+  "435d7402ab2d99346e6b1c6b830b0e21": {
+    "name": "BILLA Пушено свинско филе слайс",
+    "store": "Billa",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 1.78
+      }
+    ]
+  },
+  "c1deee309f0ad0251663648df71857df": {
+    "name": "Ridano's Мариновани пилешки филенца",
+    "store": "Lidl",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 2.04
+      }
+    ]
+  },
+  "80d11bcd0fae8397e2e3442327c098af": {
+    "name": "BILLA Филе Елена слайс",
+    "store": "Billa",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 2.55
+      }
+    ]
+  },
+  "b722c8fd0177f433f6385f81475a118c": {
+    "name": "K Classic Багета с масло",
+    "store": "Kaufland",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 0.71
+      }
+    ]
+  },
+  "702ac4e89d3f57b03f7a8dc99955e3a5": {
+    "name": "Кроасан с масло BILLA",
+    "store": "Billa",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 0.3
+      }
+    ]
+  },
+  "971bb0fa64540d8744f2c0057202291d": {
+    "name": "Роден край Бисквити",
+    "store": "Billa",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 1.02
+      }
+    ]
+  },
+  "069385c10b79467a2855c2a3da7301a0": {
+    "name": "Краве масло САЯНА",
+    "store": "Fantastico",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 0.99
+      }
+    ]
+  },
+  "23c044c8891cafd01d1db650c329c323": {
+    "name": "Pilos краве масло",
+    "store": "Lidl",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 1.09
+      }
+    ]
+  },
+  "023ddd81a5f7fd317c265238afcca0e9": {
+    "name": "Deutsche Markenbutter Краве масло",
+    "store": "Kaufland",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 3.06
+      }
+    ]
+  },
+  "233d8493b738461ac738013b7bf045c9": {
+    "name": "Deutsche Markenbutter краве масло",
+    "store": "Billa",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 1.78
+      }
+    ]
+  },
+  "7485be925de701a8cdb3758f9fbee214": {
+    "name": "Monarch краве масло",
+    "store": "Kaufland",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 2.55
+      }
+    ]
+  },
+  "29846": {
+    "name": "Българско кисело мляко ЗНП",
+    "store": "Lidl",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 1.1
+      }
+    ]
+  },
+  "29872": {
+    "name": "Pilos кисело мляко 2%",
+    "store": "Lidl",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 0.82
+      }
+    ]
   }
 }

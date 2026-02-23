@@ -125,7 +125,7 @@ async def list_shopping(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
 
     if not shopping:
         text = "🛒 Your cart is empty."
-        reply_markup = main_menu_keyboard()
+        reply_markup = main_menu_keyboard(user_id)
         if query:
             await query.answer()
             await safe_edit(query, text, reply_markup)
@@ -222,22 +222,45 @@ async def list_shopping(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
 async def add_to_shopping_callback(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> None:
+    """Adds a product to the shopping cart without removing the message."""
     query = update.callback_query
     if not query:
         return
-    await query.answer()
 
     product_id = query.data.replace("add_shopping_", "")
     search_results = context.user_data.get("search_results", {})
     product = search_results.get(product_id)
 
     if not product:
-        await safe_edit(query, "❌ Product not found.")
+        await query.answer("❌ Product not found.")
         return
 
-    added = add_to_shopping(query.from_user.id, product)
-    msg = f"🛒 *{product['name']}* added to cart." if added else "ℹ️ Already in cart."
-    await safe_edit(query, msg)
+    user_id = query.from_user.id
+    added = add_to_shopping(user_id, product)
+
+    if added:
+        await query.answer(f"🛒 {product['name']} added to cart!")
+    else:
+        await query.answer("ℹ️ Already in cart.")
+
+    current_keyboard = query.message.reply_markup.inline_keyboard
+    new_keyboard = []
+
+    for row in current_keyboard:
+        new_row = []
+        for button in row:
+            if button.callback_data == query.data:
+                new_row.append(InlineKeyboardButton("✅ In Cart", callback_data="none"))
+            else:
+                new_row.append(button)
+        new_keyboard.append(new_row)
+
+    try:
+        await query.edit_message_reply_markup(
+            reply_markup=InlineKeyboardMarkup(new_keyboard)
+        )
+    except Exception:
+        pass
 
 
 async def remove_shopping_callback(
@@ -276,7 +299,13 @@ async def clear_shopping_callback(
     if not query:
         return
     await query.answer()
-    clear_shopping_list(update.effective_user.id)
+    
+    user_id = update.effective_user.id
+    
+    clear_shopping_list(user_id)
+    
     await safe_edit(
-        query, "🧹 Cart has been cleared.", reply_markup=main_menu_keyboard()
+        query, 
+        "🧹 Cart has been cleared.", 
+        reply_markup=main_menu_keyboard(user_id)
     )

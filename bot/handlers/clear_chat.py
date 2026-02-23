@@ -18,6 +18,7 @@ async def clear_chat(update: Update, context: ContextTypes.DEFAULT_TYPE):
     clear_messages(user_id)
 
     msg = await context.bot.send_message(
-        chat_id=chat_id, text="Чатът е изчистен! 🧹", reply_markup=main_menu_keyboard()
+        chat_id=chat_id, text="Чатът е изчистен! 🧹",
+        reply_markup=main_menu_keyboard(user_id)
     )    
     add_message(user_id, msg.message_id)

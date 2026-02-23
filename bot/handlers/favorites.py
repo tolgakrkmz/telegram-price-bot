@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-from telegram import Update, constants
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, constants
 from telegram.ext import ContextTypes
 
 from api.supermarket import get_product_price
@@ -164,23 +164,43 @@ async def view_price_history_callback(
     )
 
 
-async def add_to_favorite_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def add_to_favorite_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.callback_query
-    await query.answer()
+    if not query:
+        return
+
     product_id = query.data.replace("add_favorite_", "")
     search_results = context.user_data.get("search_results", {})
     product = search_results.get(product_id)
+
     if not product:
-        await query.message.reply_text("❌ Product data not found.")
+        await query.answer("❌ Product not found.")
         return
+
     user_id = query.from_user.id
-    added = add_favorite(user_id, product)
-    msg = (
-        f"⭐ *{product['name']}* added to favorites."
-        if added
-        else "ℹ️ Already in favorites."
-    )
-    await query.message.reply_text(msg, parse_mode=constants.ParseMode.MARKDOWN)
+    added = add_favorite(user_id, product) 
+
+    if added:
+        await query.answer(f"⭐ {product['name']} added to favorites!")
+    else:
+        await query.answer("ℹ️ Already in favorites.")
+
+    current_keyboard = query.message.reply_markup.inline_keyboard
+    new_keyboard = []
+
+    for row in current_keyboard:
+        new_row = []
+        for button in row:
+            if button.callback_data == query.data:
+                new_row.append(InlineKeyboardButton("✅ In Favorites", callback_data="none"))
+            else:
+                new_row.append(button)
+        new_keyboard.append(new_row)
+
+    try:
+        await query.edit_message_reply_markup(reply_markup=InlineKeyboardMarkup(new_keyboard))
+    except Exception:
+        pass
 
 
 async def delete_favorite_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):

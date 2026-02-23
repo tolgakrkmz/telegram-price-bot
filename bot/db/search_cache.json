@@ -599,5 +599,736 @@
         }
       }
     ]
+  },
+  "вафли": {
+    "timestamp": "2026-02-23T22:19:40.546841",
+    "results": [
+      {
+        "id": 29558,
+        "name": "Sondey Оризови вафли",
+        "price": 1.29,
+        "price_eur": 0.66,
+        "unit": "120г",
+        "quantity": "120г",
+        "store": "Lidl",
+        "supermarket": {
+          "id": 3,
+          "name": "Lidl",
+          "slug": "lidl",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl.png"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32565/crops/3_crop_3.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32565/crops/3_crop_3.jpg",
+        "discount": "13",
+        "brochure": {
+          "id": 104,
+          "code": "32565",
+          "valid_from": "2026-02-23",
+          "valid_until": "2026-03-01"
+        }
+      },
+      {
+        "id": 29999,
+        "name": "Вафли Боровец",
+        "price": 1.96,
+        "price_eur": 1,
+        "unit": "5 x 45-55г",
+        "quantity": "5 x 45-55г",
+        "store": "Kaufland",
+        "supermarket": {
+          "id": 2,
+          "name": "Kaufland",
+          "slug": "kaufland",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland.png"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32573/crops/7_crop_17.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32573/crops/7_crop_17.jpg",
+        "discount": "42",
+        "brochure": {
+          "id": 106,
+          "code": "32573",
+          "valid_from": "2026-02-23",
+          "valid_until": "2026-03-01"
+        }
+      },
+      {
+        "id": 29110,
+        "name": "ХИПЕР Мини вафли Класик",
+        "price": 2.58,
+        "price_eur": 1.32,
+        "unit": "2 бр. x 123г",
+        "quantity": "2 бр. x 123г",
+        "store": "Fantastico",
+        "supermarket": {
+          "id": 4,
+          "name": "Fantastico",
+          "slug": "fantastiko",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/fantastiko.png"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/fantastiko/32553/crops/9_crop_12.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/fantastiko/32553/crops/9_crop_12.jpg",
+        "discount": "50",
+        "brochure": {
+          "id": 102,
+          "code": "32553",
+          "valid_from": "2026-02-19",
+          "valid_until": "2026-02-25"
+        }
+      },
+      {
+        "id": 29399,
+        "name": "НЕЛИС Карамелени или медени вафли",
+        "price": 2.99,
+        "price_eur": 1.53,
+        "unit": "192г",
+        "quantity": "192г",
+        "store": "Billa",
+        "supermarket": {
+          "id": 1,
+          "name": "Billa",
+          "slug": "billa",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa.jpg"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa/32554/crops/18_crop_5.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa/32554/crops/18_crop_5.jpg",
+        "discount": "19",
+        "brochure": {
+          "id": 103,
+          "code": "32554",
+          "valid_from": "2026-02-19",
+          "valid_until": "2026-02-25"
+        }
+      },
+      {
+        "id": 29994,
+        "name": "ЦАРЕВЕЦ Обикновени вафли",
+        "price": 3.48,
+        "price_eur": 1.78,
+        "unit": "504г",
+        "quantity": "504г",
+        "store": "Kaufland",
+        "supermarket": {
+          "id": 2,
+          "name": "Kaufland",
+          "slug": "kaufland",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland.png"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32573/crops/7_crop_15.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32573/crops/7_crop_15.jpg",
+        "discount": "50",
+        "brochure": {
+          "id": 106,
+          "code": "32573",
+          "valid_from": "2026-02-23",
+          "valid_until": "2026-03-01"
+        }
+      }
+    ]
+  },
+  "риба": {
+    "timestamp": "2026-02-23T22:22:42.342914",
+    "results": [
+      {
+        "id": 29041,
+        "name": "Риба тон късчета The Chefs",
+        "price": 2.19,
+        "price_eur": 1.12,
+        "unit": "160г",
+        "quantity": "160г",
+        "store": "Fantastico",
+        "supermarket": {
+          "id": 4,
+          "name": "Fantastico",
+          "slug": "fantastiko",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/fantastiko.png"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/fantastiko/32553/crops/6_crop_11.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/fantastiko/32553/crops/6_crop_11.jpg",
+        "discount": "33",
+        "brochure": {
+          "id": 102,
+          "code": "32553",
+          "valid_from": "2026-02-19",
+          "valid_until": "2026-02-25"
+        }
+      },
+      {
+        "id": 27655,
+        "name": "Thunfischstucke в спънчогледово олио",
+        "price": 2.29,
+        "price_eur": 1.17,
+        "unit": "185г",
+        "quantity": "185г",
+        "store": "Kaufland",
+        "supermarket": {
+          "id": 2,
+          "name": "Kaufland",
+          "slug": "kaufland",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland.png"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32456/crops/2_crop_2.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32456/crops/2_crop_2.jpg",
+        "discount": "20",
+        "brochure": {
+          "id": 96,
+          "code": "32456",
+          "valid_from": "2026-02-09",
+          "valid_until": "2026-03-08"
+        }
+      },
+      {
+        "id": 29873,
+        "name": "Nixe риба тон",
+        "price": 2.43,
+        "price_eur": 1.24,
+        "unit": "140g",
+        "quantity": "140g",
+        "store": "Lidl",
+        "supermarket": {
+          "id": 3,
+          "name": "Lidl",
+          "slug": "lidl",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl.png"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32563/crops/3_crop_6.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32563/crops/3_crop_6.jpg",
+        "discount": "30",
+        "brochure": {
+          "id": 105,
+          "code": "32563",
+          "valid_from": "2026-02-23",
+          "valid_until": "2026-03-01"
+        }
+      },
+      {
+        "id": 30109,
+        "name": "Риба тон филе размразено",
+        "price": 29.98,
+        "price_eur": 15.33,
+        "unit": "1кг",
+        "quantity": "1кг",
+        "store": "Kaufland",
+        "supermarket": {
+          "id": 2,
+          "name": "Kaufland",
+          "slug": "kaufland",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland.png"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32573/crops/16_crop_19.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32573/crops/16_crop_19.jpg",
+        "discount": "28",
+        "brochure": {
+          "id": 106,
+          "code": "32573",
+          "valid_from": "2026-02-23",
+          "valid_until": "2026-03-01"
+        }
+      }
+    ]
+  },
+  "хек": {
+    "timestamp": "2026-02-23T22:23:11.116886",
+    "results": [
+      {
+        "id": 29301,
+        "name": "Д Хек филе",
+        "price": 12.99,
+        "price_eur": 6.64,
+        "unit": "1кг",
+        "quantity": "1кг",
+        "store": "Billa",
+        "supermarket": {
+          "id": 1,
+          "name": "Billa",
+          "slug": "billa",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa.jpg"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa/32554/crops/8_crop_8.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa/32554/crops/8_crop_8.jpg",
+        "discount": "29",
+        "brochure": {
+          "id": 103,
+          "code": "32554",
+          "valid_from": "2026-02-19",
+          "valid_until": "2026-02-25"
+        }
+      },
+      {
+        "id": 30094,
+        "name": "Хек филе #9оЛВ",
+        "price": 12.99,
+        "price_eur": 6.64,
+        "unit": "1кг",
+        "quantity": "1кг",
+        "store": "Kaufland",
+        "supermarket": {
+          "id": 2,
+          "name": "Kaufland",
+          "slug": "kaufland",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland.png"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32573/crops/16_crop_2.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32573/crops/16_crop_2.jpg",
+        "discount": "27",
+        "brochure": {
+          "id": 106,
+          "code": "32573",
+          "valid_from": "2026-02-23",
+          "valid_until": "2026-03-01"
+        }
+      }
+    ]
+  },
+  "скумрия": {
+    "timestamp": "2026-02-23T22:23:39.277761",
+    "results": [
+      {
+        "id": 30186,
+        "name": "Ловмийт Скумрия или Рибна салата",
+        "price": 1.78,
+        "price_eur": 0.91,
+        "unit": "160г",
+        "quantity": "160г",
+        "store": "Kaufland",
+        "supermarket": {
+          "id": 2,
+          "name": "Kaufland",
+          "slug": "kaufland",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland.png"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32573/crops/19_crop_13.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32573/crops/19_crop_13.jpg",
+        "discount": "28",
+        "brochure": {
+          "id": 106,
+          "code": "32573",
+          "valid_from": "2026-02-23",
+          "valid_until": "2026-03-01"
+        }
+      },
+      {
+        "id": 30113,
+        "name": "PRIMOFISH Скумрия",
+        "price": 4.99,
+        "price_eur": 2.55,
+        "unit": "1кг",
+        "quantity": "1кг",
+        "store": "Kaufland",
+        "supermarket": {
+          "id": 2,
+          "name": "Kaufland",
+          "slug": "kaufland",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland.png"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32573/crops/17_crop_0.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32573/crops/17_crop_0.jpg",
+        "discount": "37",
+        "brochure": {
+          "id": 106,
+          "code": "32573",
+          "valid_from": "2026-02-23",
+          "valid_until": "2026-03-01"
+        }
+      },
+      {
+        "id": 30108,
+        "name": "Скумрия изчистена с глава размразена",
+        "price": 9.99,
+        "price_eur": 5.11,
+        "unit": "1кг",
+        "quantity": "1кг",
+        "store": "Kaufland",
+        "supermarket": {
+          "id": 2,
+          "name": "Kaufland",
+          "slug": "kaufland",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland.png"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32573/crops/16_crop_17.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32573/crops/16_crop_17.jpg",
+        "discount": "23",
+        "brochure": {
+          "id": 106,
+          "code": "32573",
+          "valid_from": "2026-02-23",
+          "valid_until": "2026-03-01"
+        }
+      }
+    ]
+  },
+  "филе": {
+    "timestamp": "2026-02-23T22:24:06.326174",
+    "results": [
+      {
+        "id": 29330,
+        "name": "BILLA Пушено свинско филе слайс",
+        "price": 3.48,
+        "price_eur": 1.78,
+        "unit": "150г",
+        "quantity": "150г",
+        "store": "Billa",
+        "supermarket": {
+          "id": 1,
+          "name": "Billa",
+          "slug": "billa",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa.jpg"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa/32554/crops/11_crop_11.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa/32554/crops/11_crop_11.jpg",
+        "discount": "46",
+        "brochure": {
+          "id": 103,
+          "code": "32554",
+          "valid_from": "2026-02-19",
+          "valid_until": "2026-02-25"
+        }
+      },
+      {
+        "id": 29652,
+        "name": "Ridano's Мариновани пилешки филенца",
+        "price": 3.99,
+        "price_eur": 2.04,
+        "unit": "150g",
+        "quantity": "150g",
+        "store": "Lidl",
+        "supermarket": {
+          "id": 3,
+          "name": "Lidl",
+          "slug": "lidl",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl.png"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32565/crops/13_crop_3.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32565/crops/13_crop_3.jpg",
+        "discount": null,
+        "brochure": {
+          "id": 104,
+          "code": "32565",
+          "valid_from": "2026-02-23",
+          "valid_until": "2026-03-01"
+        }
+      },
+      {
+        "id": 29581,
+        "name": "Пилешко мляно месо",
+        "price": 3.99,
+        "price_eur": 2.04,
+        "unit": "500g",
+        "quantity": "500g",
+        "store": "Lidl",
+        "supermarket": {
+          "id": 3,
+          "name": "Lidl",
+          "slug": "lidl",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl.png"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32565/crops/6_crop_3.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32565/crops/6_crop_3.jpg",
+        "discount": null,
+        "brochure": {
+          "id": 104,
+          "code": "32565",
+          "valid_from": "2026-02-23",
+          "valid_until": "2026-03-01"
+        }
+      },
+      {
+        "id": 29233,
+        "name": "BILLA Дива сьомга филе замразена",
+        "price": 4.87,
+        "price_eur": 2.49,
+        "unit": "250г",
+        "quantity": "250г",
+        "store": "Billa",
+        "supermarket": {
+          "id": 1,
+          "name": "Billa",
+          "slug": "billa",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa.jpg"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa/32554/crops/5_crop_8.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa/32554/crops/5_crop_8.jpg",
+        "discount": "39",
+        "brochure": {
+          "id": 103,
+          "code": "32554",
+          "valid_from": "2026-02-19",
+          "valid_until": "2026-02-25"
+        }
+      },
+      {
+        "id": 29332,
+        "name": "BILLA Филе Елена слайс",
+        "price": 4.99,
+        "price_eur": 2.55,
+        "unit": "100г",
+        "quantity": "100г",
+        "store": "Billa",
+        "supermarket": {
+          "id": 1,
+          "name": "Billa",
+          "slug": "billa",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa.jpg"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa/32554/crops/11_crop_10.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa/32554/crops/11_crop_10.jpg",
+        "discount": "25",
+        "brochure": {
+          "id": 103,
+          "code": "32554",
+          "valid_from": "2026-02-19",
+          "valid_until": "2026-02-25"
+        }
+      }
+    ]
+  },
+  "масло": {
+    "timestamp": "2026-02-23T22:24:59.867922",
+    "results": [
+      {
+        "id": 29268,
+        "name": "Кроасан с масло BILLA",
+        "price": 0.59,
+        "price_eur": 0.3,
+        "unit": "54г",
+        "quantity": "54г",
+        "store": "Billa",
+        "supermarket": {
+          "id": 1,
+          "name": "Billa",
+          "slug": "billa",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa.jpg"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa/32554/crops/2_crop_4.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa/32554/crops/2_crop_4.jpg",
+        "discount": "34",
+        "brochure": {
+          "id": 103,
+          "code": "32554",
+          "valid_from": "2026-02-19",
+          "valid_until": "2026-02-25"
+        }
+      },
+      {
+        "id": 30122,
+        "name": "K Classic Багета с масло",
+        "price": 1.39,
+        "price_eur": 0.71,
+        "unit": "175г",
+        "quantity": "175г",
+        "store": "Kaufland",
+        "supermarket": {
+          "id": 2,
+          "name": "Kaufland",
+          "slug": "kaufland",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland.png"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32573/crops/17_crop_13.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32573/crops/17_crop_13.jpg",
+        "discount": "28",
+        "brochure": {
+          "id": 106,
+          "code": "32573",
+          "valid_from": "2026-02-23",
+          "valid_until": "2026-03-01"
+        }
+      },
+      {
+        "id": 28991,
+        "name": "Краве масло САЯНА",
+        "price": 1.94,
+        "price_eur": 0.99,
+        "unit": "125г",
+        "quantity": "125г",
+        "store": "Fantastico",
+        "supermarket": {
+          "id": 4,
+          "name": "Fantastico",
+          "slug": "fantastiko",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/fantastiko.png"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/fantastiko/32553/crops/3_crop_11.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/fantastiko/32553/crops/3_crop_11.jpg",
+        "discount": "48",
+        "brochure": {
+          "id": 102,
+          "code": "32553",
+          "valid_from": "2026-02-19",
+          "valid_until": "2026-02-25"
+        }
+      },
+      {
+        "id": 29394,
+        "name": "Роден край Бисквити",
+        "price": 1.99,
+        "price_eur": 1.02,
+        "unit": "165г",
+        "quantity": "165г",
+        "store": "Billa",
+        "supermarket": {
+          "id": 1,
+          "name": "Billa",
+          "slug": "billa",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa.jpg"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa/32554/crops/18_crop_1.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa/32554/crops/18_crop_1.jpg",
+        "discount": "32",
+        "brochure": {
+          "id": 103,
+          "code": "32554",
+          "valid_from": "2026-02-19",
+          "valid_until": "2026-02-25"
+        }
+      },
+      {
+        "id": 26894,
+        "name": "Pilos краве масло",
+        "price": 2.13,
+        "price_eur": 1.09,
+        "unit": "100г",
+        "quantity": "100г",
+        "store": "Lidl",
+        "supermarket": {
+          "id": 3,
+          "name": "Lidl",
+          "slug": "lidl",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl.png"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32437/crops/2_crop_7.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32437/crops/2_crop_7.jpg",
+        "discount": "23",
+        "brochure": {
+          "id": 93,
+          "code": "32437",
+          "valid_from": "2026-02-02",
+          "valid_until": "2026-03-01"
+        }
+      }
+    ]
+  },
+  "краве масло": {
+    "timestamp": "2026-02-23T22:25:16.284576",
+    "results": [
+      {
+        "id": 28991,
+        "name": "Краве масло САЯНА",
+        "price": 1.94,
+        "price_eur": 0.99,
+        "unit": "125г",
+        "quantity": "125г",
+        "store": "Fantastico",
+        "supermarket": {
+          "id": 4,
+          "name": "Fantastico",
+          "slug": "fantastiko",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/fantastiko.png"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/fantastiko/32553/crops/3_crop_11.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/fantastiko/32553/crops/3_crop_11.jpg",
+        "discount": "48",
+        "brochure": {
+          "id": 102,
+          "code": "32553",
+          "valid_from": "2026-02-19",
+          "valid_until": "2026-02-25"
+        }
+      },
+      {
+        "id": 26894,
+        "name": "Pilos краве масло",
+        "price": 2.13,
+        "price_eur": 1.09,
+        "unit": "100г",
+        "quantity": "100г",
+        "store": "Lidl",
+        "supermarket": {
+          "id": 3,
+          "name": "Lidl",
+          "slug": "lidl",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl.png"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32437/crops/2_crop_7.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32437/crops/2_crop_7.jpg",
+        "discount": "23",
+        "brochure": {
+          "id": 93,
+          "code": "32437",
+          "valid_from": "2026-02-02",
+          "valid_until": "2026-03-01"
+        }
+      },
+      {
+        "id": 29216,
+        "name": "Deutsche Markenbutter краве масло",
+        "price": 3.48,
+        "price_eur": 1.78,
+        "unit": "250г",
+        "quantity": "250г",
+        "store": "Billa",
+        "supermarket": {
+          "id": 1,
+          "name": "Billa",
+          "slug": "billa",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa.jpg"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa/32554/crops/1_crop_5.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa/32554/crops/1_crop_5.jpg",
+        "discount": "61",
+        "brochure": {
+          "id": 103,
+          "code": "32554",
+          "valid_from": "2026-02-19",
+          "valid_until": "2026-02-25"
+        }
+      },
+      {
+        "id": 30133,
+        "name": "Monarch краве масло",
+        "price": 4.99,
+        "price_eur": 2.55,
+        "unit": "250г",
+        "quantity": "250г",
+        "store": "Kaufland",
+        "supermarket": {
+          "id": 2,
+          "name": "Kaufland",
+          "slug": "kaufland",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland.png"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32573/crops/17_crop_21.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32573/crops/17_crop_21.jpg",
+        "discount": "44",
+        "brochure": {
+          "id": 106,
+          "code": "32573",
+          "valid_from": "2026-02-23",
+          "valid_until": "2026-03-01"
+        }
+      },
+      {
+        "id": 30303,
+        "name": "Deutsche Markenbutter Краве масло",
+        "price": 5.98,
+        "price_eur": 3.06,
+        "unit": "2x250г",
+        "quantity": "2x250г",
+        "store": "Kaufland",
+        "supermarket": {
+          "id": 2,
+          "name": "Kaufland",
+          "slug": "kaufland",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland.png"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32573/crops/26_crop_10.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32573/crops/26_crop_10.jpg",
+        "discount": "50",
+        "brochure": {
+          "id": 106,
+          "code": "32573",
+          "valid_from": "2026-02-23",
+          "valid_until": "2026-03-01"
+        }
+      }
+    ]
   }
 }

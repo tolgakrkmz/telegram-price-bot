@@ -1,88 +1,7 @@
 {
   "1210776920": {
     "shopping_list": [],
-    "notifications_enabled": true,
-    "30301": {
-      "id": 30301,
-      "name": "КРАДЕ КИСЕЛО МЛЯКО 2% 400г",
-      "price": 0.68,
-      "price_eur": 5,
-      "unit": "400г",
-      "quantity": "400г",
-      "store": "Kaufland",
-      "supermarket": {
-        "id": 2,
-        "name": "Kaufland",
-        "slug": "kaufland",
-        "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland.png"
-      },
-      "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32573/crops/26_crop_3.jpg",
-      "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32573/crops/26_crop_3.jpg",
-      "discount": "33",
-      "brochure": {
-        "id": 106,
-        "code": "32573",
-        "valid_from": "2026-02-23",
-        "valid_until": "2026-02-24"
-      },
-      "calc_unit_price": 0.87,
-      "base_unit": "kg",
-      "valid-until": "2026-03-01"
-    },
-    "29389": {
-      "id": 29389,
-      "name": "САЯНА Кисело мляко",
-      "price": 1.15,
-      "price_eur": 0.59,
-      "unit": "400г",
-      "quantity": "400г",
-      "store": "Billa",
-      "supermarket": {
-        "id": 1,
-        "name": "Billa",
-        "slug": "billa",
-        "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa.jpg"
-      },
-      "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa/32554/crops/14_crop_20.jpg",
-      "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa/32554/crops/14_crop_20.jpg",
-      "discount": "35",
-      "brochure": {
-        "id": 103,
-        "code": "32554",
-        "valid_from": "2026-02-19",
-        "valid_until": "2026-02-24"
-      },
-      "calc_unit_price": 1.47,
-      "base_unit": "kg",
-      "valid-until": "2026-02-24"
-    },
-    "29241": {
-      "id": 29241,
-      "name": "BILLA Кисело мляко 3,6%",
-      "price": 1.15,
-      "price_eur": 0.59,
-      "unit": "400г",
-      "quantity": "400г",
-      "store": "Billa",
-      "supermarket": {
-        "id": 1,
-        "name": "Billa",
-        "slug": "billa",
-        "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa.jpg"
-      },
-      "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa/32554/crops/3_crop_6.jpg",
-      "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa/32554/crops/3_crop_6.jpg",
-      "discount": "20",
-      "brochure": {
-        "id": 103,
-        "code": "32554",
-        "valid_from": "2026-02-19",
-        "valid_until": "2026-02-25"
-      },
-      "calc_unit_price": 1.47,
-      "base_unit": "kg",
-      "valid-until": "2026-02-25"
-    }
+    "notifications_enabled": true
   },
   "6248530134": {
     "shopping_list": [
@@ -112,6 +31,7 @@
         "calc_unit_price": 30.0,
         "base_unit": "kg"
       }
-    ]
+    ],
+    "notifications_enabled": false
   }
 }
