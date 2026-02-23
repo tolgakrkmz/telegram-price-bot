@@ -1,0 +1,377 @@
+{
+  "мляко": {
+    "timestamp": "2026-02-23T12:46:15.672917",
+    "results": [
+      {
+        "id": 30301,
+        "name": "КРАДЕ КИСЕЛО МЛЯКО 2% 400г",
+        "price": 0.68,
+        "price_eur": 0.35,
+        "unit": "400г",
+        "quantity": "400г",
+        "store": "Kaufland",
+        "supermarket": {
+          "id": 2,
+          "name": "Kaufland",
+          "slug": "kaufland",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland.png"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32573/crops/26_crop_3.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32573/crops/26_crop_3.jpg",
+        "discount": "33",
+        "brochure": {
+          "id": 106,
+          "code": "32573",
+          "valid_from": "2026-02-23",
+          "valid_until": "2026-03-01"
+        }
+      },
+      {
+        "id": 29872,
+        "name": "Pilos кисело мляко 2%",
+        "price": 0.82,
+        "price_eur": 0.42,
+        "unit": "400г",
+        "quantity": "400г",
+        "store": "Lidl",
+        "supermarket": {
+          "id": 3,
+          "name": "Lidl",
+          "slug": "lidl",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl.png"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32563/crops/3_crop_0.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32563/crops/3_crop_0.jpg",
+        "discount": "31",
+        "brochure": {
+          "id": 105,
+          "code": "32563",
+          "valid_from": "2026-02-23",
+          "valid_until": "2026-03-01"
+        }
+      },
+      {
+        "id": 29846,
+        "name": "Българско кисело мляко ЗНП",
+        "price": 1.1,
+        "price_eur": 0.56,
+        "unit": "400г",
+        "quantity": "400г",
+        "store": "Lidl",
+        "supermarket": {
+          "id": 3,
+          "name": "Lidl",
+          "slug": "lidl",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl.png"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32565/crops/34_crop_11.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32565/crops/34_crop_11.jpg",
+        "discount": "24",
+        "brochure": {
+          "id": 104,
+          "code": "32565",
+          "valid_from": "2026-02-23",
+          "valid_until": "2026-03-01"
+        }
+      },
+      {
+        "id": 29241,
+        "name": "BILLA Кисело мляко 3,6%",
+        "price": 1.15,
+        "price_eur": 0.59,
+        "unit": "400г",
+        "quantity": "400г",
+        "store": "Billa",
+        "supermarket": {
+          "id": 1,
+          "name": "Billa",
+          "slug": "billa",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa.jpg"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa/32554/crops/3_crop_6.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa/32554/crops/3_crop_6.jpg",
+        "discount": "20",
+        "brochure": {
+          "id": 103,
+          "code": "32554",
+          "valid_from": "2026-02-19",
+          "valid_until": "2026-02-25"
+        }
+      },
+      {
+        "id": 29389,
+        "name": "САЯНА Кисело мляко",
+        "price": 1.15,
+        "price_eur": 0.59,
+        "unit": "400г",
+        "quantity": "400г",
+        "store": "Billa",
+        "supermarket": {
+          "id": 1,
+          "name": "Billa",
+          "slug": "billa",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa.jpg"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa/32554/crops/14_crop_20.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa/32554/crops/14_crop_20.jpg",
+        "discount": "35",
+        "brochure": {
+          "id": 103,
+          "code": "32554",
+          "valid_from": "2026-02-19",
+          "valid_until": "2026-02-25"
+        }
+      }
+    ]
+  },
+  "кафе": {
+    "timestamp": "2026-02-23T13:01:59.093474",
+    "results": [
+      {
+        "id": 29077,
+        "name": "Jacobs 3in1 кафе",
+        "price": 0.35,
+        "price_eur": 0.18,
+        "unit": "11.1-15.1г; 12.4г",
+        "quantity": "11.1-15.1г; 12.4г",
+        "store": "Fantastico",
+        "supermarket": {
+          "id": 4,
+          "name": "Fantastico",
+          "slug": "fantastiko",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/fantastiko.png"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/fantastiko/32553/crops/10_crop_6.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/fantastiko/32553/crops/10_crop_6.jpg",
+        "discount": "37",
+        "brochure": {
+          "id": 102,
+          "code": "32553",
+          "valid_from": "2026-02-19",
+          "valid_until": "2026-02-25"
+        }
+      },
+      {
+        "id": 30300,
+        "name": "Nescafe разтворимо кафе",
+        "price": 2.89,
+        "price_eur": 1.48,
+        "unit": "10 бр. х 8 - 17 г",
+        "quantity": "10 бр. х 8 - 17 г",
+        "store": "Kaufland",
+        "supermarket": {
+          "id": 2,
+          "name": "Kaufland",
+          "slug": "kaufland",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland.png"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32573/crops/26_crop_6.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/kaufland/32573/crops/26_crop_6.jpg",
+        "discount": "46",
+        "brochure": {
+          "id": 106,
+          "code": "32573",
+          "valid_from": "2026-02-23",
+          "valid_until": "2026-03-01"
+        }
+      },
+      {
+        "id": 29079,
+        "name": "Jacobs Разтворимо кафе 3в1",
+        "price": 3.31,
+        "price_eur": 1.69,
+        "unit": "151г",
+        "quantity": "151г",
+        "store": "Fantastico",
+        "supermarket": {
+          "id": 4,
+          "name": "Fantastico",
+          "slug": "fantastiko",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/fantastiko.png"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/fantastiko/32553/crops/10_crop_7.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/fantastiko/32553/crops/10_crop_7.jpg",
+        "discount": "40",
+        "brochure": {
+          "id": 102,
+          "code": "32553",
+          "valid_from": "2026-02-19",
+          "valid_until": "2026-02-25"
+        }
+      },
+      {
+        "id": 29096,
+        "name": "Мляно кафе NOVA BRASILIA",
+        "price": 5.46,
+        "price_eur": 2.79,
+        "unit": "200г",
+        "quantity": "200г",
+        "store": "Fantastico",
+        "supermarket": {
+          "id": 4,
+          "name": "Fantastico",
+          "slug": "fantastiko",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/fantastiko.png"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/fantastiko/32553/crops/10_crop_14.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/fantastiko/32553/crops/10_crop_14.jpg",
+        "discount": "31",
+        "brochure": {
+          "id": 102,
+          "code": "32553",
+          "valid_from": "2026-02-19",
+          "valid_until": "2026-02-25"
+        }
+      },
+      {
+        "id": 29602,
+        "name": "Nescafe Разтворимо кафе 3 в 1 Класик",
+        "price": 5.79,
+        "price_eur": 2.96,
+        "unit": "310г",
+        "quantity": "310г",
+        "store": "Lidl",
+        "supermarket": {
+          "id": 3,
+          "name": "Lidl",
+          "slug": "lidl",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl.png"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32565/crops/7_crop_6.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32565/crops/7_crop_6.jpg",
+        "discount": null,
+        "brochure": {
+          "id": 104,
+          "code": "32565",
+          "valid_from": "2026-02-23",
+          "valid_until": "2026-03-01"
+        }
+      }
+    ]
+  },
+  "месо": {
+    "timestamp": "2026-02-23T13:03:00.431451",
+    "results": [
+      {
+        "id": 29251,
+        "name": "BILLA Premium Суджук от телешко и говеждо месо",
+        "price": 0,
+        "price_eur": 0,
+        "unit": "",
+        "quantity": "",
+        "store": "Billa",
+        "supermarket": {
+          "id": 1,
+          "name": "Billa",
+          "slug": "billa",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa.jpg"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa/32554/crops/3_crop_16.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa/32554/crops/3_crop_16.jpg",
+        "discount": "",
+        "brochure": {
+          "id": 103,
+          "code": "32554",
+          "valid_from": "2026-02-19",
+          "valid_until": "2026-02-25"
+        }
+      },
+      {
+        "id": 29307,
+        "name": "мелено месо",
+        "price": 1.99,
+        "price_eur": 1.02,
+        "unit": "",
+        "quantity": "",
+        "store": "Billa",
+        "supermarket": {
+          "id": 1,
+          "name": "Billa",
+          "slug": "billa",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa.jpg"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa/32554/crops/8_crop_12.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa/32554/crops/8_crop_12.jpg",
+        "discount": "37",
+        "brochure": {
+          "id": 103,
+          "code": "32554",
+          "valid_from": "2026-02-19",
+          "valid_until": "2026-02-25"
+        }
+      },
+      {
+        "id": 29465,
+        "name": "Clever Chunks консерви за кучета",
+        "price": 2.8,
+        "price_eur": 1.43,
+        "unit": "1240г",
+        "quantity": "1240г",
+        "store": "Billa",
+        "supermarket": {
+          "id": 1,
+          "name": "Billa",
+          "slug": "billa",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa.jpg"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa/32554/crops/24_crop_14.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/billa/32554/crops/24_crop_14.jpg",
+        "discount": "27",
+        "brochure": {
+          "id": 103,
+          "code": "32554",
+          "valid_from": "2026-02-19",
+          "valid_until": "2026-02-25"
+        }
+      },
+      {
+        "id": 29716,
+        "name": "Деликатесен салам",
+        "price": 2.99,
+        "price_eur": 1.53,
+        "unit": "100г",
+        "quantity": "100г",
+        "store": "Lidl",
+        "supermarket": {
+          "id": 3,
+          "name": "Lidl",
+          "slug": "lidl",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl.png"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32565/crops/18_crop_11.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32565/crops/18_crop_11.jpg",
+        "discount": null,
+        "brochure": {
+          "id": 104,
+          "code": "32565",
+          "valid_from": "2026-02-23",
+          "valid_until": "2026-03-01"
+        }
+      },
+      {
+        "id": 29857,
+        "name": "PIKOR Пуешко месо от бутче",
+        "price": 3.81,
+        "price_eur": 1.95,
+        "unit": "280г",
+        "quantity": "280г",
+        "store": "Lidl",
+        "supermarket": {
+          "id": 3,
+          "name": "Lidl",
+          "slug": "lidl",
+          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl.png"
+        },
+        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32565/crops/36_crop_1.jpg",
+        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32565/crops/36_crop_1.jpg",
+        "discount": "30",
+        "brochure": {
+          "id": 104,
+          "code": "32565",
+          "valid_from": "2026-02-23",
+          "valid_until": "2026-03-01"
+        }
+      }
+    ]
+  }
+}

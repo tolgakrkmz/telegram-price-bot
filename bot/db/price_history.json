@@ -1,0 +1,172 @@
+{
+  "349fa982a74fb7714e94a9da65924107": {
+    "name": "КРАДЕ КИСЕЛО МЛЯКО 2% 400г",
+    "store": "Kaufland",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 0.35
+      }
+    ]
+  },
+  "3888dc4dc7153eca2f0823552560e932": {
+    "name": "Pilos кисело мляко 2%",
+    "store": "Lidl",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 0.42
+      }
+    ]
+  },
+  "7ad39e5b8c5a7f12ea69968608190d51": {
+    "name": "Българско кисело мляко ЗНП",
+    "store": "Lidl",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 0.56
+      }
+    ]
+  },
+  "51c03169612bcb6c47ae7a29de4769e8": {
+    "name": "BILLA Кисело мляко 3,6%",
+    "store": "Billa",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 0.59
+      }
+    ]
+  },
+  "62ba95f86477de66717390d68a9fb83a": {
+    "name": "САЯНА Кисело мляко",
+    "store": "Billa",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 0.59
+      }
+    ]
+  },
+  "d441996cfb807f253245110b4f43febb": {
+    "name": "Nescafe разтворимо кафе",
+    "store": "Kaufland",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 1.48
+      }
+    ]
+  },
+  "f08309098cf9f57fafb7f9b51ce9a33a": {
+    "name": "Nescafe Разтворимо кафе 3 в 1 Класик",
+    "store": "Lidl",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 2.96
+      }
+    ]
+  },
+  "b8af13c218260168e08f81b1cb6a8055": {
+    "name": "Jacobs Разтворимо кафе 3в1",
+    "store": "Fantastico",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 1.69
+      }
+    ]
+  },
+  "d2a8d71e91c4ed3c333d5210c937619c": {
+    "name": "Jacobs 3in1 кафе",
+    "store": "Fantastico",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 0.18
+      }
+    ]
+  },
+  "ae13b8fa07d926d648b58173c7f78931": {
+    "name": "Мляно кафе NOVA BRASILIA",
+    "store": "Fantastico",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 2.79
+      }
+    ]
+  },
+  "29096": {
+    "name": "Мляно кафе NOVA BRASILIA",
+    "store": "Fantastico",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 5.46
+      }
+    ]
+  },
+  "ee01da6ac6b7ea46634c437185d01122": {
+    "name": "Clever Chunks консерви за кучета",
+    "store": "Billa",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 1.43
+      }
+    ]
+  },
+  "223227914ef2edf395ac0cb4bb59d06e": {
+    "name": "PIKOR Пуешко месо от бутче",
+    "store": "Lidl",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 1.95
+      }
+    ]
+  },
+  "bf77641214dbfb05cef040d99ba8976e": {
+    "name": "Деликатесен салам",
+    "store": "Lidl",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 1.53
+      }
+    ]
+  },
+  "0be2dae7be2961b76dd777342d435b00": {
+    "name": "BILLA Premium Суджук от телешко и говеждо месо",
+    "store": "Billa",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 0.0
+      }
+    ]
+  },
+  "cdacf2beef081e0b49992732937082ef": {
+    "name": "мелено месо",
+    "store": "Billa",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 1.02
+      }
+    ]
+  },
+  "29307": {
+    "name": "мелено месо",
+    "store": "Billa",
+    "prices": [
+      {
+        "date": "2026-02-23",
+        "price": 1.99
+      }
+    ]
+  }
+}
