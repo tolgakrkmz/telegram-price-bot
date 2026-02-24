@@ -1,4 +1,5 @@
 import asyncio
+import datetime
 from collections import defaultdict
 
 from telegram import CallbackQuery, Update, constants
@@ -7,7 +8,8 @@ from telegram.ext import ContextTypes
 from api.supermarket import get_product_price
 from db.repositories.favorites_repo import get_all_favorites_from_db, get_user_favorites
 from db.repositories.history_repo import add_price_history_record
-from db.repositories.user_repo import get_users_to_notify, toggle_notifications
+from db.repositories.user_repo import toggle_notifications
+from db.supabase_client import supabase
 from utils.menu import main_menu_keyboard
 
 CURRENCY = "€"
@@ -20,7 +22,6 @@ CURRENCY = "€"
 async def handle_toggle_alerts(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> None:
-    """Handles the toggle button click in the main menu."""
     query: CallbackQuery = update.callback_query
     user_id = query.from_user.id
 
@@ -39,19 +40,18 @@ async def handle_toggle_alerts(
 # ==============================
 
 
-from telegram import Update
-from telegram.ext import ContextTypes
-from db.repositories.favorites_repo import get_all_favorites_from_db
-from api.supermarket import get_product_price
-from db.supabase_client import supabase
-
-
 async def global_price_update(context: ContextTypes.DEFAULT_TYPE):
-    """
-    Automatic task for the job_queue.
-    Checks all favorites and sends alerts for price drops.
-    """
-    favorites = get_all_favorites_from_db()
+    try:
+        response = (
+            supabase.table("favorites")
+            .select("*, users!inner(notifications_enabled)")
+            .eq("users.notifications_enabled", True)
+            .execute()
+        )
+        favorites = response.data
+    except Exception as e:
+        print(f"Error fetching favorites for update: {e}")
+        return
 
     if not favorites:
         return
@@ -60,20 +60,16 @@ async def global_price_update(context: ContextTypes.DEFAULT_TYPE):
         product_id = fav.get("product_id")
         user_id = fav.get("user_id")
 
-        # Current price in our database
         old_price = float(fav.get("price_eur") or fav.get("price") or 0)
-
-        # Get fresh price from the store API
         fresh_data = get_product_price(product_id)
+
         if not fresh_data:
             continue
 
         new_price = float(fresh_data.get("price_eur") or fresh_data.get("price") or 0)
 
-        # Alert if the price has dropped
         if new_price < old_price:
             diff = old_price - new_price
-
             message = (
                 f"📉 *Price Drop Alert!*\n"
                 f"🛒 *{fav.get('name')}*\n"
@@ -86,13 +82,78 @@ async def global_price_update(context: ContextTypes.DEFAULT_TYPE):
                 await context.bot.send_message(
                     chat_id=user_id, text=message, parse_mode="Markdown"
                 )
-
-                # Update DB with the new lower price to prevent repeat alerts
                 supabase.table("favorites").update({"price_eur": new_price}).eq(
                     "id", fav.get("id")
                 ).execute()
             except Exception as e:
                 print(f"Failed to send alert to {user_id}: {e}")
+
+
+async def check_expiring_alerts(context: ContextTypes.DEFAULT_TYPE) -> None:
+    today = datetime.datetime.now().date().isoformat()
+
+    try:
+        response = (
+            supabase.table("favorites")
+            .select(
+                "user_id, name, price_eur, store, users!inner(notifications_enabled)"
+            )
+            .eq("valid_until", today)
+            .eq("users.notifications_enabled", True)
+            .execute()
+        )
+
+        if not response.data:
+            return
+
+        for item in response.data:
+            user_id = item.get("user_id")
+            msg = (
+                f"⚠️ *Last Chance!*\n"
+                f"The promotion for *{item['name']}* ends **today**!\n"
+                f"💰 Price: {item['price_eur']:.2f}€\n"
+                f"🏬 Store: {item.get('store', 'N/A')}"
+            )
+            try:
+                await context.bot.send_message(
+                    chat_id=user_id, text=msg, parse_mode="Markdown"
+                )
+            except Exception as e:
+                print(f"Failed to send expiring alert to {user_id}: {e}")
+    except Exception as e:
+        print(f"Supabase Expiring Alerts Error: {e}")
+
+
+async def check_expiring_tomorrow_alerts(context: ContextTypes.DEFAULT_TYPE) -> None:
+    tomorrow = (datetime.datetime.now() + datetime.timedelta(days=1)).date().isoformat()
+
+    try:
+        response = (
+            supabase.table("favorites")
+            .select("user_id, name, store, users!inner(notifications_enabled)")
+            .eq("valid_until", tomorrow)
+            .eq("users.notifications_enabled", True)
+            .execute()
+        )
+
+        if not response.data:
+            return
+
+        for item in response.data:
+            user_id = item.get("user_id")
+            msg = (
+                f"🔔 *Reminder: Deal Ending Soon*\n"
+                f"The promotion for *{item['name']}* expires **tomorrow**.\n"
+                f"🏬 Store: {item.get('store', 'N/A')}"
+            )
+            try:
+                await context.bot.send_message(
+                    chat_id=user_id, text=msg, parse_mode="Markdown"
+                )
+            except Exception as e:
+                print(f"Failed to send tomorrow alert to {user_id}: {e}")
+    except Exception as e:
+        print(f"Supabase Tomorrow Alerts Error: {e}")
 
 
 # ==============================
@@ -103,7 +164,6 @@ async def global_price_update(context: ContextTypes.DEFAULT_TYPE):
 async def update_favorites_prices(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> None:
-    """Manual update triggered by /update_prices command."""
     user_id = update.effective_user.id
     fav_list = get_user_favorites(user_id) or []
 
@@ -133,19 +193,3 @@ async def update_favorites_prices(
     await status_msg.edit_text(
         "\n".join(report), parse_mode=constants.ParseMode.MARKDOWN
     )
-
-
-async def check_expiring_alerts(context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Temporary placeholder for expiring alerts."""
-    print(
-        "DEBUG: check_expiring_alerts was called but is not yet implemented with Supabase."
-    )
-    pass
-
-
-async def check_expiring_tomorrow_alerts(context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Temporary placeholder for expiring tomorrow alerts."""
-    print(
-        "DEBUG: check_expiring_tomorrow_alerts was called but is not yet implemented with Supabase."
-    )
-    pass

@@ -49,6 +49,7 @@ def add_favorite(user_id: int, product: Dict) -> Optional[Dict]:
             "unit": product.get("unit"),
             "quantity": product.get("quantity"),
             "store": product.get("store"),
+            "valid_until": product.get("valid_until"),
             "supermarket": product.get("supermarket"),
             "image": product.get("image") or product.get("image_url"),
             "discount": str(product.get("discount", "")),
