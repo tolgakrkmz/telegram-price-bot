@@ -5,10 +5,6 @@ from telegram.ext import ContextTypes, ConversationHandler
 
 from api.supermarket import get_product_price
 from db.repositories.history_repo import add_price_entry, get_product_history
-from db.storage import (
-    get_cached_search,
-    save_search_to_cache,
-)
 from utils.helpers import calculate_unit_price, get_product_id
 from utils.menu import main_menu_keyboard
 from utils.message_cache import add_message
@@ -40,7 +36,6 @@ async def search_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
     user_id = update.effective_user.id
 
     # 1. Check Cloud Cache in Supabase (to save API credits)
-    # We set expiry to 24 hours to keep data fresh
     from db.repositories.cache_repo import get_cached_results, set_cache_results
 
     products = get_cached_results(user_input, expiry_hours=24)
@@ -111,17 +106,14 @@ async def search_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
         curr_image = p.get("image_url") or p.get("image")
 
         # 3. SUPABASE HISTORY LOGIC
-        # Always attempt to record current price (Unique index handles duplicates)
-        from db.repositories.history_repo import add_price_entry, get_product_history
-
+        # Record current price
         add_price_entry(product_id, curr_name, curr_store, curr_price)
 
         # Fetch history to detect trends
         history = get_product_history(product_id)
         trend_text = ""
 
-        if len(history) > 1:
-            # history[0] is current, history[1] is the one from the previous record
+        if history and len(history) > 1:
             try:
                 prev_price = float(history[1]["price"])
                 if curr_price < prev_price:
@@ -131,7 +123,7 @@ async def search_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
                     trend_text = (
                         f"📈 *Price went up* (was {prev_price:.2f}{CURRENCY})\n"
                     )
-            except (IndexError, ValueError):
+            except (IndexError, ValueError, KeyError):
                 pass
 
         # 4. Message Formatting

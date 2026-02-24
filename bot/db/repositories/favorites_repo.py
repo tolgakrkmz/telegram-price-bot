@@ -77,3 +77,13 @@ def delete_favorite(user_id: int, product_id: str) -> bool:
     except Exception as e:
         print(f"Supabase Delete Error: {e}")
         return False
+
+
+def get_all_favorites_from_db():
+    """Fetches all favorites. Using your exact schema columns."""
+    try:
+        response = supabase.table("favorites").select("*").execute()
+        return response.data
+    except Exception as e:
+        print(f"Error fetching all favorites: {e}")
+        return []

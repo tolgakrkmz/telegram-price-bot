@@ -1,15 +1,19 @@
 from collections import defaultdict
 from datetime import datetime
 
+import supabase
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, constants
 from telegram.ext import ContextTypes
 
 from api.supermarket import get_product_price
 from db.repositories.favorites_repo import (
     add_favorite,
-    delete_favorite as remove_favorite,
     get_user_favorites,
 )
+from db.repositories.favorites_repo import (
+    delete_favorite as remove_favorite,
+)
+from db.repositories.history_repo import get_product_history
 from db.repositories.shopping_repo import add_to_shopping_list
 from services.history_service import get_combined_price_history
 from utils.helpers import calculate_unit_price, format_promo_dates
@@ -230,49 +234,40 @@ async def move_to_cart_callback(update: Update, context: ContextTypes.DEFAULT_TY
 # ==========================================================
 
 
+# Inside bot/handlers/favorites.py
+
+
 async def view_price_history_callback(
     update: Update, context: ContextTypes.DEFAULT_TYPE
-):
+) -> None:
     query = update.callback_query
-    await query.answer("Fetching price history...")
+    await query.answer()
 
+    # Extract product_id
     product_id = query.data.replace("price_history_", "")
-    user_id = query.from_user.id
+    history = get_product_history(product_id)
 
-    fav_list = get_user_favorites(user_id) or []
-    product_entry = next(
-        (p for p in fav_list if str(p.get("product_id")) == product_id),
-        None,
-    )
-
-    if not product_entry:
-        await query.message.reply_text("❌ Product not found.")
+    if not history:
+        await query.message.reply_text("📉 No history found.")
         return
 
-    product_name = product_entry.get("name", "Product")
-    store = product_entry.get("store", "Store")
+    # Use first entry for metadata
+    name = history[0].get("name", "Product")
+    store = history[0].get("store", "Store")
 
-    combined_history = get_combined_price_history(product_id, product_name, store)
+    text = f"📊 *Price History*\n🛒 *{name}*\n🏬 {store}\n\n"
+    for entry in history:
+        date = entry.get("recorded_date", "N/A")
+        price = float(entry.get("price", 0))
+        text += f"• {date}: **{price:.2f}{CURRENCY}**\n"
 
-    if not combined_history:
-        await query.message.reply_text(
-            f"❌ No historical data available for {product_name}."
-        )
-        return
+    await query.message.reply_text(text, parse_mode=constants.ParseMode.MARKDOWN)
 
-    sorted_dates = sorted(combined_history.keys())
 
-    lines = [f"📈 *Extended History for {product_name}*:\n"]
-
-    for date in sorted_dates[-15:]:
-        try:
-            display_date = datetime.strptime(date, "%Y-%m-%d").strftime("%d.%m.%Y")
-        except Exception:
-            display_date = date
-
-        lines.append(f"• {display_date}: **{combined_history[date]:.2f}{CURRENCY}**")
-
-    await query.message.reply_text(
-        "\n".join(lines),
-        parse_mode=constants.ParseMode.MARKDOWN,
-    )
+def get_all_favorites_from_db():
+    try:
+        response = supabase.table("favorites").select("*").execute()
+        return response.data
+    except Exception as e:
+        print(f"Error fetching all favorites: {e}")
+        return []

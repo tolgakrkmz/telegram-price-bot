@@ -68,3 +68,18 @@ def toggle_notifications(user_id: int) -> bool:
     except Exception as e:
         print(f"Notification Toggle Error: {e}")
         return False
+
+
+def get_users_to_notify():
+    """Returns a list of user IDs who have notifications enabled."""
+    try:
+        response = (
+            supabase.table("users")
+            .select("id")
+            .eq("notifications_enabled", True)
+            .execute()
+        )
+        return [user["id"] for user in response.data]
+    except Exception as e:
+        print(f"Error fetching users to notify: {e}")
+        return []
