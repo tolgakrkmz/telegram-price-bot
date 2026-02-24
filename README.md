@@ -46,7 +46,7 @@ API_BASE_URL=[https://prices.alexandergekov.com/api](https://prices.alexandergek
 ## 🙏 Acknowledgements
 This bot uses the Supermarket Prices API provided by Alexander Gekov.
 
-API Source: prices.alexandergekov.com
+API Source: [prices.alexandergekov.com](https://prices.alexandergekov.com)
 
 Special thanks to Alexander for providing the data that makes this project possible!
 
