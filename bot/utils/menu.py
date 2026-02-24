@@ -1,13 +1,13 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
-from db import storage  # Import storage to check notification status
+from db.repositories.user_repo import get_notification_state
 
 
 def main_menu_keyboard(user_id: int):
     """Main navigation menu with dynamic notification toggle."""
-    
+
     # Check current notification status from storage
-    notifications_on = storage.get_notification_status(user_id)
+    notifications_on = get_notification_state(user_id)
     notif_icon = "🔔" if notifications_on else "🔕"
     notif_text = f"{notif_icon} Notifications: {'ON' if notifications_on else 'OFF'}"
 
@@ -17,9 +17,7 @@ def main_menu_keyboard(user_id: int):
             InlineKeyboardButton("⭐ Favorites", callback_data="list_favorites"),
             InlineKeyboardButton("🛒 Cart", callback_data="shopping_list"),
         ],
-        [
-            InlineKeyboardButton(notif_text, callback_data="toggle_alerts")
-        ],
+        [InlineKeyboardButton(notif_text, callback_data="toggle_notifications")],
         [
             InlineKeyboardButton("ℹ️ Info & Help", callback_data="bot_info"),
             InlineKeyboardButton("🧹 Clear Chat", callback_data="clear_chat"),

@@ -12,8 +12,6 @@ from telegram.ext import (
 )
 
 from config.settings import TELEGRAM_TOKEN
-
-# Added check_expiring_alerts and handle_toggle_alerts
 from handlers.alerts import (
     check_expiring_alerts,
     check_expiring_tomorrow_alerts,
@@ -30,6 +28,7 @@ from handlers.favorites import (
 )
 from handlers.info import show_info
 from handlers.search import SEARCH_INPUT, search_input, search_start
+from handlers.settings import toggle_notifications_handler
 from handlers.shopping import (
     add_to_shopping_callback,
     clear_shopping_callback,
@@ -87,16 +86,18 @@ def main():
     )
 
     job_queue.run_daily(
-    check_expiring_tomorrow_alerts,
-    time=datetime.time(hour=18, minute=0, second=0, tzinfo=timezone),
-)
-    
+        check_expiring_tomorrow_alerts,
+        time=datetime.time(hour=18, minute=0, second=0, tzinfo=timezone),
+    )
+
     # --- Core Commands ---
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("update_prices", update_favorites_prices))
 
     # --- Notification Toggle ---
-    app.add_handler(CallbackQueryHandler(handle_toggle_alerts, pattern="^toggle_alerts$"))
+    app.add_handler(
+        CallbackQueryHandler(handle_toggle_alerts, pattern="^toggle_alerts$")
+    )
 
     # --- Search Logic ---
     search_conv = ConversationHandler(
@@ -138,6 +139,12 @@ def main():
     )
 
     app.add_handler(CallbackQueryHandler(show_info, pattern="^bot_info$"))
+
+    app.add_handler(
+        CallbackQueryHandler(
+            toggle_notifications_handler, pattern="^toggle_notifications$"
+        )
+    )
 
     # --- Generic Buttons ---
     app.add_handler(CallbackQueryHandler(button_handler))
