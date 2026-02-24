@@ -5,6 +5,11 @@ from telegram.ext import ContextTypes, ConversationHandler
 
 from api.supermarket import get_product_price
 from db.repositories.history_repo import add_price_entry, get_product_history
+from db.repositories.user_repo import (
+    get_user_subscription_status,
+    increment_request_count,
+    is_user_premium,
+)
 from utils.helpers import calculate_unit_price, get_product_id
 from utils.menu import main_menu_keyboard
 from utils.message_cache import add_message
@@ -12,12 +17,42 @@ from utils.message_cache import add_message
 # Constants
 SEARCH_INPUT = 1
 CURRENCY = "€"
+FREE_DAILY_LIMIT = 5
+PREMIUM_DAILY_LIMIT = 10
 
 
 async def search_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Initializes the search process and prompts for user input."""
-    prompt_text = "🔍 Enter the product name:"
+    """Initializes the search process and checks user limits based on rank."""
     user_id = update.effective_user.id
+
+    # Fetch status once to avoid multiple DB calls
+    status = get_user_subscription_status(user_id)
+    is_premium = is_user_premium(user_id)
+
+    current_count = status.get("daily_request_count", 0) if status else 0
+    limit = PREMIUM_DAILY_LIMIT if is_premium else FREE_DAILY_LIMIT
+
+    if current_count >= limit:
+        limit_text = (
+            f"🚫 Limit Reached! ({current_count}/{limit})\n\n"
+            f"Unlock more searches and Premium features for only 2.50 BGN! 🚀"
+        )
+        if update.callback_query:
+            await update.callback_query.answer(limit_text, show_alert=True)
+        else:
+            await update.message.reply_text(f"⚠️ {limit_text}")
+
+        if update.callback_query:
+            await update.callback_query.answer(
+                limit_text.replace("**", ""), show_alert=True
+            )
+        else:
+            await update.message.reply_text(
+                limit_text, parse_mode=constants.ParseMode.MARKDOWN
+            )
+        return ConversationHandler.END
+
+    prompt_text = "🔍 Enter the product name:"
 
     if update.message:
         msg = await update.message.reply_text(prompt_text)
@@ -31,22 +66,25 @@ async def search_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
 
 
 async def search_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Processes search input, handles Supabase history, and displays results."""
+    """Processes search input and increments limit if fresh data is fetched."""
     user_input = update.message.text.strip().lower()
     user_id = update.effective_user.id
 
-    # 1. Check Cloud Cache in Supabase (to save API credits)
     from db.repositories.cache_repo import get_cached_results, set_cache_results
 
     products = get_cached_results(user_input, expiry_hours=24)
     is_cached = True
 
     if not products:
-        # Only call the API if we don't have a valid cloud cache
+        # Check overall system limit if needed here
         products = get_product_price(user_input, multiple=True)
+        is_cached = False
+
         if products:
             set_cache_results(user_input, products)
-        is_cached = False
+            # Increment request count ONLY for fresh API data
+            if not is_user_premium(user_id):
+                increment_request_count(user_id)
 
     if not products:
         msg = await update.message.reply_text("❌ No promotional products found.")
@@ -78,11 +116,10 @@ async def search_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
         promo_timer = ""
         brochure = p.get("brochure")
         if brochure and isinstance(brochure, dict):
-            from_d = brochure.get("valid_from")
             until_d = brochure.get("valid_until")
+            from_d = brochure.get("valid_from")
             if until_d:
                 p["valid-until"] = until_d
-
             if from_d and until_d:
                 try:
                     f = datetime.strptime(from_d, "%Y-%m-%d").strftime("%d.%m")
@@ -92,7 +129,6 @@ async def search_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
                     promo_timer = f"⏳ {from_d} - {until_d}"
 
         search_results[product_id] = p
-
         curr_name = p.get("name", "N/A")
         curr_price = float(p.get("price_eur") or p.get("price", 0))
 
@@ -106,10 +142,7 @@ async def search_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
         curr_image = p.get("image_url") or p.get("image")
 
         # 3. SUPABASE HISTORY LOGIC
-        # Record current price
         add_price_entry(product_id, curr_name, curr_store, curr_price)
-
-        # Fetch history to detect trends
         history = get_product_history(product_id)
         trend_text = ""
 
@@ -188,8 +221,6 @@ async def search_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
             continue
 
     context.user_data["search_results"] = search_results
-
-    # Inform the user if results are fresh or from cloud cache
     status = " (cloud cache)" if is_cached else " (fresh data)"
     footer_text = f"✅ Search completed!{status}"
 

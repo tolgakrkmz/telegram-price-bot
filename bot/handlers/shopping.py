@@ -1,13 +1,8 @@
 from typing import Any
-
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, constants
 from telegram.ext import ContextTypes
 
-from db.repositories.cache_repo import (
-    get_all_cached_products,
-)
-
-# Updated imports to use Supabase repository
+from db.repositories.cache_repo import get_all_cached_products
 from db.repositories.shopping_repo import (
     add_to_shopping_list as add_to_shopping,
 )
@@ -17,10 +12,12 @@ from db.repositories.shopping_repo import (
 from db.repositories.shopping_repo import (
     get_user_shopping_list as get_shopping_list,
 )
+from db.repositories.user_repo import is_user_premium  # Imported for checks
 from utils.helpers import calculate_unit_price
 from utils.menu import main_menu_keyboard
 
 CURRENCY = "€"
+FREE_SHOPPING_LIMIT = 5
 
 
 def get_better_price(
@@ -29,10 +26,7 @@ def get_better_price(
     current_store: str,
     current_item: dict[str, Any],
 ) -> dict[str, Any] | None:
-    """
-    Analyzes Supabase cloud cache to find better deals using unit prices.
-    """
-    # Вместо load_json, взимаме всичко кеширано от Supabase
+    """Analyzes Supabase cloud cache to find better deals using unit prices."""
     all_cached_results = get_all_cached_products()
     better_option = None
 
@@ -44,7 +38,6 @@ def get_better_price(
         return None
 
     min_unit_price = curr_u_price
-
     ignore_words = {
         "pilos",
         "саяна",
@@ -68,14 +61,12 @@ def get_better_price(
                 try:
                     p_price = float(p.get("price_eur") or p.get("price", 0))
                     p_unit = p.get("quantity") or p.get("unit")
-
                     supermarket = p.get("supermarket")
                     p_store = (
                         supermarket.get("name")
                         if isinstance(supermarket, dict)
                         else p.get("store", "Unknown")
                     )
-
                     p_u_price, _ = calculate_unit_price(p_price, p_unit)
 
                     if (
@@ -113,9 +104,10 @@ async def safe_edit(
 
 
 async def list_shopping(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Displays the shopping list from Supabase with EUR comparisons."""
+    """Displays the shopping list with Premium deal comparison logic."""
     query = update.callback_query
     user_id = update.effective_user.id
+    is_premium = is_user_premium(user_id)
 
     shopping = get_shopping_list(user_id) or []
 
@@ -154,11 +146,13 @@ async def list_shopping(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         total_sum += price
         store_totals[store] = store_totals.get(store, 0.0) + price
 
-        better = get_better_price(name, price, store, product)
         better_text = ""
-        if better:
-            better_text = f"   💡 *Better Deal:* {better['price']:.2f}{CURRENCY} ({better['unit']}) at {better['store']}\n"
-            potential_savings += price - float(better["price"])
+        # Only show better deals to Premium users
+        if is_premium:
+            better = get_better_price(name, price, store, product)
+            if better:
+                better_text = f"   💡 *Better Deal:* {better['price']:.2f}{CURRENCY} ({better['unit']}) at {better['store']}\n"
+                potential_savings += price - float(better["price"])
 
         report_lines.append(
             f"• {name}\n   💰 **{price:.2f}{CURRENCY}** ({unit})\n   🏬 {store}\n{better_text}"
@@ -175,8 +169,12 @@ async def list_shopping(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         f"\n📦 Items: {len(shopping)}",
         f"💰 *Total Sum: {total_sum:.2f}{CURRENCY}*",
     ]
-    if potential_savings > 0:
-        summary.append(f"✨ *Potential Savings: {potential_savings:.2f}{CURRENCY}*")
+
+    if is_premium:
+        if potential_savings > 0:
+            summary.append(f"✨ *Potential Savings: {potential_savings:.2f}{CURRENCY}*")
+    else:
+        summary.append("\n⭐ *Premium Tip:* Unlock price comparisons and save money!")
 
     summary.append("\n🧾 *By Store:*")
     for store, s_sum in store_totals.items():
@@ -188,21 +186,44 @@ async def list_shopping(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     )
     keyboard.append([InlineKeyboardButton("⬅️ Menu", callback_data="main_menu")])
 
-    await (
-        safe_edit(query, "\n".join(report_lines), InlineKeyboardMarkup(keyboard))
-        if query
-        else update.message.reply_text(
-            "\n".join(report_lines),
-            reply_markup=InlineKeyboardMarkup(keyboard),
+    final_text = "\n".join(report_lines)
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    if query:
+        await safe_edit(query, final_text, reply_markup)
+    else:
+        await update.message.reply_text(
+            final_text,
+            reply_markup=reply_markup,
             parse_mode=constants.ParseMode.MARKDOWN,
         )
-    )
 
 
 async def add_to_shopping_callback(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> None:
+    """Adds product to cart with a clean alert limit check for Free users."""
     query = update.callback_query
+    if not query:
+        return
+
+    user_id = query.from_user.id
+    is_premium = is_user_premium(user_id)  # Synchronous call
+    current_shopping = get_shopping_list(user_id) or []
+
+    # --- ENHANCED LIMIT CHECK (SHOW ALERT) ---
+    if not is_premium and len(current_shopping) >= FREE_SHOPPING_LIMIT:
+        limit_text = (
+            f"🛒 Cart Limit! ({len(current_shopping)}/{FREE_SHOPPING_LIMIT})\n\n"
+            "Upgrade to Premium for only 2.50 EUR to unlock:\n"
+            "• Unlimited Shopping Cart Items\n"
+            "• Smart Price Comparisons\n"
+            "• Better Deal Recommendations! 💎"
+        )
+        await query.answer(limit_text, show_alert=True)
+        return
+    # ------------------------------------------
+
     product_id = query.data.replace("add_shopping_", "")
     product = context.user_data.get("search_results", {}).get(product_id)
 
@@ -210,8 +231,10 @@ async def add_to_shopping_callback(
         await query.answer("❌ Product not found.")
         return
 
-    if add_to_shopping(query.from_user.id, product):
+    if add_to_shopping(user_id, product):
         await query.answer(f"🛒 {product['name']} added to cart!")
+
+        # Update button UI to show confirmation
         new_keyboard = [
             [
                 InlineKeyboardButton("✅ In Cart", callback_data="none")
@@ -225,7 +248,7 @@ async def add_to_shopping_callback(
             await query.edit_message_reply_markup(
                 reply_markup=InlineKeyboardMarkup(new_keyboard)
             )
-        except:
+        except Exception:
             pass
     else:
         await query.answer("❌ Error adding to cart.")

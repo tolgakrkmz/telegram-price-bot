@@ -2,16 +2,19 @@ import datetime
 import logging
 
 import pytz
+from telegram import Update
 from telegram.ext import (
     Application,
     CallbackQueryHandler,
     CommandHandler,
+    ContextTypes,
     ConversationHandler,
     MessageHandler,
     filters,
 )
 
 from config.settings import TELEGRAM_TOKEN
+from db.repositories.user_repo import get_user_subscription_status, is_user_premium
 from handlers.alerts import (
     check_expiring_alerts,
     check_expiring_tomorrow_alerts,
@@ -28,7 +31,6 @@ from handlers.favorites import (
 )
 from handlers.info import show_info
 from handlers.search import SEARCH_INPUT, search_input, search_start
-from handlers.settings import toggle_notifications_handler
 from handlers.shopping import (
     add_to_shopping_callback,
     clear_shopping_callback,
@@ -46,8 +48,36 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# Constants
+FREE_DAILY_LIMIT = 50
 
-async def button_handler(update, context):
+
+async def check_limits_middleware(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """
+    Checks if the user has reached their daily limit before allowing specific actions.
+    This logic can be expanded or called within specific entry points.
+    """
+    user_id = update.effective_user.id
+
+    if await is_user_premium(user_id):
+        return True
+
+    status = get_user_subscription_status(user_id)
+    if status and status["daily_request_count"] >= FREE_DAILY_LIMIT:
+        text = (
+            f"⚠️ You have reached your daily limit of {FREE_DAILY_LIMIT} requests.\n\n"
+            "Upgrade to ⭐ Premium for unlimited searches and Smart Shopping Mode!"
+        )
+        if update.callback_query:
+            await update.callback_query.answer(text, show_alert=True)
+        else:
+            await update.message.reply_text(text)
+        return False
+
+    return True
+
+
+async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handles generic navigation buttons."""
     query = update.callback_query
     user_id = update.effective_user.id
@@ -59,7 +89,6 @@ async def button_handler(update, context):
         msg = await query.message.reply_text("📂 Categories: Coming Soon...")
         add_message(user_id, msg.message_id)
     elif query.data == "main_menu":
-        # Added user_id to correctly show notification status in menu
         await query.message.edit_text(
             "🏠 Main Menu:", reply_markup=main_menu_keyboard(user_id)
         )
@@ -73,13 +102,11 @@ def main():
     job_queue = app.job_queue
     timezone = pytz.timezone("Europe/Sofia")
 
-    # Schedule global price sync every day at 09:00 AM
     job_queue.run_daily(
         global_price_update,
         time=datetime.time(hour=9, minute=0, second=0, tzinfo=timezone),
     )
 
-    # Schedule daily check for expiring promotions at 09:30 AM
     job_queue.run_daily(
         check_expiring_alerts,
         time=datetime.time(hour=9, minute=30, second=0, tzinfo=timezone),
@@ -99,7 +126,9 @@ def main():
         CallbackQueryHandler(handle_toggle_alerts, pattern="^toggle_alerts$")
     )
 
-    # --- Search Logic ---
+    # --- Search Logic (With Limit Check) ---
+    # Note: The actual limit increment should happen inside search_input
+    # after a successful API call to avoid wasting limits on typos.
     search_conv = ConversationHandler(
         entry_points=[CallbackQueryHandler(search_start, pattern="^search$")],
         states={
@@ -141,9 +170,7 @@ def main():
     app.add_handler(CallbackQueryHandler(show_info, pattern="^bot_info$"))
 
     app.add_handler(
-        CallbackQueryHandler(
-            toggle_notifications_handler, pattern="^toggle_notifications$"
-        )
+        CallbackQueryHandler(handle_toggle_alerts, pattern="^toggle_notifications$")
     )
 
     # --- Generic Buttons ---

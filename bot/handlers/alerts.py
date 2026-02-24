@@ -8,7 +8,10 @@ from telegram.ext import ContextTypes
 from api.supermarket import get_product_price
 from db.repositories.favorites_repo import get_all_favorites_from_db, get_user_favorites
 from db.repositories.history_repo import add_price_history_record
-from db.repositories.user_repo import toggle_notifications
+from db.repositories.user_repo import (
+    is_user_premium,
+    toggle_notifications,
+)  # Added is_user_premium
 from db.supabase_client import supabase
 from utils.menu import main_menu_keyboard
 
@@ -25,14 +28,26 @@ async def handle_toggle_alerts(
     query: CallbackQuery = update.callback_query
     user_id = query.from_user.id
 
+    premium_status = is_user_premium(user_id)
+    print(f"DEBUG: User {user_id} premium status is: {premium_status}")
+
+    if premium_status is not True:
+        limit_text = (
+            "🔔 Premium Feature!\n\n"
+            "Enable automatic Price Drop alerts for only 2.50 EUR/month! 📉\n\n"
+            "Stay ahead of price changes!"
+        )
+        await query.answer(limit_text, show_alert=True)
+        return
+
     new_status = toggle_notifications(user_id)
     status_text = "enabled ✅" if new_status else "disabled ❌"
     await query.answer(f"Notifications {status_text}!")
 
     try:
         await query.edit_message_reply_markup(reply_markup=main_menu_keyboard(user_id))
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"Error updating keyboard: {e}")
 
 
 # ==============================
@@ -41,11 +56,16 @@ async def handle_toggle_alerts(
 
 
 async def global_price_update(context: ContextTypes.DEFAULT_TYPE):
+    """Updates prices and sends alerts only to Premium users with notifications enabled."""
     try:
+        # We join with users to check BOTH notifications_enabled AND is_premium
         response = (
             supabase.table("favorites")
-            .select("*, users!inner(notifications_enabled)")
+            .select("*, users!inner(notifications_enabled, is_premium)")
             .eq("users.notifications_enabled", True)
+            .eq(
+                "users.is_premium", True
+            )  # Safety filter: only premium users get processed
             .execute()
         )
         favorites = response.data
@@ -90,16 +110,18 @@ async def global_price_update(context: ContextTypes.DEFAULT_TYPE):
 
 
 async def check_expiring_alerts(context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Sends expiring deal alerts only to Premium users."""
     today = datetime.datetime.now().date().isoformat()
 
     try:
         response = (
             supabase.table("favorites")
             .select(
-                "user_id, name, price_eur, store, users!inner(notifications_enabled)"
+                "user_id, name, price_eur, store, users!inner(notifications_enabled, is_premium)"
             )
             .eq("valid_until", today)
             .eq("users.notifications_enabled", True)
+            .eq("users.is_premium", True)  # Only for Premium
             .execute()
         )
 
@@ -125,14 +147,18 @@ async def check_expiring_alerts(context: ContextTypes.DEFAULT_TYPE) -> None:
 
 
 async def check_expiring_tomorrow_alerts(context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Sends tomorrow's expiring deal alerts only to Premium users."""
     tomorrow = (datetime.datetime.now() + datetime.timedelta(days=1)).date().isoformat()
 
     try:
         response = (
             supabase.table("favorites")
-            .select("user_id, name, store, users!inner(notifications_enabled)")
+            .select(
+                "user_id, name, store, users!inner(notifications_enabled, is_premium)"
+            )
             .eq("valid_until", tomorrow)
             .eq("users.notifications_enabled", True)
+            .eq("users.is_premium", True)  # Only for Premium
             .execute()
         )
 
@@ -164,7 +190,12 @@ async def check_expiring_tomorrow_alerts(context: ContextTypes.DEFAULT_TYPE) -> 
 async def update_favorites_prices(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> None:
+    """Manual sync remains available, but follows general daily request limits in future logic."""
     user_id = update.effective_user.id
+
+    # Optional: You might want to limit this command for Free users too
+    # but since it's manual, we can let it be for now or apply the same 5/10 logic.
+
     fav_list = get_user_favorites(user_id) or []
 
     if not fav_list:

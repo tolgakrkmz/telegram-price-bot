@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import Dict, List, Optional
+
 from db.supabase_client import supabase
 
 HISTORY_TABLE = "price_history"
@@ -13,7 +14,7 @@ def add_price_entry(
         record_date = date_str if date_str else datetime.now().strftime("%Y-%m-%d")
 
         payload = {
-            "product_id": str(product_id),
+            "product_id": str(product_id).strip(),
             "name": name,
             "store": store,
             "price": float(price),
@@ -28,35 +29,33 @@ def add_price_entry(
 
 
 def get_product_history(product_id: str, limit: int = 15) -> List[Dict]:
-    """Fetches history, explicitly treating product_id as string."""
+    """Fetches history with correct sorting (newest first)."""
     try:
-        # Ensure it is a string and stripped of any hidden spaces
         clean_id = str(product_id).strip()
-
+        # Fixed sorting by using ascending=False for descending order
         response = (
             supabase.table(HISTORY_TABLE)
             .select("price, recorded_date, name, store")
             .eq("product_id", clean_id)
-            .order("recorded_date", desc=True)
+            .order("recorded_date", asc=False)
             .limit(limit)
             .execute()
         )
         return response.data or []
     except Exception as e:
-        print(f"Supabase History Select Error: {e}")
+        print(f"Supabase History Error: {e}")
         return []
 
 
 def get_latest_price(product_id: str, store: str) -> Optional[float]:
     """Gets the most recent price recorded for a product in a specific store."""
     try:
-        # Changed desc=True to descending=True
         response = (
             supabase.table(HISTORY_TABLE)
             .select("price")
-            .eq("product_id", str(product_id))
+            .eq("product_id", str(product_id).strip())
             .eq("store", store)
-            .order("recorded_date", descending=True)
+            .order("recorded_date", ascending=False)
             .limit(1)
             .execute()
         )
@@ -69,10 +68,13 @@ def get_latest_price(product_id: str, store: str) -> Optional[float]:
 
 
 def add_price_history_record(product_id: str, price: float):
-    """Inserts or updates a price record into the price_history table."""
+    """
+    Inserts or updates a price record into the price_history table.
+    Kept for backward compatibility.
+    """
     try:
         data = {
-            "product_id": str(product_id),
+            "product_id": str(product_id).strip(),
             "price": float(price),
             "recorded_date": datetime.now().strftime("%Y-%m-%d"),
         }
