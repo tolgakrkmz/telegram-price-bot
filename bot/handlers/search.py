@@ -49,7 +49,7 @@ async def search_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
         is_cached = False
 
     if not products:
-        msg = await update.message.reply_text("❌ No products found.")
+        msg = await update.message.reply_text("❌ No promotional products found.")
         add_message(user_id, msg.message_id)
         return ConversationHandler.END
 
