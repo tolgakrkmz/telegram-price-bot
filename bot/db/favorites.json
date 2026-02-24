@@ -1,37 +1,5 @@
 {
   "1210776920": {
-    "shopping_list": [],
     "notifications_enabled": true
-  },
-  "6248530134": {
-    "shopping_list": [
-      {
-        "id": "29564",
-        "name": "J.D. Gross Шоколадови бонбони с фъстъчен крем",
-        "price": 2.29,
-        "price_eur": 1.17,
-        "unit": "39g",
-        "quantity": "39g",
-        "store": "Lidl",
-        "supermarket": {
-          "id": 3,
-          "name": "Lidl",
-          "slug": "lidl",
-          "logo": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl.png"
-        },
-        "image": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32565/crops/3_crop_11.jpg",
-        "image_url": "https://pub-8748e64cc52f4d569a152bd427cc8fb1.r2.dev/lidl/32565/crops/3_crop_11.jpg",
-        "discount": "18",
-        "brochure": {
-          "id": 104,
-          "code": "32565",
-          "valid_from": "2026-02-23",
-          "valid_until": "2026-03-01"
-        },
-        "calc_unit_price": 30.0,
-        "base_unit": "kg"
-      }
-    ],
-    "notifications_enabled": false
   }
 }

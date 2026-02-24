@@ -14,3 +14,6 @@ if not SUPER_API_KEY:
     raise RuntimeError("SUPER_API_KEY is not set")
 if not SUPER_API_BASE:
     raise RuntimeError("SUPER_API_BASE is not set")
+
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")

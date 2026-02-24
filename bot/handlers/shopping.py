@@ -1,17 +1,17 @@
 from typing import Any
-
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, constants
 from telegram.ext import ContextTypes
 
-from db.storage import (
-    CACHE_FILE,
-    add_to_shopping,
-    clear_shopping_list,
-    get_shopping_list,
-    remove_from_shopping,
+# Updated imports to use Supabase repository
+from db.repositories.shopping_repo import (
+    add_to_shopping_list as add_to_shopping,
+    get_user_shopping_list as get_shopping_list,
+    delete_shopping_item as remove_from_shopping,
+    # Make sure this function exists in your shopping_repo.py
 )
+from db.storage import CACHE_FILE
 from db.storage import _load_json as load_json
-from utils.helpers import (  # Added format_promo_dates
+from utils.helpers import (
     calculate_unit_price,
     format_promo_dates,
 )
@@ -32,7 +32,6 @@ def get_better_price(
     cache = load_json(CACHE_FILE)
     better_option = None
 
-    # Use fallback keys for unit price calculation
     curr_u_price, _ = calculate_unit_price(
         current_price, current_item.get("quantity") or current_item.get("unit")
     )
@@ -57,7 +56,6 @@ def get_better_price(
     ]
 
     for query, data in cache.items():
-        # Handle cases where cache structure might vary
         results = data if isinstance(data, list) else data.get("results", [])
         for p in results:
             p_name_lower = p.get("name", "").lower()
@@ -65,12 +63,14 @@ def get_better_price(
 
             if match_count >= 2:
                 try:
-                    # Get prices and stores using fallback mapping
                     p_price = float(p.get("price_eur") or p.get("price", 0))
                     p_unit = p.get("quantity") or p.get("unit")
+
+                    # Handle supermarket object or string
+                    supermarket = p.get("supermarket")
                     p_store = (
-                        p.get("supermarket", {}).get("name")
-                        if isinstance(p.get("supermarket"), dict)
+                        supermarket.get("name")
+                        if isinstance(supermarket, dict)
                         else p.get("store", "Unknown")
                     )
 
@@ -87,7 +87,6 @@ def get_better_price(
                                 continue
 
                         min_unit_price = p_u_price
-                        # Create a clean display object for 'better'
                         better_option = {
                             "price": p_price,
                             "unit": p_unit,
@@ -113,15 +112,16 @@ async def safe_edit(
         else:
             await query.edit_message_caption(**params)
     except Exception:
-        # Fallback if message is unchanged
         pass
 
 
 async def list_shopping(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Displays the shopping list with dates and EUR comparisons."""
+    """Displays the shopping list from Supabase with EUR comparisons."""
     query = update.callback_query
     user_id = update.effective_user.id
-    shopping = get_shopping_list(user_id)
+
+    # Fetch from Supabase instead of JSON
+    shopping = get_shopping_list(user_id) or []
 
     if not shopping:
         text = "🛒 Your cart is empty."
@@ -144,31 +144,29 @@ async def list_shopping(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     report_lines = ["🛒 *Your Shopping List*\n"]
     keyboard = []
 
-    # Iterate through cart
-    # shopping can be dict {pid: p} or list [p1, p2] depending on your storage.py
-    # Assuming list based on your previous shopping.py logic
-    items = shopping.items() if isinstance(shopping, dict) else enumerate(shopping)
+    for product in shopping:
+        price = float(product.get("price_eur") or product.get("price") or 0)
 
-    for idx, product in items:
-        # Fallback mapping
-        price = float(product.get("price_eur") or product.get("price", 0))
+        # Handle supermarket field if it's a JSON/Dict
+        supermarket = product.get("supermarket")
         store = (
-            product.get("supermarket", {}).get("name")
-            if isinstance(product.get("supermarket"), dict)
+            supermarket.get("name")
+            if isinstance(supermarket, dict)
             else product.get("store", "Unknown")
         )
+
         name = product.get("name", "Unknown")
         unit = product.get("quantity") or product.get("unit", "N/A")
-        product_id = product.get("id") or idx
+
+        # Use Supabase UUID for deletion
+        db_id = product.get("id")
 
         total_sum += price
         store_totals[store] = store_totals.get(store, 0.0) + price
 
-        # Extract dates via helper
         promo_timer = format_promo_dates(product)
         promo_text = f" | ⏳ {promo_timer}" if promo_timer else ""
 
-        # Smart Comparison
         better = get_better_price(name, price, store, product)
         better_text = ""
         if better:
@@ -183,7 +181,7 @@ async def list_shopping(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
             [
                 InlineKeyboardButton(
                     f"🗑 Remove {name[:15]}...",
-                    callback_data=f"remove_shopping_{product_id}",
+                    callback_data=f"remove_shopping_{db_id}",
                 )
             ]
         )
@@ -222,7 +220,7 @@ async def list_shopping(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
 async def add_to_shopping_callback(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> None:
-    """Adds a product to the shopping cart without removing the message."""
+    """Adds a product to the Supabase shopping cart."""
     query = update.callback_query
     if not query:
         return
@@ -241,7 +239,7 @@ async def add_to_shopping_callback(
     if added:
         await query.answer(f"🛒 {product['name']} added to cart!")
     else:
-        await query.answer("ℹ️ Already in cart.")
+        await query.answer("❌ Error adding to cart.")
 
     current_keyboard = query.message.reply_markup.inline_keyboard
     new_keyboard = []
@@ -266,13 +264,14 @@ async def add_to_shopping_callback(
 async def remove_shopping_callback(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> None:
+    """Removes a single item using its Supabase UUID."""
     query = update.callback_query
     if not query:
         return
     await query.answer()
-    remove_from_shopping(
-        update.effective_user.id, query.data.replace("remove_shopping_", "")
-    )
+
+    item_uuid = query.data.replace("remove_shopping_", "")
+    remove_from_shopping(item_uuid)
     await list_shopping(update, context)
 
 
@@ -295,17 +294,22 @@ async def confirm_clear_callback(
 async def clear_shopping_callback(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> None:
+    """Clears the entire shopping list for the user."""
     query = update.callback_query
     if not query:
         return
     await query.answer()
-    
+
     user_id = update.effective_user.id
-    
-    clear_shopping_list(user_id)
-    
+
+    # Import locally or ensure it's in the repo
+    from db.repositories.shopping_repo import SHOPPING_TABLE, supabase
+
+    try:
+        supabase.table(SHOPPING_TABLE).delete().eq("user_id", user_id).execute()
+    except Exception:
+        pass
+
     await safe_edit(
-        query, 
-        "🧹 Cart has been cleared.", 
-        reply_markup=main_menu_keyboard(user_id)
+        query, "🧹 Cart has been cleared.", reply_markup=main_menu_keyboard(user_id)
     )

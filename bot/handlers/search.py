@@ -4,11 +4,10 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, constan
 from telegram.ext import ContextTypes, ConversationHandler
 
 from api.supermarket import get_product_price
+from db.repositories.history_repo import add_price_entry, get_product_history
 from db.storage import (
     get_cached_search,
-    get_product_history,
     save_search_to_cache,
-    update_price_history,
 )
 from utils.helpers import calculate_unit_price, get_product_id
 from utils.menu import main_menu_keyboard
@@ -36,17 +35,22 @@ async def search_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
 
 
 async def search_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Processes search input, handles caching, compares unit prices, and displays results."""
-    user_input = update.message.text.strip()
+    """Processes search input, handles Supabase history, and displays results."""
+    user_input = update.message.text.strip().lower()
     user_id = update.effective_user.id
 
-    products = get_cached_search(user_input)
+    # 1. Check Cloud Cache in Supabase (to save API credits)
+    # We set expiry to 24 hours to keep data fresh
+    from db.repositories.cache_repo import get_cached_results, set_cache_results
+
+    products = get_cached_results(user_input, expiry_hours=24)
     is_cached = True
 
     if not products:
+        # Only call the API if we don't have a valid cloud cache
         products = get_product_price(user_input, multiple=True)
         if products:
-            save_search_to_cache(user_input, products)
+            set_cache_results(user_input, products)
         is_cached = False
 
     if not products:
@@ -54,6 +58,7 @@ async def search_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
         add_message(user_id, msg.message_id)
         return ConversationHandler.END
 
+    # 2. Unit Price Calculation & Sorting
     for p in products:
         price_val = p.get("price_eur") or p.get("price")
         unit_val = p.get("quantity") or p.get("unit")
@@ -73,18 +78,16 @@ async def search_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
 
     for p in products:
         product_id = get_product_id(p)
-        
-        # --- DATES LOGIC FOR NOTIFICATIONS ---
+
+        # --- DATES LOGIC ---
         promo_timer = ""
         brochure = p.get("brochure")
         if brochure and isinstance(brochure, dict):
             from_d = brochure.get("valid_from")
             until_d = brochure.get("valid_until")
-            
-            # Map valid_until to valid-until for storage consistency
             if until_d:
                 p["valid-until"] = until_d
-                
+
             if from_d and until_d:
                 try:
                     f = datetime.strptime(from_d, "%Y-%m-%d").strftime("%d.%m")
@@ -93,32 +96,45 @@ async def search_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
                 except:
                     promo_timer = f"⏳ {from_d} - {until_d}"
 
-        # Store product in session results
         search_results[product_id] = p
 
         curr_name = p.get("name", "N/A")
-        curr_price = p.get("price_eur") or p.get("price", 0)
+        curr_price = float(p.get("price_eur") or p.get("price", 0))
+
+        supermarket = p.get("supermarket")
         curr_store = (
-            p.get("supermarket", {}).get("name")
-            if isinstance(p.get("supermarket"), dict)
+            supermarket.get("name")
+            if isinstance(supermarket, dict)
             else p.get("store", "Unknown")
         )
         curr_unit = p.get("quantity") or p.get("unit", "")
         curr_image = p.get("image_url") or p.get("image")
 
-        if not is_cached:
-            update_price_history(product_id, curr_price, curr_name, curr_store)
+        # 3. SUPABASE HISTORY LOGIC
+        # Always attempt to record current price (Unique index handles duplicates)
+        from db.repositories.history_repo import add_price_entry, get_product_history
 
+        add_price_entry(product_id, curr_name, curr_store, curr_price)
+
+        # Fetch history to detect trends
         history = get_product_history(product_id)
         trend_text = ""
+
         if len(history) > 1:
+            # history[0] is current, history[1] is the one from the previous record
             try:
-                prev_price = float(history[-2]["price"])
-                if float(curr_price) < prev_price:
-                    trend_text = f"📉 Price drop! (was {prev_price:.2f}{CURRENCY})\n"
-            except:
+                prev_price = float(history[1]["price"])
+                if curr_price < prev_price:
+                    diff = prev_price - curr_price
+                    trend_text = f"📉 *Price drop!* (was {prev_price:.2f}{CURRENCY}, saved {diff:.2f}{CURRENCY})\n"
+                elif curr_price > prev_price:
+                    trend_text = (
+                        f"📈 *Price went up* (was {prev_price:.2f}{CURRENCY})\n"
+                    )
+            except (IndexError, ValueError):
                 pass
 
+        # 4. Message Formatting
         unit_price_info = ""
         best_value_tag = ""
         if p.get("calc_unit_price"):
@@ -131,7 +147,7 @@ async def search_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
         caption = (
             f"{best_value_tag}"
             f"🛒 *{curr_name}*\n"
-            f"💰 Price: **{float(curr_price):.2f}{CURRENCY}** ({curr_unit}){promo_info}\n"
+            f"💰 Price: **{curr_price:.2f}{CURRENCY}** ({curr_unit}){promo_info}\n"
             f"{unit_price_info}"
             f"🏬 Store: {curr_store}\n"
             f"{trend_text}"
@@ -151,6 +167,11 @@ async def search_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
                 [
                     InlineKeyboardButton(
                         "🛒 Add to Cart", callback_data=f"add_shopping_{product_id}"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        "📈 Price History", callback_data=f"price_history_{product_id}"
                     )
                 ],
             ]
@@ -175,14 +196,17 @@ async def search_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
             continue
 
     context.user_data["search_results"] = search_results
-    footer_text = "✅ Search completed!" + (" (cached data)" if is_cached else "")
-    
-    # FIXED: Added user_id to main_menu_keyboard to avoid TypeError
+
+    # Inform the user if results are fresh or from cloud cache
+    status = " (cloud cache)" if is_cached else " (fresh data)"
+    footer_text = f"✅ Search completed!{status}"
+
     final_msg = await update.message.reply_text(
         footer_text, reply_markup=main_menu_keyboard(user_id)
     )
-    
+
     messages_to_cache.append(final_msg.message_id)
     for m_id in messages_to_cache:
         add_message(user_id, m_id)
+
     return ConversationHandler.END
