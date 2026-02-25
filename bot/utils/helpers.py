@@ -2,6 +2,8 @@ import hashlib
 import re
 from datetime import datetime
 
+from db.repositories.user_repo import is_user_premium
+
 
 def get_product_id(product: dict) -> str:
     """
@@ -71,3 +73,7 @@ def format_promo_dates(product: dict) -> str:
     except (ValueError, TypeError):
         # Fallback if date format is different
         return f"⏳ until {until_date}"
+
+
+def get_user_badge(user_id: int) -> str:
+    return "💎 Premium Member" if is_user_premium(user_id) else "👤 Free Member"

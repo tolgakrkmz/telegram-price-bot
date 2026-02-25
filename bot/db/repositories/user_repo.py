@@ -1,4 +1,5 @@
 from datetime import datetime
+
 from db.supabase_client import supabase
 
 
@@ -146,3 +147,17 @@ def get_users_to_notify():
     except Exception as e:
         print(f"Error fetching users to notify: {e}")
         return []
+
+
+def get_daily_request_count(user_id: int) -> int:
+    """Returns the current daily search count for a user."""
+    res = (
+        supabase.table("users")
+        .select("daily_request_count")
+        .eq("id", user_id)
+        .single()
+        .execute()
+    )
+    if res.data:
+        return res.data.get("daily_request_count", 0)
+    return 0

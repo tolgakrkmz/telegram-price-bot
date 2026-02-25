@@ -30,6 +30,7 @@ from handlers.favorites import (
     view_price_history_callback,
 )
 from handlers.info import show_info
+from handlers.profile import view_profile_callback
 from handlers.search import SEARCH_INPUT, search_input, search_start
 from handlers.shopping import (
     add_to_shopping_callback,
@@ -49,7 +50,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Constants
-FREE_DAILY_LIMIT = 50
+FREE_DAILY_LIMIT = 5
 
 
 async def check_limits_middleware(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -171,6 +172,10 @@ def main():
 
     app.add_handler(
         CallbackQueryHandler(handle_toggle_alerts, pattern="^toggle_notifications$")
+    )
+
+    app.add_handler(
+        CallbackQueryHandler(view_profile_callback, pattern="^view_profile$")
     )
 
     # --- Generic Buttons ---

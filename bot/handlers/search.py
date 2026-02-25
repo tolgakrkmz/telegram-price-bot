@@ -14,7 +14,6 @@ from utils.helpers import calculate_unit_price, get_product_id
 from utils.menu import main_menu_keyboard
 from utils.message_cache import add_message
 
-# Constants
 SEARCH_INPUT = 1
 CURRENCY = "€"
 FREE_DAILY_LIMIT = 5

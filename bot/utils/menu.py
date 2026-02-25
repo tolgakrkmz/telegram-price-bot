@@ -18,6 +18,7 @@ def main_menu_keyboard(user_id: int):
             InlineKeyboardButton("🛒 Cart", callback_data="shopping_list"),
         ],
         [InlineKeyboardButton(notif_text, callback_data="toggle_notifications")],
+        [InlineKeyboardButton("👤 My Profile", callback_data="view_profile")],
         [
             InlineKeyboardButton("ℹ️ Info & Help", callback_data="bot_info"),
             InlineKeyboardButton("🧹 Clear Chat", callback_data="clear_chat"),
