@@ -39,6 +39,26 @@ from handlers.shopping import (
     list_shopping,
     remove_shopping_callback,
 )
+from handlers.smart_basket import (
+    SB_CHANGE_SEARCH,
+    SB_INPUT,
+    SB_REVIEW,
+    SB_SELECT_REPLACEMENT,
+    SB_TIME,
+    confirm_clear_basket,
+    execute_clear_basket,
+    finalize_replacement,
+    finalize_sb,
+    handle_change_request,
+    handle_sb_input,
+    handle_time_edit,
+    handle_time_selection,
+    process_replacement_search,
+    show_basket_review,
+    smart_basket_job,
+    smart_basket_start,
+    start_new_basket_flow,
+)
 from handlers.start import start
 from utils.menu import main_menu_keyboard
 from utils.message_cache import add_message
@@ -118,6 +138,13 @@ def main():
         time=datetime.time(hour=18, minute=0, second=0, tzinfo=timezone),
     )
 
+    job_queue.run_daily(
+        smart_basket_job, time=datetime.time(hour=9, minute=0, tzinfo=timezone)
+    )
+    job_queue.run_daily(
+        smart_basket_job, time=datetime.time(hour=18, minute=0, tzinfo=timezone)
+    )
+
     # --- Core Commands ---
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("update_prices", update_favorites_prices))
@@ -141,6 +168,43 @@ def main():
         allow_reentry=True,
     )
     app.add_handler(search_conv)
+
+    # --- SMART BASKET ---
+
+    smart_basket_conv = ConversationHandler(
+        entry_points=[
+            CallbackQueryHandler(smart_basket_start, pattern="^smart_basket$"),
+            CallbackQueryHandler(start_new_basket_flow, pattern="^sb_new_start$"),
+            CallbackQueryHandler(show_basket_review, pattern="^sb_edit_existing$"),
+        ],
+        states={
+            SB_TIME: [CallbackQueryHandler(handle_time_selection, pattern="^sbtime_")],
+            SB_INPUT: [
+                MessageHandler(filters.TEXT & ~filters.COMMAND, handle_sb_input)
+            ],
+            SB_REVIEW: [
+                CallbackQueryHandler(handle_change_request, pattern="^sb_change_"),
+                CallbackQueryHandler(handle_time_edit, pattern="^sb_edit_time_only$"),
+                CallbackQueryHandler(finalize_sb, pattern="^sb_finalize$"),
+                CallbackQueryHandler(
+                    confirm_clear_basket, pattern="^sb_clear_confirm$"
+                ),
+                CallbackQueryHandler(execute_clear_basket, pattern="^sb_clear_final$"),
+            ],
+            SB_CHANGE_SEARCH: [
+                MessageHandler(
+                    filters.TEXT & ~filters.COMMAND, process_replacement_search
+                )
+            ],
+            SB_SELECT_REPLACEMENT: [
+                CallbackQueryHandler(finalize_replacement, pattern="^sb_rep_"),
+                CallbackQueryHandler(show_basket_review, pattern="^sb_back$"),
+            ],
+        },
+        fallbacks=[CallbackQueryHandler(button_handler, pattern="^main_menu$")],
+        allow_reentry=True,
+    )
+    app.add_handler(smart_basket_conv)
 
     # --- Favorites & Shopping ---
     app.add_handler(CallbackQueryHandler(list_favorites, pattern="^list_favorites$"))

@@ -161,3 +161,8 @@ def get_daily_request_count(user_id: int) -> int:
     if res.data:
         return res.data.get("daily_request_count", 0)
     return 0
+
+
+def get_user_subscription_status(user_id: int):
+    result = supabase.table("users").select("*").eq("id", user_id).execute()
+    return result.data[0] if result.data else None

@@ -13,6 +13,7 @@ def main_menu_keyboard(user_id: int):
 
     keyboard = [
         [InlineKeyboardButton("🔍 Search Products", callback_data="search")],
+        [InlineKeyboardButton("✨ Smart Basket", callback_data="smart_basket")],
         [
             InlineKeyboardButton("⭐ Favorites", callback_data="list_favorites"),
             InlineKeyboardButton("🛒 Cart", callback_data="shopping_list"),
