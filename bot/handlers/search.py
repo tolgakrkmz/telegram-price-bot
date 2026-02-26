@@ -34,7 +34,7 @@ async def search_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
     if current_count >= limit:
         limit_text = (
             f"🚫 Limit Reached! ({current_count}/{limit})\n\n"
-            f"Unlock more searches and Premium features for only 2.50 BGN! 🚀"
+            f"Unlock more searches and Premium features for only 2.50 EUR! 🚀"
         )
         if update.callback_query:
             await update.callback_query.answer(limit_text, show_alert=True)

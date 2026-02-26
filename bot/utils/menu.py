@@ -1,29 +1,49 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
-from db.repositories.user_repo import get_notification_state
+from db.repositories.user_repo import get_notification_state, is_user_premium
 
 
 def main_menu_keyboard(user_id: int):
-    """Main navigation menu with dynamic notification toggle."""
+    """Main navigation menu with dynamic Smart Cart and Smart Basket."""
 
-    # Check current notification status from storage
+    is_premium = is_user_premium(user_id)
+
+    # Dynamic Cart Button
+    cart_text = "💎 Smart Cart" if is_premium else "🛒 Cart"
+    cart_callback = "premium_cart" if is_premium else "shopping_list"
+
     notifications_on = get_notification_state(user_id)
     notif_icon = "🔔" if notifications_on else "🔕"
     notif_text = f"{notif_icon} Notifications: {'ON' if notifications_on else 'OFF'}"
 
     keyboard = [
         [InlineKeyboardButton("🔍 Search Products", callback_data="search")],
-        [
-            InlineKeyboardButton("⭐ Favorites", callback_data="list_favorites"),
-            InlineKeyboardButton("🛒 Cart", callback_data="shopping_list"),
-        ],
-        [InlineKeyboardButton(notif_text, callback_data="toggle_notifications")],
-        [InlineKeyboardButton("👤 My Profile", callback_data="view_profile")],
-        [
-            InlineKeyboardButton("ℹ️ Info & Help", callback_data="bot_info"),
-            InlineKeyboardButton("🧹 Clear Chat", callback_data="clear_chat"),
-        ],
     ]
+
+    # Add Smart Basket only for Premium users
+    if is_premium:
+        keyboard.append(
+            [
+                InlineKeyboardButton(
+                    "✨ Smart Basket (Quick List)", callback_data="smart_basket"
+                )
+            ]
+        )
+
+    keyboard.extend(
+        [
+            [
+                InlineKeyboardButton("⭐ Favorites", callback_data="list_favorites"),
+                InlineKeyboardButton(cart_text, callback_data=cart_callback),
+            ],
+            [InlineKeyboardButton(notif_text, callback_data="toggle_notifications")],
+            [InlineKeyboardButton("👤 My Profile", callback_data="view_profile")],
+            [
+                InlineKeyboardButton("ℹ️ Info & Help", callback_data="bot_info"),
+                InlineKeyboardButton("🧹 Clear Chat", callback_data="clear_chat"),
+            ],
+        ]
+    )
     return InlineKeyboardMarkup(keyboard)
 
 

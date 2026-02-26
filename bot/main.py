@@ -30,6 +30,11 @@ from handlers.favorites import (
     view_price_history_callback,
 )
 from handlers.info import show_info
+from handlers.premium_cart import (
+    handle_single_store,
+    handle_smart_split,
+    premium_cart_menu,
+)
 from handlers.profile import view_profile_callback
 from handlers.search import SEARCH_INPUT, search_input, search_start
 from handlers.shopping import (
@@ -38,6 +43,13 @@ from handlers.shopping import (
     confirm_clear_callback,
     list_shopping,
     remove_shopping_callback,
+)
+from handlers.smart_basket import (
+    SB_INPUT,
+    SB_PREFERENCE,
+    handle_sb_input,
+    process_smart_basket,
+    smart_basket_start,
 )
 from handlers.start import start
 from utils.menu import main_menu_keyboard
@@ -177,6 +189,28 @@ def main():
     app.add_handler(
         CallbackQueryHandler(view_profile_callback, pattern="^view_profile$")
     )
+
+    # --- SMART CART ---
+
+    app.add_handler(CallbackQueryHandler(premium_cart_menu, pattern="^premium_cart$"))
+    app.add_handler(CallbackQueryHandler(handle_smart_split, pattern="^opt_split$"))
+    app.add_handler(CallbackQueryHandler(handle_single_store, pattern="^opt_single$"))
+
+    # --- SMART BASKET ----
+
+    smart_basket_conv = ConversationHandler(
+        entry_points=[
+            CallbackQueryHandler(smart_basket_start, pattern="^smart_basket$")
+        ],
+        states={
+            SB_INPUT: [
+                MessageHandler(filters.TEXT & ~filters.COMMAND, handle_sb_input)
+            ],
+            SB_PREFERENCE: [CallbackQueryHandler(process_smart_basket, pattern="^sb_")],
+        },
+        fallbacks=[CallbackQueryHandler(button_handler, pattern="^main_menu$")],
+    )
+    app.add_handler(smart_basket_conv)
 
     # --- Generic Buttons ---
     app.add_handler(CallbackQueryHandler(button_handler))
