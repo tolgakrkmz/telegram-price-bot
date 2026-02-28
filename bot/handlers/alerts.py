@@ -29,7 +29,6 @@ async def handle_toggle_alerts(
     user_id = query.from_user.id
 
     premium_status = is_user_premium(user_id)
-    print(f"DEBUG: User {user_id} premium status is: {premium_status}")
 
     if premium_status is not True:
         limit_text = (

@@ -53,7 +53,8 @@ async def view_profile_callback(
             f"✨ **Upgrade to Premium for 2.50€ to get:**\n"
             f"🚀 **Smart Shopping Mode**\n"
             f"🔔 **Price Alerts**\n"
-            f"📊 **Full Price History**"
+            f"📊 **Full Price History**\n"
+            f"📈 **Increase Favorites ⭐ / Cart 🛒 limits**"
         )
         buttons = [
             [

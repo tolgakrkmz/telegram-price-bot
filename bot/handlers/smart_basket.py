@@ -1,5 +1,4 @@
 import datetime
-
 import pytz
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, constants
 from telegram.ext import ContextTypes, ConversationHandler
@@ -47,7 +46,14 @@ async def smart_basket_start(update: Update, context: ContextTypes.DEFAULT_TYPE)
             context.user_data.update(
                 {"sb_matched_items": items, "sb_alert_time": alert_time}
             )
-            text = f"🧺 *Your Current Smart Basket*\n\n⏰ *Alert Time:* {alert_time}\n📦 *Items:*\n"
+
+            total_price = sum(float(item.get("price", 0)) for item in items)
+
+            text = f"🧺 *Your Current Smart Basket*\n\n"
+            text += f"⏰ *Alert Time:* {alert_time}\n"
+            text += f"📊 *Total Value:* {total_price:.2f}€\n\n"
+            text += "📦 *Tracked Items:*\n"
+
             for idx, item in enumerate(items):
                 text += f"{idx + 1}. {item['name']} ({item['price']}€)\n"
 
@@ -148,20 +154,25 @@ async def handle_sb_input(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def show_basket_review(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    items, alert_time = (
-        context.user_data.get("sb_matched_items", []),
-        context.user_data.get("sb_alert_time"),
-    )
+    items = context.user_data.get("sb_matched_items", [])
+    alert_time = context.user_data.get("sb_alert_time", "Not set")
+
     existing = get_user_basket(update.effective_user.id)
     btn_text = (
         "💾 Save Changes" if (existing and existing.data) else "✅ Save & Activate"
     )
 
-    text = f"📋 *Smart Basket Review*\n\n⏰ *Time:* {alert_time}\n📦 *Items:*\n\n"
+    total_price = sum(float(item.get("price", 0)) for item in items)
+
+    text = "📋 *Smart Basket Review*\n\n"
+    text += f"⏰ *Time:* {alert_time}\n"
+    text += f"📊 *Total Value:* {total_price:.2f}€\n\n"
+    text += "📦 *Items:*\n"
+
     keyboard = []
     for idx, item in enumerate(items):
         text += (
-            f"*{idx + 1}. {item['name']}*\n💰 {item['price']}€ @ {item['store']}\n\n"
+            f"\n*{idx + 1}. {item['name']}*\n💰 {item['price']}€ @ {item['store']}\n"
         )
         keyboard.append(
             [
@@ -186,6 +197,7 @@ async def show_basket_review(update: Update, context: ContextTypes.DEFAULT_TYPE)
 
     markup = InlineKeyboardMarkup(keyboard)
     msg = update.callback_query.message if update.callback_query else update.message
+
     try:
         await msg.edit_text(
             text, parse_mode=constants.ParseMode.MARKDOWN, reply_markup=markup
@@ -302,13 +314,17 @@ async def finalize_sb(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not items or not alert_time:
         return ConversationHandler.END
 
-    update_smart_basket(user_id, items, alert_time)
+    # Capture initial prices for the last_prices column
+    initial_prices = {item["name"]: float(item["price"]) for item in items}
+    update_smart_basket(user_id, items, alert_time, initial_prices)
+
     u_status = get_user_subscription_status(user_id)
     warn = (
         "\n\n⚠️ *Notifications are OFF!*"
         if u_status and not u_status.get("notifications_enabled")
         else ""
     )
+
     kb = [[InlineKeyboardButton("🏠 Menu", callback_data="main_menu")]]
     if warn:
         kb.insert(0, [InlineKeyboardButton("🔔 Enable", callback_data="toggle_alerts")])
@@ -333,18 +349,20 @@ async def smart_basket_job(context: ContextTypes.DEFAULT_TYPE):
         if not u_status or not u_status.get("notifications_enabled", True):
             continue
 
+        history_prices = b.get("last_prices") or {}
         new_prices, alerts = {}, []
+
         for item in b["items"]:
             res = get_product_price(item["name"], multiple=True)
             if res:
                 match = res[0]
                 curr_p = float(match.get("price"))
                 new_prices[item["name"]] = curr_p
-                if b.get("last_prices", {}).get(item["name"]) and curr_p < float(
-                    b["last_prices"][item["name"]]
-                ):
+
+                old_p = history_prices.get(item["name"])
+                if old_p and curr_p < float(old_p):
                     alerts.append(
-                        f"📉 *{item['name']}*: *{curr_p}€* @ {match['store']}"
+                        f"📉 *{item['name']}*: *{curr_p}€* (was {old_p}€) @ {match['store']}"
                     )
 
         update_last_prices(u_id, new_prices)

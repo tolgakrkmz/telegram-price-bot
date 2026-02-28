@@ -141,6 +141,7 @@ def main():
     job_queue.run_daily(
         smart_basket_job, time=datetime.time(hour=9, minute=0, tzinfo=timezone)
     )
+
     job_queue.run_daily(
         smart_basket_job, time=datetime.time(hour=18, minute=0, tzinfo=timezone)
     )
