@@ -6,7 +6,10 @@ CACHE_TABLE = "search_cache"
 
 
 def get_cached_results(query: str, expiry_hours: int = 24):
-    """Gets cached results if they are not older than expiry_hours."""
+    """
+    Gets cached results only if they are not older than expiry_hours.
+    Does NOT delete expired data to allow fallback during API limits.
+    """
     try:
         query = query.lower().strip()
         response = supabase.table(CACHE_TABLE).select("*").eq("query", query).execute()
@@ -17,14 +20,14 @@ def get_cached_results(query: str, expiry_hours: int = 24):
                 cache_data["created_at"].replace("Z", "+00:00")
             )
 
-            # Check if cache is still valid
+            # Check if cache is still fresh
             if datetime.now(created_at.tzinfo) < created_at + timedelta(
                 hours=expiry_hours
             ):
                 return cache_data["results"]
-            else:
-                # Optional: Delete expired cache
-                supabase.table(CACHE_TABLE).delete().eq("query", query).execute()
+
+            # If expired, we return None to force a fresh API search,
+            # but we keep the data in DB for emergency fallback.
 
         return None
     except Exception as e:
@@ -41,7 +44,7 @@ def set_cache_results(query: str, results: list):
             "results": results,
             "created_at": datetime.now().isoformat(),
         }
-        # upsert automatically updates if query exists
+        # upsert updates the record if the query already exists
         supabase.table(CACHE_TABLE).upsert(payload).execute()
     except Exception as e:
         print(f"Cache Write Error: {e}")

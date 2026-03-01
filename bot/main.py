@@ -48,8 +48,8 @@ from handlers.smart_basket import (
     confirm_clear_basket,
     execute_clear_basket,
     finalize_replacement,
-    finalize_sb,
     handle_change_request,
+    handle_new_basket_confirm,
     handle_sb_input,
     handle_time_edit,
     handle_time_selection,
@@ -186,9 +186,11 @@ def main():
             SB_REVIEW: [
                 CallbackQueryHandler(handle_change_request, pattern="^sb_change_"),
                 CallbackQueryHandler(handle_time_edit, pattern="^sb_edit_time_only$"),
-                CallbackQueryHandler(finalize_sb, pattern="^sb_finalize$"),
                 CallbackQueryHandler(
                     confirm_clear_basket, pattern="^sb_clear_confirm$"
+                ),
+                CallbackQueryHandler(
+                    handle_new_basket_confirm, pattern="^sb_new_confirm$"
                 ),
                 CallbackQueryHandler(execute_clear_basket, pattern="^sb_clear_final$"),
             ],

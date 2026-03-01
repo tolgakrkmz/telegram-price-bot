@@ -85,6 +85,30 @@ async def smart_basket_start(update: Update, context: ContextTypes.DEFAULT_TYPE)
 
 async def start_new_basket_flow(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
+    query = update.callback_query
+
+    if (
+        query
+        and query.data == "sb_new_start"
+        and context.user_data.get("sb_matched_items")
+    ):
+        text = (
+            "⚠️ *Warning!*\n\n"
+            "Creating a new basket will replace your current one. "
+            "Are you sure you want to proceed?"
+        )
+        keyboard = [
+            [InlineKeyboardButton("✅ Yes", callback_data="sb_new_confirm")],
+            [InlineKeyboardButton("🔙 Back", callback_data="sb_edit_existing")],
+        ]
+        msg = await query.message.edit_text(
+            text,
+            parse_mode=constants.ParseMode.MARKDOWN,
+            reply_markup=InlineKeyboardMarkup(keyboard),
+        )
+        add_message(user_id, msg.message_id)
+        return SB_REVIEW
+
     context.user_data["sb_limit"] = SB_LIMIT
     keyboard = [
         [InlineKeyboardButton("🌅 Morning (09:00)", callback_data="sbtime_09:00")],
@@ -102,15 +126,27 @@ async def start_new_basket_flow(update: Update, context: ContextTypes.DEFAULT_TY
     return SB_TIME
 
 
+async def handle_new_basket_confirm(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.callback_query.answer()
+    context.user_data.pop("sb_matched_items", None)
+    context.user_data.pop("sb_alert_time", None)
+    return await start_new_basket_flow(update, context)
+
+
 async def handle_time_selection(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     user_id = update.effective_user.id
-    await query.answer()
-    context.user_data["sb_alert_time"] = query.data.split("_")[1]
+    new_time = query.data.split("_")[1]
+    context.user_data["sb_alert_time"] = new_time
 
-    if context.user_data.get("sb_matched_items"):
+    items = context.user_data.get("sb_matched_items")
+    if items:
+        initial_prices = {item["name"]: float(item["price"]) for item in items}
+        update_smart_basket(user_id, items, new_time, initial_prices)
+        await query.answer("🕒 Time updated!")
         return await show_basket_review(update, context)
 
+    await query.answer()
     msg = await query.message.edit_text(
         f"✨ *Smart Basket: Step 2*\n\nSend your list (up to {SB_LIMIT} items).\nFormat: _eggs, milk, bread_",
         parse_mode=constants.ParseMode.MARKDOWN,
@@ -121,8 +157,6 @@ async def handle_time_selection(update: Update, context: ContextTypes.DEFAULT_TY
 
 async def handle_sb_input(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
-
-    # Track user's input message
     if update.message:
         add_message(user_id, update.message.message_id)
 
@@ -165,6 +199,12 @@ async def handle_sb_input(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
 
     context.user_data["sb_matched_items"] = matched
+
+    alert_time = context.user_data.get("sb_alert_time")
+    if alert_time:
+        initial_prices = {item["name"]: float(item["price"]) for item in matched}
+        update_smart_basket(user_id, matched, alert_time, initial_prices)
+
     await processing.delete()
     return await show_basket_review(update, context)
 
@@ -174,14 +214,9 @@ async def show_basket_review(update: Update, context: ContextTypes.DEFAULT_TYPE)
     items = context.user_data.get("sb_matched_items", [])
     alert_time = context.user_data.get("sb_alert_time", "Not set")
 
-    existing = get_user_basket(user_id)
-    btn_text = (
-        "💾 Save Changes" if (existing and existing.data) else "✅ Save & Activate"
-    )
-
     total_price = sum(float(item.get("price", 0)) for item in items)
 
-    text = "📋 *Smart Basket Review*\n\n"
+    text = "🧺 *Your Active Smart Basket*\n\n"
     text += f"⏰ *Time:* {alert_time}\n"
     text += f"📊 *Total Value:* {total_price:.2f}€\n\n"
     text += "📦 *Items:*\n"
@@ -206,9 +241,8 @@ async def show_basket_review(update: Update, context: ContextTypes.DEFAULT_TYPE)
                     "🕒 Change Alert Time", callback_data="sb_edit_time_only"
                 )
             ],
-            [InlineKeyboardButton(btn_text, callback_data="sb_finalize")],
             [InlineKeyboardButton("🗑️ Clear Basket", callback_data="sb_clear_confirm")],
-            [InlineKeyboardButton("❌ Cancel", callback_data="main_menu")],
+            [InlineKeyboardButton("🏠 Main Menu", callback_data="main_menu")],
         ]
     )
 
@@ -260,18 +294,51 @@ async def process_replacement_search(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ):
     user_id = update.effective_user.id
+    search_query = update.message.text.strip().lower()
 
     if update.message:
         add_message(user_id, update.message.message_id)
 
-    products = get_product_price(update.message.text.strip().lower(), multiple=True)
+    # 1. Try Live API
+    products = get_product_price(search_query, multiple=True)
+    is_from_cache = False
+    cache_date = "recently"
+
+    # 2. Fallback to Cache
+    if not products:
+        from db.repositories.cache_repo import CACHE_TABLE
+        from db.supabase_client import supabase
+
+        response = (
+            supabase.table(CACHE_TABLE).select("*").eq("query", search_query).execute()
+        )
+
+        if response.data:
+            cache_row = response.data[0]
+            products = cache_row.get("results", [])
+            is_from_cache = True
+
+            # Try to get the date when this search was cached
+            try:
+                raw_date = cache_row.get("created_at")
+                if raw_date:
+                    dt = datetime.fromisoformat(raw_date.replace("Z", "+00:00"))
+                    cache_date = dt.strftime("%d.%m.%Y")
+            except:
+                # Fallback to brochure date if available in the first product
+                if products and "brochure" in products[0]:
+                    cache_date = products[0]["brochure"].get(
+                        "valid_from", "unknown date"
+                    )
 
     if not products:
-        msg = await update.message.reply_text("❌ No results. Try again:")
-        # This registers the "No results" message so Clear Chat can find it later
+        msg = await update.message.reply_text(
+            "❌ No results found (API limit). Try again later:"
+        )
         add_message(user_id, msg.message_id)
         return SB_CHANGE_SEARCH
 
+    # Process products (sort and calculate units)
     for p in products:
         p["calc_unit_price"], p["base_unit"] = calculate_unit_price(
             p.get("price_eur") or p.get("price"), p.get("quantity") or p.get("unit")
@@ -288,9 +355,20 @@ async def process_replacement_search(
     for p in products[:5]:
         p_id = get_product_id(p)
         temp_res[p_id] = p
-        cap = (
-            f"🛒 *{p.get('name')}*\n💰 **{p.get('price'):.2f}€**\n🏬 {p.get('store')}\n"
+
+        price_val = float(p.get("price_eur") or p.get("price") or 0)
+
+        # Proper caption logic
+        prefix = (
+            f"⚠️ *Showing last known price* (from {cache_date}):\n"
+            if is_from_cache
+            else ""
         )
+        cap = (
+            f"{prefix}"
+            f"🛒 *{p.get('name')}*\n💰 **{price_val:.2f}€**\n🏬 {p.get('store')}\n"
+        )
+
         kb = InlineKeyboardMarkup(
             [
                 [InlineKeyboardButton("✅ Select", callback_data=f"sb_rep_{p_id}")],
@@ -299,23 +377,22 @@ async def process_replacement_search(
         )
 
         try:
-            if p.get("image_url"):
-                m = await update.message.reply_photo(
+            m = (
+                await update.message.reply_photo(
                     p.get("image_url"),
                     caption=cap,
                     reply_markup=kb,
                     parse_mode=constants.ParseMode.MARKDOWN,
                 )
-            else:
-                m = await update.message.reply_text(
+                if p.get("image_url")
+                else await update.message.reply_text(
                     cap, reply_markup=kb, parse_mode=constants.ParseMode.MARKDOWN
                 )
-
+            )
             msgs.append(m.message_id)
             add_message(user_id, m.message_id)
         except Exception as e:
-            print(f"Error sending replacement option: {e}")
-            continue
+            print(f"Error: {e}")
 
     context.user_data.update(
         {"temp_search_results": temp_res, "messages_to_clear": msgs}
@@ -324,16 +401,20 @@ async def process_replacement_search(
 
 
 async def finalize_replacement(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    p_id = update.callback_query.data.replace("sb_rep_", "")
+    query = update.callback_query
+    user_id = update.effective_user.id
+    p_id = query.data.replace("sb_rep_", "")
     res = context.user_data.get("temp_search_results", {}).get(p_id)
+
     for m_id in context.user_data.get("messages_to_clear", []):
         try:
-            await context.bot.delete_message(update.effective_user.id, m_id)
+            await context.bot.delete_message(user_id, m_id)
         except:
             pass
 
     idx = context.user_data["editing_idx"]
-    context.user_data["sb_matched_items"][idx].update(
+    items = context.user_data["sb_matched_items"]
+    items[idx].update(
         {
             "id": p_id,
             "name": res.get("name"),
@@ -341,39 +422,14 @@ async def finalize_replacement(update: Update, context: ContextTypes.DEFAULT_TYP
             "store": res.get("store"),
         }
     )
+
+    alert_time = context.user_data.get("sb_alert_time")
+    if alert_time:
+        initial_prices = {item["name"]: float(item["price"]) for item in items}
+        update_smart_basket(user_id, items, alert_time, initial_prices)
+        await query.answer("✅ Item replaced and saved!")
+
     return await show_basket_review(update, context)
-
-
-async def finalize_sb(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_id = update.effective_user.id
-    items, alert_time = (
-        context.user_data.get("sb_matched_items"),
-        context.user_data.get("sb_alert_time"),
-    )
-    if not items or not alert_time:
-        return ConversationHandler.END
-
-    initial_prices = {item["name"]: float(item["price"]) for item in items}
-    update_smart_basket(user_id, items, alert_time, initial_prices)
-
-    u_status = get_user_subscription_status(user_id)
-    warn = (
-        "\n\n⚠️ *Notifications are OFF!*"
-        if u_status and not u_status.get("notifications_enabled")
-        else ""
-    )
-
-    kb = [[InlineKeyboardButton("🏠 Menu", callback_data="main_menu")]]
-    if warn:
-        kb.insert(0, [InlineKeyboardButton("🔔 Enable", callback_data="toggle_alerts")])
-
-    msg = await update.callback_query.message.edit_text(
-        f"🚀 *Smart Basket Saved!*{warn}",
-        parse_mode=constants.ParseMode.MARKDOWN,
-        reply_markup=InlineKeyboardMarkup(kb),
-    )
-    add_message(user_id, msg.message_id)
-    return ConversationHandler.END
 
 
 async def smart_basket_job(context: ContextTypes.DEFAULT_TYPE):
@@ -390,14 +446,12 @@ async def smart_basket_job(context: ContextTypes.DEFAULT_TYPE):
 
         history_prices = b.get("last_prices") or {}
         new_prices, alerts = {}, []
-
         for item in b["items"]:
             res = get_product_price(item["name"], multiple=True)
             if res:
                 match = res[0]
                 curr_p = float(match.get("price"))
                 new_prices[item["name"]] = curr_p
-
                 old_p = history_prices.get(item["name"])
                 if old_p and curr_p < float(old_p):
                     alerts.append(
@@ -406,7 +460,6 @@ async def smart_basket_job(context: ContextTypes.DEFAULT_TYPE):
 
         update_last_prices(u_id, new_prices)
         if alerts:
-            # Automated notifications are kept (not added to message_cache)
             await context.bot.send_message(
                 u_id,
                 "🎁 *Smart Basket Price Drop!*\n\n" + "\n".join(alerts),
