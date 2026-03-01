@@ -37,7 +37,7 @@ async def search_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
         # Note: We use FREE_USER_DAILY_LIMIT (20) here
         limit_text = (
             f"🚫 *Limit Reached!* ({current_count}/{FREE_USER_DAILY_LIMIT})\n\n"
-            f"Unlock *Unlimited* searches and Premium features for only 2.50 BGN! 🚀"
+            f"Unlock *Unlimited* searches and Premium features for only 2.50 EUR! 🚀"
         )
 
         if update.callback_query:
