@@ -69,34 +69,6 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Constants
-FREE_DAILY_LIMIT = 5
-
-
-async def check_limits_middleware(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """
-    Checks if the user has reached their daily limit before allowing specific actions.
-    This logic can be expanded or called within specific entry points.
-    """
-    user_id = update.effective_user.id
-
-    if await is_user_premium(user_id):
-        return True
-
-    status = get_user_subscription_status(user_id)
-    if status and status["daily_request_count"] >= FREE_DAILY_LIMIT:
-        text = (
-            f"⚠️ You have reached your daily limit of {FREE_DAILY_LIMIT} requests.\n\n"
-            "Upgrade to ⭐ Premium for unlimited searches and Smart Shopping Mode!"
-        )
-        if update.callback_query:
-            await update.callback_query.answer(text, show_alert=True)
-        else:
-            await update.message.reply_text(text)
-        return False
-
-    return True
-
 
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handles generic navigation buttons."""
