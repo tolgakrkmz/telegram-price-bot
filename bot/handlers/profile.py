@@ -3,25 +3,23 @@ from telegram.ext import ContextTypes
 
 from db.repositories.favorites_repo import get_user_favorites
 from db.repositories.shopping_repo import get_user_shopping_list
-
-# Import get_user_subscription_status to get all data in one go
-from db.repositories.user_repo import get_user_subscription_status
-
-FREE_SEARCH_LIMIT = 5
-PREMIUM_SEARCH_LIMIT = 10
+from db.repositories.user_repo import (
+    get_user_subscription_status,
+    FREE_USER_DAILY_LIMIT,
+)
 
 
 async def view_profile_callback(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> None:
+    """Displays the user profile with current stats and subscription status."""
     query = update.callback_query
     user = update.effective_user
     user_id = user.id
 
-    # Fetch the full status once. This triggers the reset logic in user_repo.py
+    # Fetch the full status to trigger reset logic and get fresh daily counts
     user_status = get_user_subscription_status(user_id)
 
-    # Fallback if user not found
     if not user_status:
         is_premium = False
         daily_requests = 0
@@ -42,29 +40,30 @@ async def view_profile_callback(
         badge = "💎 **PREMIUM USER**"
         status_text = (
             f"{badge}\n\n"
+            f"✅ **Unlimited** Searches\n"
             f"✅ **Unlimited** Favorites\n"
             f"✅ **Unlimited** Shopping Cart\n"
             f"✅ **Price Drop Alerts** Active\n"
             f"✅ **Smart Comparison** Enabled\n\n"
-            f"📊 **Your Stats:**\n"
+            f"📊 **Your Stats Today:**\n"
             f"⭐ Favorites: {len(favs)}\n"
             f"🛒 Cart items: {len(cart)}\n"
-            f"👀 Searches today: {daily_requests}/{PREMIUM_SEARCH_LIMIT}"
+            f"👀 Searches: {daily_requests} (Unlimited)"
         )
         buttons = [[InlineKeyboardButton("⬅️ Back", callback_data="main_menu")]]
     else:
         badge = "👤 **FREE USER**"
         status_text = (
             f"{badge}\n\n"
-            f"⚠️ **Limits Active:**\n"
+            f"⚠️ **Daily Limits:**\n"
+            f"👀 Searches: {daily_requests}/{FREE_USER_DAILY_LIMIT}\n"
             f"⭐ Favorites: {len(favs)}/3\n"
-            f"🛒 Cart items: {len(cart)}/5\n"
-            f"👀 Searches today: {daily_requests}/{FREE_SEARCH_LIMIT}\n\n"
+            f"🛒 Cart items: {len(cart)}/5\n\n"
             f"✨ **Upgrade to Premium for 2.50€ to get:**\n"
-            f"🚀 **Smart Shopping Mode**\n"
+            f"🚀 **Unlimited Searches**\n"
             f"🔔 **Price Alerts**\n"
             f"📊 **Full Price History**\n"
-            f"📈 **Increase Favorites ⭐ / Cart 🛒 limits**"
+            f"📈 **No limits on Favorites ⭐ / Cart 🛒**"
         )
         buttons = [
             [

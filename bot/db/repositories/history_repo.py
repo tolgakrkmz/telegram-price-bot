@@ -1,15 +1,23 @@
 from datetime import datetime
 from typing import Dict, List, Optional
-
 from db.supabase_client import supabase
 
 HISTORY_TABLE = "price_history"
 
 
 def add_price_entry(
-    product_id: str, name: str, store: str, price: float, date_str: Optional[str] = None
+    product_id: str,
+    name: str,
+    store: str,
+    price: float,
+    unit_price: Optional[float] = None,
+    base_unit: Optional[str] = None,
+    date_str: Optional[str] = None,
 ):
-    """Adds a price point with name support and duplicate prevention."""
+    """
+    Adds a price point with unit price support for accurate comparisons.
+    Uses upsert to prevent daily duplicates for the same product/store.
+    """
     try:
         record_date = date_str if date_str else datetime.now().strftime("%Y-%m-%d")
 
@@ -18,24 +26,46 @@ def add_price_entry(
             "name": name,
             "store": store,
             "price": float(price),
+            "unit_price": float(unit_price) if unit_price else None,
+            "base_unit": base_unit,  # e.g., 'kg', 'l', 'pc'
             "recorded_date": record_date,
         }
 
-        # Using upsert instead of insert to avoid "already exists" errors for the same day
+        # Upsert ensures we only have ONE price per product per store per day
         supabase.table(HISTORY_TABLE).upsert(payload).execute()
 
     except Exception as e:
         print(f"Supabase History Upsert Error: {e}")
 
 
-def get_product_history(product_id: str, limit: int = 15) -> List[Dict]:
-    """Fetches history with correct sorting (newest first)."""
+def get_best_deals_by_category(product_name_part: str, limit: int = 5) -> List[Dict]:
+    """
+    Experimental: Finds the best unit prices for a similar product across different stores.
+    This is how you build a 'Price Comparison' feature.
+    """
     try:
-        clean_id = str(product_id).strip()
-        # Fixed sorting by using ascending=False for descending order
+        # We search for similar names and sort by unit_price
         response = (
             supabase.table(HISTORY_TABLE)
-            .select("price, recorded_date, name, store")
+            .select("name, store, price, unit_price, base_unit")
+            .ilike("name", f"%{product_name_part}%")
+            .order("unit_price", asc=True)
+            .limit(limit)
+            .execute()
+        )
+        return response.data or []
+    except Exception as e:
+        print(f"Comparison Error: {e}")
+        return []
+
+
+def get_product_history(product_id: str, limit: int = 15) -> List[Dict]:
+    """Fetches history with newest records first."""
+    try:
+        clean_id = str(product_id).strip()
+        response = (
+            supabase.table(HISTORY_TABLE)
+            .select("price, unit_price, recorded_date, name, store")
             .eq("product_id", clean_id)
             .order("recorded_date", asc=False)
             .limit(limit)
@@ -48,7 +78,7 @@ def get_product_history(product_id: str, limit: int = 15) -> List[Dict]:
 
 
 def get_latest_price(product_id: str, store: str) -> Optional[float]:
-    """Gets the most recent price recorded for a product in a specific store."""
+    """Gets the most recent price for a product in a specific store."""
     try:
         response = (
             supabase.table(HISTORY_TABLE)
@@ -64,22 +94,4 @@ def get_latest_price(product_id: str, store: str) -> Optional[float]:
         return None
     except Exception as e:
         print(f"Supabase Latest Price Error: {e}")
-        return None
-
-
-def add_price_history_record(product_id: str, price: float):
-    """
-    Inserts or updates a price record into the price_history table.
-    Kept for backward compatibility.
-    """
-    try:
-        data = {
-            "product_id": str(product_id).strip(),
-            "price": float(price),
-            "recorded_date": datetime.now().strftime("%Y-%m-%d"),
-        }
-        response = supabase.table(HISTORY_TABLE).upsert(data).execute()
-        return response.data
-    except Exception as e:
-        print(f"Error adding price history: {e}")
         return None

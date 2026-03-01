@@ -1,6 +1,8 @@
 from datetime import datetime, timezone
-
 from db.supabase_client import supabase
+
+# Constants for limits
+FREE_USER_DAILY_LIMIT = 20
 
 
 def create_user_if_not_exists(user):
@@ -29,7 +31,7 @@ def create_user_if_not_exists(user):
 
 
 def get_user_subscription_status(user_id: int):
-    """Returns premium status and manages daily counter reset."""
+    """Returns user status and handles daily counter resets."""
     try:
         response = (
             supabase.table("users").select("*").eq("id", user_id).single().execute()
@@ -41,14 +43,12 @@ def get_user_subscription_status(user_id: int):
         data = response.data
         today = datetime.now().date().isoformat()
 
-        # Check if reset is needed
+        # Check if daily reset is needed
         if data.get("last_request_date") != today:
-            # 1. Update the database
             supabase.table("users").update(
                 {"daily_request_count": 0, "last_request_date": today}
             ).eq("id", user_id).execute()
 
-            # 2. Update the local object so the UI gets the fresh values
             data["daily_request_count"] = 0
             data["last_request_date"] = today
 
@@ -56,6 +56,24 @@ def get_user_subscription_status(user_id: int):
     except Exception as e:
         print(f"Error fetching user status: {e}")
         return None
+
+
+def can_user_make_request(user_id: int) -> bool:
+    """Checks if the user has remaining daily requests or is premium."""
+    try:
+        status = get_user_subscription_status(user_id)
+        if not status:
+            return False
+
+        # Premium users have unlimited access
+        if is_user_premium(user_id):
+            return True
+
+        # Regular users are limited to 20 requests per day
+        return status.get("daily_request_count", 0) < FREE_USER_DAILY_LIMIT
+    except Exception as e:
+        print(f"Error checking request permission: {e}")
+        return False
 
 
 def increment_request_count(user_id: int):
@@ -74,8 +92,9 @@ def increment_request_count(user_id: int):
 
 
 def is_user_premium(user_id: int) -> bool:
-    """Checks if the user has an active premium status."""
+    """Checks if the user has an active premium status and handles expiration."""
     try:
+        # Optimization: Fetching status once to avoid double DB calls
         status = get_user_subscription_status(user_id)
         if not status or not status.get("is_premium"):
             return False
@@ -146,7 +165,6 @@ def get_users_to_notify():
 def get_daily_request_count(user_id: int) -> int:
     """Returns the current daily search count for a user."""
     try:
-        # Reusing the status function ensures we get the reset count if it's a new day
         status = get_user_subscription_status(user_id)
         if status:
             return status.get("daily_request_count", 0)

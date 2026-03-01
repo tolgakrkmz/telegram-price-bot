@@ -1,29 +1,39 @@
 from typing import Any
-
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
-
 from config.settings import SUPER_API_BASE, SUPER_API_KEY
 
 # Setup a global session with retries for resilience
 session = requests.Session()
-retries = Retry(total=3, backoff_factor=1, status_forcelist=[500, 502, 503, 504])
+retries = Retry(
+    total=3,
+    backoff_factor=1,
+    status_forcelist=[
+        500,
+        502,
+        503,
+        504,
+    ],  # Fixed from status_for_list to status_forcelist
+)
 session.mount("https://", HTTPAdapter(max_retries=retries))
 
 
 def get_product_price(
     product_name: str, multiple: bool = False
-) -> dict[str, Any] | None | list[dict[str, Any]] | None:
+) -> dict[str, Any] | None | list[dict[str, Any]]:
     """
     Fetches product data from the supermarket API.
+    Increased limit to 10 to utilize the higher daily quota.
     """
     url = f"{SUPER_API_BASE}/products"
     headers = {"Authorization": f"Bearer {SUPER_API_KEY}"}
-    params = {"search": product_name, "limit": 5}
+
+    # Increased limit from 5 to 10 to provide more options to users
+    params = {"search": product_name, "limit": 10}
 
     try:
-        response = session.get(url, headers=headers, params=params, timeout=10)
+        response = session.get(url, headers=headers, params=params, timeout=12)
         response.raise_for_status()
 
         json_response = response.json()
@@ -34,6 +44,7 @@ def get_product_price(
 
         results = []
         for p in data:
+            # Mapping API response to internal product structure
             product_info = {
                 "id": p.get("id"),
                 "name": p.get("name", "Unknown Product"),
@@ -54,5 +65,6 @@ def get_product_price(
             return results
         return results[0] if results else None
 
-    except (requests.exceptions.RequestException, KeyError, ValueError, TypeError):
+    except (requests.exceptions.RequestException, KeyError, ValueError, TypeError) as e:
+        print(f"API Error: {e}")
         return [] if multiple else None

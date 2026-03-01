@@ -6,7 +6,9 @@ from telegram.ext import ContextTypes
 
 from api.supermarket import get_product_price
 from db.repositories.favorites_repo import get_user_favorites
-from db.repositories.history_repo import add_price_history_record
+
+# Updated import: changed add_price_history_record to add_price_entry
+from db.repositories.history_repo import add_price_entry, get_product_history
 from db.repositories.user_repo import (
     is_user_premium,
     toggle_notifications,
@@ -25,6 +27,7 @@ CURRENCY = "€"
 async def handle_toggle_alerts(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> None:
+    """Toggles price alerts for premium users."""
     query: CallbackQuery = update.callback_query
     user_id = query.from_user.id
 
@@ -77,10 +80,14 @@ async def global_price_update(context: ContextTypes.DEFAULT_TYPE):
         user_id = fav.get("user_id")
 
         old_price = float(fav.get("price_eur") or fav.get("price") or 0)
-        fresh_data = get_product_price(product_id)
+        fresh_data = get_product_price(fav.get("name"))  # Use name for search
 
         if not fresh_data:
             continue
+
+        # Handle potential multiple results from API
+        if isinstance(fresh_data, list):
+            fresh_data = fresh_data[0]
 
         new_price = float(fresh_data.get("price_eur") or fresh_data.get("price") or 0)
 
@@ -180,7 +187,7 @@ async def check_expiring_tomorrow_alerts(context: ContextTypes.DEFAULT_TYPE) -> 
 async def update_favorites_prices(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> None:
-    """Manual sync remains available, but follows general daily request limits."""
+    """Manual sync with new history logging support."""
     user_id = update.effective_user.id
     fav_list = get_user_favorites(user_id) or []
 
@@ -201,12 +208,21 @@ async def update_favorites_prices(
         new_results = get_product_price(p["name"], multiple=True)
         await asyncio.sleep(1.2)
 
+        if not new_results:
+            continue
+
         match = next((i for i in new_results if i.get("store") == p.get("store")), None)
         if match:
             new_p = float(match.get("price_eur") or match.get("price", 0))
             old_p = float(p.get("price_eur") or p.get("price", 0))
 
-            add_price_history_record(pid, new_p)
+            # Updated function call to add_price_entry
+            add_price_entry(
+                product_id=pid,
+                name=p["name"],
+                store=p.get("store", "Unknown"),
+                price=new_p,
+            )
 
             diff = new_p - old_p
             change = f"({'-' if diff < 0 else '+'}{abs(diff):.2f})" if diff != 0 else ""
