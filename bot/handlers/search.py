@@ -21,14 +21,20 @@ CURRENCY = "€"
 
 
 async def search_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Initializes the search process and checks if the user has reached their daily limit."""
+    """Initializes the search process and checks limits only for non-premium users."""
     user_id = update.effective_user.id
 
-    # Check if the user is allowed to perform a search
-    if not can_user_make_request(user_id):
+    # 1. PREMIUM CHECK: If user is premium, they bypass all limits immediately
+    if is_user_premium(user_id):
+        # Continue to prompt_text logic below
+        pass
+
+    # 2. LIMIT CHECK: Only for free users
+    elif not can_user_make_request(user_id):
         status = get_user_subscription_status(user_id)
         current_count = status.get("daily_request_count", 0) if status else 0
 
+        # Note: We use FREE_USER_DAILY_LIMIT (20) here
         limit_text = (
             f"🚫 *Limit Reached!* ({current_count}/{FREE_USER_DAILY_LIMIT})\n\n"
             f"Unlock *Unlimited* searches and Premium features for only 2.50 BGN! 🚀"
@@ -49,6 +55,7 @@ async def search_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
         add_message(user_id, msg.message_id)
         return ConversationHandler.END
 
+    # 3. PROMPT LOGIC: This part is reached if Premium OR if limit is not reached
     prompt_text = "🔍 *Enter the product name:*"
 
     if update.message:
