@@ -3,7 +3,9 @@ from telegram.ext import ContextTypes
 
 from db.repositories.favorites_repo import get_user_favorites
 from db.repositories.shopping_repo import get_user_shopping_list
-from db.repositories.user_repo import get_daily_request_count, is_user_premium
+
+# Import get_user_subscription_status to get all data in one go
+from db.repositories.user_repo import get_user_subscription_status
 
 FREE_SEARCH_LIMIT = 5
 PREMIUM_SEARCH_LIMIT = 10
@@ -16,8 +18,16 @@ async def view_profile_callback(
     user = update.effective_user
     user_id = user.id
 
-    is_premium = is_user_premium(user_id)
-    daily_requests = get_daily_request_count(user_id)
+    # Fetch the full status once. This triggers the reset logic in user_repo.py
+    user_status = get_user_subscription_status(user_id)
+
+    # Fallback if user not found
+    if not user_status:
+        is_premium = False
+        daily_requests = 0
+    else:
+        is_premium = user_status.get("is_premium", False)
+        daily_requests = user_status.get("daily_request_count", 0)
 
     display_name = (
         user.first_name

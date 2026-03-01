@@ -1,5 +1,4 @@
 from datetime import datetime
-
 from db.supabase_client import supabase
 
 
@@ -32,16 +31,7 @@ def get_user_subscription_status(user_id: int):
     """Returns premium status and manages daily counter reset."""
     try:
         response = (
-            supabase.table("users")
-            .select(
-                "is_premium",
-                "premium_until",
-                "daily_request_count",
-                "last_request_date",
-            )
-            .eq("id", user_id)
-            .single()
-            .execute()
+            supabase.table("users").select("*").eq("id", user_id).single().execute()
         )
 
         if not response.data:
@@ -50,13 +40,16 @@ def get_user_subscription_status(user_id: int):
         data = response.data
         today = datetime.now().date().isoformat()
 
-        # Check if we need to reset the daily counter
-        if data["last_request_date"] != today:
+        # Check if reset is needed
+        if data.get("last_request_date") != today:
+            # 1. Update the database
             supabase.table("users").update(
                 {"daily_request_count": 0, "last_request_date": today}
             ).eq("id", user_id).execute()
 
+            # 2. Update the local object so the UI gets the fresh values
             data["daily_request_count"] = 0
+            data["last_request_date"] = today
 
         return data
     except Exception as e:
@@ -83,10 +76,10 @@ def is_user_premium(user_id: int) -> bool:
     """Checks if the user has an active premium status."""
     try:
         status = get_user_subscription_status(user_id)
-        if not status or not status["is_premium"]:
+        if not status or not status.get("is_premium"):
             return False
 
-        if status["premium_until"]:
+        if status.get("premium_until"):
             # Handle potential Z (UTC) in timestamp from Supabase
             expiry_str = status["premium_until"].replace("Z", "")
             expiry = datetime.fromisoformat(expiry_str)
@@ -151,18 +144,11 @@ def get_users_to_notify():
 
 def get_daily_request_count(user_id: int) -> int:
     """Returns the current daily search count for a user."""
-    res = (
-        supabase.table("users")
-        .select("daily_request_count")
-        .eq("id", user_id)
-        .single()
-        .execute()
-    )
-    if res.data:
-        return res.data.get("daily_request_count", 0)
+    try:
+        # Reusing the status function ensures we get the reset count if it's a new day
+        status = get_user_subscription_status(user_id)
+        if status:
+            return status.get("daily_request_count", 0)
+    except Exception as e:
+        print(f"Error getting daily count: {e}")
     return 0
-
-
-def get_user_subscription_status(user_id: int):
-    result = supabase.table("users").select("*").eq("id", user_id).execute()
-    return result.data[0] if result.data else None

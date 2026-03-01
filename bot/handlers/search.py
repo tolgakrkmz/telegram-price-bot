@@ -65,32 +65,43 @@ async def search_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
 
 
 async def search_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Processes search input and increments limit if fresh data is fetched."""
+    """Processes search input and manages limits based on user rank and data source."""
+    if not update.message or not update.message.text:
+        return ConversationHandler.END
+
     user_input = update.message.text.strip().lower()
     user_id = update.effective_user.id
 
     from db.repositories.cache_repo import get_cached_results, set_cache_results
 
+    # 1. Data Retrieval
     products = get_cached_results(user_input, expiry_hours=24)
     is_cached = True
 
     if not products:
-        # Check overall system limit if needed here
         products = get_product_price(user_input, multiple=True)
         is_cached = False
 
         if products:
             set_cache_results(user_input, products)
-            # Increment request count ONLY for fresh API data
-            if not is_user_premium(user_id):
-                increment_request_count(user_id)
+
+    # 2. Strict Limit Logic
+    is_premium = is_user_premium(user_id)
+
+    if not is_premium:
+        # Free users: Always increment (Cache or Fresh)
+        increment_request_count(user_id)
+    else:
+        # Premium users: Increment only for fresh API data
+        if not is_cached:
+            increment_request_count(user_id)
 
     if not products:
         msg = await update.message.reply_text("❌ No promotional products found.")
         add_message(user_id, msg.message_id)
         return ConversationHandler.END
 
-    # 2. Unit Price Calculation & Sorting
+    # 3. Unit Price Calculation & Sorting
     for p in products:
         price_val = p.get("price_eur") or p.get("price")
         unit_val = p.get("quantity") or p.get("unit")
@@ -111,7 +122,7 @@ async def search_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
     for p in products:
         product_id = get_product_id(p)
 
-        # --- DATES LOGIC ---
+        # Dates Logic
         promo_timer = ""
         brochure = p.get("brochure")
         if brochure and isinstance(brochure, dict):
@@ -129,7 +140,11 @@ async def search_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
 
         search_results[product_id] = p
         curr_name = p.get("name", "N/A")
-        curr_price = float(p.get("price_eur") or p.get("price", 0))
+
+        try:
+            curr_price = float(p.get("price_eur") or p.get("price", 0))
+        except (ValueError, TypeError):
+            curr_price = 0.0
 
         supermarket = p.get("supermarket")
         curr_store = (
@@ -140,7 +155,7 @@ async def search_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
         curr_unit = p.get("quantity") or p.get("unit", "")
         curr_image = p.get("image_url") or p.get("image")
 
-        # 3. SUPABASE HISTORY LOGIC
+        # History Logic
         add_price_entry(product_id, curr_name, curr_store, curr_price)
         history = get_product_history(product_id)
         trend_text = ""
@@ -158,7 +173,7 @@ async def search_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
             except (IndexError, ValueError, KeyError):
                 pass
 
-        # 4. Message Formatting
+        # Formatting
         unit_price_info = ""
         best_value_tag = ""
         if p.get("calc_unit_price"):
@@ -216,12 +231,13 @@ async def search_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
                     parse_mode=constants.ParseMode.MARKDOWN,
                 )
             messages_to_cache.append(msg.message_id)
-        except:
+        except Exception as e:
+            print(f"Error sending message: {e}")
             continue
 
     context.user_data["search_results"] = search_results
-    status = " (cloud cache)" if is_cached else " (fresh data)"
-    footer_text = f"✅ Search completed!{status}"
+    status_label = " (cloud cache)" if is_cached else " (fresh data)"
+    footer_text = f"✅ Search completed!{status_label}"
 
     final_msg = await update.message.reply_text(
         footer_text, reply_markup=main_menu_keyboard(user_id)
