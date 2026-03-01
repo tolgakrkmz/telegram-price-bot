@@ -14,7 +14,7 @@ from telegram.ext import (
 )
 
 from config.settings import TELEGRAM_TOKEN
-from db.repositories.user_repo import get_user_subscription_status, is_user_premium
+from handlers.admin_bulk import bulk_job_wrapper, bulk_products
 from handlers.alerts import (
     check_expiring_alerts,
     check_expiring_tomorrow_alerts,
@@ -118,6 +118,18 @@ def main():
         smart_basket_job, time=datetime.time(hour=18, minute=0, tzinfo=timezone)
     )
 
+    job_queue.run_daily(
+        bulk_job_wrapper,
+        time=datetime.time(hour=4, minute=0, second=0, tzinfo=timezone),
+        days=(0,),
+    )
+
+    job_queue.run_daily(
+        bulk_job_wrapper,
+        time=datetime.time(hour=4, minute=0, second=0, tzinfo=timezone),
+        days=(2,),
+    )
+
     # --- Core Commands ---
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("update_prices", update_favorites_prices))
@@ -216,6 +228,9 @@ def main():
     app.add_handler(
         CallbackQueryHandler(view_profile_callback, pattern="^view_profile$")
     )
+
+    # --- BULK ---
+    app.add_handler(CommandHandler("bulk_products", bulk_products))
 
     # --- Generic Buttons ---
     app.add_handler(CallbackQueryHandler(button_handler))

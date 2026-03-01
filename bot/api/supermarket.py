@@ -1,7 +1,9 @@
 from typing import Any
+
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
+
 from config.settings import SUPER_API_BASE, SUPER_API_KEY
 
 # Setup a global session with retries for resilience
