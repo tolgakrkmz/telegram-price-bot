@@ -1,5 +1,17 @@
-python-telegram-bot==21.6
-requests
-python-dotenv
-supabase
-pytz
+# --- Telegram Bot Framework ---
+python-telegram-bot==21.6     # Main framework for the bot
+httpx[http2]==0.27.0          # Required for python-telegram-bot networking
+
+# --- Database & Storage (Supabase) ---
+supabase==2.11.0              # Official Python client for Supabase
+postgrest==0.16.5             # RESTful API client
+gotrue==2.9.0                 # Authentication and user management
+
+# --- GCP Integration & Logging ---
+google-cloud-logging==3.11.2  # Critical for viewing bot logs in GCP Console
+google-cloud-secret-manager==2.20.0 # Recommended for storing Bot Token and Supabase Key
+
+# --- Utilities ---
+requests==2.31.0              # Standard HTTP library
+python-dotenv==1.0.1          # Load environment variables from .env
+pytz==2024.1                  # Timezone definitions
