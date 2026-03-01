@@ -1,4 +1,5 @@
-from datetime import datetime
+from datetime import datetime, timezone
+
 from db.supabase_client import supabase
 
 
@@ -80,10 +81,10 @@ def is_user_premium(user_id: int) -> bool:
             return False
 
         if status.get("premium_until"):
-            # Handle potential Z (UTC) in timestamp from Supabase
-            expiry_str = status["premium_until"].replace("Z", "")
+            expiry_str = status["premium_until"].replace("Z", "+00:00")
             expiry = datetime.fromisoformat(expiry_str)
-            if expiry < datetime.now():
+
+            if expiry < datetime.now(timezone.utc):
                 supabase.table("users").update({"is_premium": False}).eq(
                     "id", user_id
                 ).execute()
