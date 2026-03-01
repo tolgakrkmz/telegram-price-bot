@@ -4,8 +4,6 @@ httpx[http2]==0.27.0          # Required for python-telegram-bot networking
 
 # --- Database & Storage (Supabase) ---
 supabase==2.11.0              # Official Python client for Supabase
-postgrest==0.16.5             # RESTful API client
-gotrue==2.9.0                 # Authentication and user management
 
 # --- GCP Integration & Logging ---
 google-cloud-logging==3.11.2  # Critical for viewing bot logs in GCP Console
