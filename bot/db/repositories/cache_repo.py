@@ -51,7 +51,6 @@ def get_all_cached_products():
     """Returns all cached product lists from the cloud cache for price comparison."""
     try:
         response = supabase.table(CACHE_TABLE).select("results").execute()
-        # Връщаме списък от списъци (всеки запис в кеша съдържа списък с продукти)
         return [item["results"] for item in response.data if item.get("results")]
     except Exception as e:
         print(f"Error fetching all cached products: {e}")

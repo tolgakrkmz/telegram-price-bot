@@ -1,19 +1,19 @@
 import asyncio
 import datetime
-from collections import defaultdict
 
 from telegram import CallbackQuery, Update, constants
 from telegram.ext import ContextTypes
 
 from api.supermarket import get_product_price
-from db.repositories.favorites_repo import get_all_favorites_from_db, get_user_favorites
+from db.repositories.favorites_repo import get_user_favorites
 from db.repositories.history_repo import add_price_history_record
 from db.repositories.user_repo import (
     is_user_premium,
     toggle_notifications,
-)  # Added is_user_premium
+)
 from db.supabase_client import supabase
 from utils.menu import main_menu_keyboard
+from utils.message_cache import add_message
 
 CURRENCY = "€"
 
@@ -57,14 +57,11 @@ async def handle_toggle_alerts(
 async def global_price_update(context: ContextTypes.DEFAULT_TYPE):
     """Updates prices and sends alerts only to Premium users with notifications enabled."""
     try:
-        # We join with users to check BOTH notifications_enabled AND is_premium
         response = (
             supabase.table("favorites")
             .select("*, users!inner(notifications_enabled, is_premium)")
             .eq("users.notifications_enabled", True)
-            .eq(
-                "users.is_premium", True
-            )  # Safety filter: only premium users get processed
+            .eq("users.is_premium", True)
             .execute()
         )
         favorites = response.data
@@ -111,7 +108,6 @@ async def global_price_update(context: ContextTypes.DEFAULT_TYPE):
 async def check_expiring_alerts(context: ContextTypes.DEFAULT_TYPE) -> None:
     """Sends expiring deal alerts only to Premium users."""
     today = datetime.datetime.now().date().isoformat()
-
     try:
         response = (
             supabase.table("favorites")
@@ -120,13 +116,11 @@ async def check_expiring_alerts(context: ContextTypes.DEFAULT_TYPE) -> None:
             )
             .eq("valid_until", today)
             .eq("users.notifications_enabled", True)
-            .eq("users.is_premium", True)  # Only for Premium
+            .eq("users.is_premium", True)
             .execute()
         )
-
         if not response.data:
             return
-
         for item in response.data:
             user_id = item.get("user_id")
             msg = (
@@ -148,7 +142,6 @@ async def check_expiring_alerts(context: ContextTypes.DEFAULT_TYPE) -> None:
 async def check_expiring_tomorrow_alerts(context: ContextTypes.DEFAULT_TYPE) -> None:
     """Sends tomorrow's expiring deal alerts only to Premium users."""
     tomorrow = (datetime.datetime.now() + datetime.timedelta(days=1)).date().isoformat()
-
     try:
         response = (
             supabase.table("favorites")
@@ -157,13 +150,11 @@ async def check_expiring_tomorrow_alerts(context: ContextTypes.DEFAULT_TYPE) -> 
             )
             .eq("valid_until", tomorrow)
             .eq("users.notifications_enabled", True)
-            .eq("users.is_premium", True)  # Only for Premium
+            .eq("users.is_premium", True)
             .execute()
         )
-
         if not response.data:
             return
-
         for item in response.data:
             user_id = item.get("user_id")
             msg = (
@@ -189,19 +180,20 @@ async def check_expiring_tomorrow_alerts(context: ContextTypes.DEFAULT_TYPE) -> 
 async def update_favorites_prices(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> None:
-    """Manual sync remains available, but follows general daily request limits in future logic."""
+    """Manual sync remains available, but follows general daily request limits."""
     user_id = update.effective_user.id
-
-    # Optional: You might want to limit this command for Free users too
-    # but since it's manual, we can let it be for now or apply the same 5/10 logic.
-
     fav_list = get_user_favorites(user_id) or []
 
+    add_message(user_id, update.message.message_id)
+
     if not fav_list:
-        await update.message.reply_text("⭐ Your favorites list is empty.")
+        msg = await update.message.reply_text("⭐ Your favorites list is empty.")
+        add_message(user_id, msg.message_id)
         return
 
     status_msg = await update.message.reply_text("🔄 Syncing latest prices...")
+    add_message(user_id, status_msg.message_id)
+
     report = ["📊 *Price Report:*\n"]
 
     for p in fav_list:

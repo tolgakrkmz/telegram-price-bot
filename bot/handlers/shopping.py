@@ -13,9 +13,10 @@ from db.repositories.shopping_repo import (
 from db.repositories.shopping_repo import (
     get_user_shopping_list as get_shopping_list,
 )
-from db.repositories.user_repo import is_user_premium  # Imported for checks
+from db.repositories.user_repo import is_user_premium
 from utils.helpers import calculate_unit_price
 from utils.menu import main_menu_keyboard
+from utils.message_cache import add_message  # Внедрена логика
 
 CURRENCY = "€"
 FREE_SHOPPING_LIMIT = 5
@@ -39,6 +40,7 @@ def get_better_price(
         return None
 
     min_unit_price = curr_u_price
+    # Keeping your original ignore list
     ignore_words = {
         "pilos",
         "саяна",
@@ -89,7 +91,8 @@ def get_better_price(
 async def safe_edit(
     query, text: str, reply_markup: InlineKeyboardMarkup = None
 ) -> None:
-    """Safely updates messages with either text or caption."""
+    """Safely updates messages and registers them in cache."""
+    user_id = query.from_user.id
     params = {
         "text" if query.message.text else "caption": text,
         "reply_markup": reply_markup,
@@ -97,9 +100,12 @@ async def safe_edit(
     }
     try:
         if query.message.text:
-            await query.edit_message_text(**params)
+            msg = await query.edit_message_text(**params)
         else:
-            await query.edit_message_caption(**params)
+            msg = await query.edit_message_caption(**params)
+
+        # Log the edited message ID to cache
+        add_message(user_id, msg.message_id)
     except Exception:
         pass
 
@@ -113,15 +119,16 @@ async def list_shopping(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     shopping = get_shopping_list(user_id) or []
 
     if not shopping:
-        text = "🛒 Your cart is empty."
+        text = "🛒 *Your cart is empty.*"
         reply_markup = main_menu_keyboard(user_id)
         if query:
             await query.answer()
             await safe_edit(query, text, reply_markup)
         else:
-            await update.message.reply_text(
+            msg = await update.message.reply_text(
                 text, reply_markup=reply_markup, parse_mode=constants.ParseMode.MARKDOWN
             )
+            add_message(user_id, msg.message_id)
         return
 
     if query:
@@ -148,7 +155,6 @@ async def list_shopping(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         store_totals[store] = store_totals.get(store, 0.0) + price
 
         better_text = ""
-        # Only show better deals to Premium users
         if is_premium:
             better = get_better_price(name, price, store, product)
             if better:
@@ -193,37 +199,36 @@ async def list_shopping(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     if query:
         await safe_edit(query, final_text, reply_markup)
     else:
-        await update.message.reply_text(
+        msg = await update.message.reply_text(
             final_text,
             reply_markup=reply_markup,
             parse_mode=constants.ParseMode.MARKDOWN,
         )
+        add_message(user_id, msg.message_id)
 
 
 async def add_to_shopping_callback(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> None:
-    """Adds product to cart with a clean alert limit check for Free users."""
+    """Adds product to cart with limit check."""
     query = update.callback_query
     if not query:
         return
 
     user_id = query.from_user.id
-    is_premium = is_user_premium(user_id)  # Synchronous call
+    is_premium = is_user_premium(user_id)
     current_shopping = get_shopping_list(user_id) or []
 
-    # --- ENHANCED LIMIT CHECK (SHOW ALERT) ---
     if not is_premium and len(current_shopping) >= FREE_SHOPPING_LIMIT:
         limit_text = (
             f"🛒 Cart Limit! ({len(current_shopping)}/{FREE_SHOPPING_LIMIT})\n\n"
-            "Upgrade to Premium for only 2.50 EUR to unlock:\n"
+            "Upgrade to Premium to unlock:\n"
             "• Unlimited Shopping Cart Items\n"
             "• Smart Price Comparisons\n"
             "• Better Deal Recommendations! 💎"
         )
         await query.answer(limit_text, show_alert=True)
         return
-    # ------------------------------------------
 
     product_id = query.data.replace("add_shopping_", "")
     product = context.user_data.get("search_results", {}).get(product_id)
@@ -234,8 +239,6 @@ async def add_to_shopping_callback(
 
     if add_to_shopping(user_id, product):
         await query.answer(f"🛒 {product['name']} added to cart!")
-
-        # Update button UI to show confirmation
         new_keyboard = [
             [
                 InlineKeyboardButton("✅ In Cart", callback_data="none")
@@ -275,7 +278,7 @@ async def confirm_clear_callback(
     ]
     await safe_edit(
         update.callback_query,
-        "⚠️ Clear the entire cart?",
+        "⚠️ *Clear the entire cart?*",
         InlineKeyboardMarkup(keyboard),
     )
 
@@ -290,8 +293,9 @@ async def clear_shopping_callback(
         supabase.table(SHOPPING_TABLE).delete().eq("user_id", user_id).execute()
     except:
         pass
+
     await safe_edit(
         update.callback_query,
-        "🧹 Cart has been cleared.",
+        "🧹 *Cart has been cleared.*",
         reply_markup=main_menu_keyboard(user_id),
     )

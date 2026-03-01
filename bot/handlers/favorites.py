@@ -1,8 +1,5 @@
 from collections import defaultdict
-from datetime import datetime
 
-# Fixed import to use your client
-from db.supabase_client import supabase
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, constants
 from telegram.ext import ContextTypes
 
@@ -14,12 +11,12 @@ from db.repositories.favorites_repo import (
 from db.repositories.favorites_repo import (
     delete_favorite as remove_favorite,
 )
-from db.repositories.history_repo import get_product_history
-from db.repositories.user_repo import is_user_premium  # Imported for limit checks
 from db.repositories.shopping_repo import add_to_shopping_list
-from services.history_service import get_combined_price_history
+from db.repositories.user_repo import is_user_premium
+from db.supabase_client import supabase
 from utils.helpers import calculate_unit_price, format_promo_dates
 from utils.menu import favorites_keyboard, main_menu_keyboard
+from utils.message_cache import add_message  # Added import
 
 CURRENCY = "€"
 FREE_FAVORITES_LIMIT = 3
@@ -35,7 +32,6 @@ async def render_favorites_text(favorites: dict) -> str:
         return "⭐ Your favorites list is empty."
 
     grouped = defaultdict(list)
-
     for pid, product in favorites.items():
         supermarket = product.get("supermarket")
         store_name = (
@@ -49,14 +45,12 @@ async def render_favorites_text(favorites: dict) -> str:
 
     for store, products in grouped.items():
         text += f"🏪 *{store}*\n"
-
         for pid, product in products:
             name = product.get("name", "N/A")
             saved_price = float(product.get("price_eur") or product.get("price") or 0)
             unit = product.get("quantity") or product.get("unit", "")
 
             fresh_results = get_product_price(name, multiple=True) or []
-
             current_match = next(
                 (
                     item
@@ -103,9 +97,7 @@ async def render_favorites_text(favorites: dict) -> str:
                 f"   💰 **{current_price:.2f}{CURRENCY}**"
                 f"{unit_info}{promo_info}{price_alert}\n"
             )
-
         text += "\n"
-
     return text
 
 
@@ -116,30 +108,32 @@ async def render_favorites_text(favorites: dict) -> str:
 
 async def list_favorites(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
+    user_id = query.from_user.id
+
     await query.answer("Refreshing prices...")
 
-    user_id = query.from_user.id
     fav_list = get_user_favorites(user_id) or []
-
     favorites = {
         str(item.get("product_id") or item.get("id")): item for item in fav_list
     }
 
     if not favorites:
-        await query.message.edit_text(
+        msg = await query.message.edit_text(
             "⭐ Your favorites list is empty.",
             reply_markup=main_menu_keyboard(user_id),
             parse_mode=constants.ParseMode.MARKDOWN,
         )
+        add_message(user_id, msg.message_id)
         return
 
     text = await render_favorites_text(favorites)
 
-    await query.message.edit_text(
+    msg = await query.message.edit_text(
         text,
         reply_markup=favorites_keyboard(favorites),
         parse_mode=constants.ParseMode.MARKDOWN,
     )
+    add_message(user_id, msg.message_id)
 
 
 # ==========================================================
@@ -153,21 +147,19 @@ async def add_to_favorite_callback(update: Update, context: ContextTypes.DEFAULT
         return
 
     user_id = query.from_user.id
-    is_premium = is_user_premium(user_id)  # Synchronous check
+    is_premium = is_user_premium(user_id)
     fav_list = get_user_favorites(user_id) or []
 
-    # --- ENHANCED LIMIT CHECK (SHOW ALERT) ---
     if not is_premium and len(fav_list) >= FREE_FAVORITES_LIMIT:
         limit_text = (
             f"⭐ Favorites Limit! ({len(fav_list)}/{FREE_FAVORITES_LIMIT})\n\n"
-            "Upgrade to Premium for only 2.50 EUR to unlock:\n"
+            "Upgrade to Premium to unlock:\n"
             "• Unlimited Favorites\n"
             "• Price Drop Alerts\n"
             "• Price History & Smart Shopping! 🚀"
         )
         await query.answer(limit_text, show_alert=True)
         return
-    # ------------------------------------------
 
     product_id = query.data.replace("add_favorite_", "")
     search_results = context.user_data.get("search_results", {})
@@ -182,10 +174,8 @@ async def add_to_favorite_callback(update: Update, context: ContextTypes.DEFAULT
     if isinstance(added, dict) and not added.get("error"):
         await query.answer(f"⭐ {product['name']} added to favorites!")
 
-        # Update button UI to show confirmation
         current_keyboard = query.message.reply_markup.inline_keyboard
         new_keyboard = []
-
         for row in current_keyboard:
             new_row = []
             for button in row:
@@ -215,10 +205,8 @@ async def add_to_favorite_callback(update: Update, context: ContextTypes.DEFAULT
 async def delete_favorite_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
-
     product_id = query.data.replace("delete_", "")
     remove_favorite(query.from_user.id, product_id)
-
     await list_favorites(update, context)
 
 
@@ -233,8 +221,6 @@ async def move_to_cart_callback(update: Update, context: ContextTypes.DEFAULT_TY
 
     product_id = query.data.replace("fav_to_cart_", "")
     fav_list = get_user_favorites(query.from_user.id) or []
-
-    # Improved lookup to handle both UUID and product_id
     product = next(
         (
             item
@@ -271,12 +257,9 @@ async def view_price_history_callback(
     raw_id = query.data.replace("price_history_", "").strip()
 
     product_data = None
-
-    # 1. Try search results cache
     search_results = context.user_data.get("search_results", {})
     product_data = search_results.get(raw_id)
 
-    # 2. Try Favorites DB lookup (UUID or product_id)
     if not product_data:
         try:
             res = (
@@ -290,7 +273,6 @@ async def view_price_history_callback(
         except:
             pass
 
-    # 3. Fetch history using all available identifiers
     history = []
     ids_to_try = list(
         filter(None, [raw_id, product_data.get("product_id") if product_data else None])
@@ -304,7 +286,6 @@ async def view_price_history_callback(
             history = res.data
             break
 
-    # 4. Critical Fallback: Search by Name if IDs failed
     if not history and product_data and product_data.get("name"):
         try:
             res_name = (
@@ -318,12 +299,11 @@ async def view_price_history_callback(
             pass
 
     if not history:
-        await query.message.reply_text("📉 No history found for this item.")
+        msg = await query.message.reply_text("📉 No history found for this item.")
+        add_message(user_id, msg.message_id)
         return
 
-    # Sort and Display
     history.sort(key=lambda x: x.get("recorded_date", ""), reverse=True)
-
     name = (
         product_data.get("name") if product_data else history[0].get("name", "Product")
     )
@@ -332,7 +312,6 @@ async def view_price_history_callback(
     )
 
     text = f"📊 *Price History*\n🛒 *{name}*\n🏬 {store}\n\n"
-
     seen_dates = set()
     for entry in history:
         d = entry.get("recorded_date", "N/A")
@@ -341,7 +320,8 @@ async def view_price_history_callback(
             price = float(entry.get("price", 0))
             text += f"• {d}: **{price:.2f}{CURRENCY}**\n"
 
-    await query.message.reply_text(text, parse_mode=constants.ParseMode.MARKDOWN)
+    msg = await query.message.reply_text(text, parse_mode=constants.ParseMode.MARKDOWN)
+    add_message(user_id, msg.message_id)
 
 
 def get_all_favorites_from_db():

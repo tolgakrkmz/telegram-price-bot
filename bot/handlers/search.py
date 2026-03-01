@@ -24,7 +24,6 @@ async def search_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
     """Initializes the search process and checks user limits based on rank."""
     user_id = update.effective_user.id
 
-    # Fetch status once to avoid multiple DB calls
     status = get_user_subscription_status(user_id)
     is_premium = is_user_premium(user_id)
 
@@ -33,32 +32,37 @@ async def search_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
 
     if current_count >= limit:
         limit_text = (
-            f"🚫 Limit Reached! ({current_count}/{limit})\n\n"
+            f"🚫 *Limit Reached!* ({current_count}/{limit})\n\n"
             f"Unlock more searches and Premium features for only 2.50 BGN! 🚀"
         )
-        if update.callback_query:
-            await update.callback_query.answer(limit_text, show_alert=True)
-        else:
-            await update.message.reply_text(f"⚠️ {limit_text}")
 
         if update.callback_query:
             await update.callback_query.answer(
-                limit_text.replace("**", ""), show_alert=True
+                limit_text.replace("*", ""), show_alert=True
             )
-        else:
-            await update.message.reply_text(
+            msg = await update.callback_query.message.reply_text(
                 limit_text, parse_mode=constants.ParseMode.MARKDOWN
             )
+        else:
+            msg = await update.message.reply_text(
+                limit_text, parse_mode=constants.ParseMode.MARKDOWN
+            )
+
+        add_message(user_id, msg.message_id)
         return ConversationHandler.END
 
-    prompt_text = "🔍 Enter the product name:"
+    prompt_text = "🔍 *Enter the product name:*"
 
     if update.message:
-        msg = await update.message.reply_text(prompt_text)
+        msg = await update.message.reply_text(
+            prompt_text, parse_mode=constants.ParseMode.MARKDOWN
+        )
         add_message(user_id, msg.message_id)
     elif update.callback_query:
         await update.callback_query.answer()
-        msg = await update.callback_query.message.reply_text(prompt_text)
+        msg = await update.callback_query.message.reply_text(
+            prompt_text, parse_mode=constants.ParseMode.MARKDOWN
+        )
         add_message(user_id, msg.message_id)
 
     return SEARCH_INPUT
@@ -71,6 +75,9 @@ async def search_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
 
     user_input = update.message.text.strip().lower()
     user_id = update.effective_user.id
+
+    # Save user's own message to be cleared later
+    add_message(user_id, update.message.message_id)
 
     from db.repositories.cache_repo import get_cached_results, set_cache_results
 
@@ -89,10 +96,8 @@ async def search_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
     is_premium = is_user_premium(user_id)
 
     if not is_premium:
-        # Free users: Always increment (Cache or Fresh)
         increment_request_count(user_id)
     else:
-        # Premium users: Increment only for fresh API data
         if not is_cached:
             increment_request_count(user_id)
 
@@ -117,12 +122,11 @@ async def search_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
     cheapest_unit_val = products[0]["calc_unit_price"] if products else None
 
     search_results = {}
-    messages_to_cache = []
 
     for p in products:
         product_id = get_product_id(p)
 
-        # Dates Logic
+        # Dates Logic (As requested, keeping your original promo date logic)
         promo_timer = ""
         brochure = p.get("brochure")
         if brochure and isinstance(brochure, dict):
@@ -230,21 +234,20 @@ async def search_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
                     reply_markup=keyboard,
                     parse_mode=constants.ParseMode.MARKDOWN,
                 )
-            messages_to_cache.append(msg.message_id)
+            add_message(user_id, msg.message_id)
         except Exception as e:
             print(f"Error sending message: {e}")
             continue
 
     context.user_data["search_results"] = search_results
     status_label = " (cloud cache)" if is_cached else " (fresh data)"
-    footer_text = f"✅ Search completed!{status_label}"
+    footer_text = f"✅ *Search completed!*{status_label}"
 
     final_msg = await update.message.reply_text(
-        footer_text, reply_markup=main_menu_keyboard(user_id)
+        footer_text,
+        reply_markup=main_menu_keyboard(user_id),
+        parse_mode=constants.ParseMode.MARKDOWN,
     )
-
-    messages_to_cache.append(final_msg.message_id)
-    for m_id in messages_to_cache:
-        add_message(user_id, m_id)
+    add_message(user_id, final_msg.message_id)
 
     return ConversationHandler.END

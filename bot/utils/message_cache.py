@@ -1,20 +1,31 @@
-# Кеширане на съобщения на ботa за всеки потребител
-user_messages = {}
+from db.supabase_client import supabase
 
 
 def add_message(user_id: int, message_id: int):
-    if user_id not in user_messages:
-        user_messages[user_id] = []
-    user_messages[user_id].append(message_id)
-    # пазим максимум 50 съобщения
-    if len(user_messages[user_id]) > 50:
-        user_messages[user_id] = user_messages[user_id][-50:]
+    try:
+        supabase.table("message_cache").insert(
+            {"user_id": user_id, "message_id": message_id}
+        ).execute()
+    except Exception as e:
+        print(f"Error adding message to cache: {e}")
 
 
 def get_messages(user_id: int):
-    return user_messages.get(user_id, [])
+    try:
+        response = (
+            supabase.table("message_cache")
+            .select("message_id")
+            .eq("user_id", user_id)
+            .execute()
+        )
+        return [row["message_id"] for row in response.data]
+    except Exception as e:
+        print(f"Error fetching messages from cache: {e}")
+        return []
 
 
 def clear_messages(user_id: int):
-    if user_id in user_messages:
-        del user_messages[user_id]
+    try:
+        supabase.table("message_cache").delete().eq("user_id", user_id).execute()
+    except Exception as e:
+        print(f"Error clearing message cache: {e}")
