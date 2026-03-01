@@ -3,10 +3,10 @@ from telegram import Update, constants
 from telegram.ext import ContextTypes
 
 from api.supermarket import get_product_price
-from utils.message_cache import add_message
 from config.settings import ADMIN_ID, SUPER_API_BASE, SUPER_API_KEY
 from db.repositories.history_repo import add_price_entry
 from utils.helpers import calculate_unit_price, get_product_id
+from utils.message_cache import add_message
 
 CATEGORIES_URL = f"{SUPER_API_BASE}/categories"
 
