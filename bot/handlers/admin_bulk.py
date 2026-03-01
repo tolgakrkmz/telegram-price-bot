@@ -2,8 +2,9 @@ import requests
 from telegram import Update, constants
 from telegram.ext import ContextTypes
 
-from config.settings import ADMIN_ID, SUPER_API_BASE, SUPER_API_KEY
 from api.supermarket import get_product_price
+from bot.utils.message_cache import add_message
+from config.settings import ADMIN_ID, SUPER_API_BASE, SUPER_API_KEY
 from db.repositories.history_repo import add_price_entry
 from utils.helpers import calculate_unit_price, get_product_id
 
@@ -75,17 +76,19 @@ async def bulk_products(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def bulk_job_wrapper(context: ContextTypes.DEFAULT_TYPE):
     """Wrapper function for the Scheduler (Job Queue)."""
     # Notify admin that auto-update started
-    await context.bot.send_message(
+    msg_start = await context.bot.send_message(
         chat_id=ADMIN_ID,
         text="🤖 *Scheduled Task:* Starting automatic bulk update (Mon/Wed)...",
         parse_mode=constants.ParseMode.MARKDOWN,
     )
+    add_message(ADMIN_ID, msg_start.message_id)
 
     cats, items = await run_bulk_logic(context)
 
     # Notify admin that it finished
-    await context.bot.send_message(
+    msg_end = await context.bot.send_message(
         chat_id=ADMIN_ID,
         text=f"✅ *Auto Bulk Finished*\nProcessed {cats} categories and {items} products.",
         parse_mode=constants.ParseMode.MARKDOWN,
     )
+    add_message(ADMIN_ID, msg_end.message_id)
