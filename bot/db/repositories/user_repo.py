@@ -21,7 +21,7 @@ def create_user_if_not_exists(user):
             "is_premium": False,
             "daily_request_count": 0,
             "last_request_date": datetime.now().date().isoformat(),
-            "notifications_enabled": True,
+            "notifications_enabled": False,
             "selected_stores": ["all"],  # Default to all stores
         }
 
