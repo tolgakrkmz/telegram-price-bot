@@ -30,15 +30,15 @@ from handlers.favorites import (
 )
 from handlers.info import show_info
 from handlers.profile import view_profile_callback
+from handlers.search import SEARCH_INPUT, search_input, search_start
 
 # Import new settings handlers
 from handlers.settings import (
-    settings_menu_callback,
-    toggle_notifications_settings_callback,
     select_stores_menu_callback,
+    settings_menu_callback,
     store_toggle_callback,
+    toggle_notifications_settings_callback,
 )
-from handlers.search import SEARCH_INPUT, search_input, search_start
 from handlers.shopping import (
     add_to_shopping_callback,
     clear_shopping_callback,
@@ -61,6 +61,7 @@ from handlers.smart_basket import (
     handle_time_edit,
     handle_time_selection,
     process_replacement_search,
+    sb_continue_flow,
     show_basket_review,
     smart_basket_job,
     smart_basket_start,
@@ -176,6 +177,9 @@ def main():
     smart_basket_conv = ConversationHandler(
         entry_points=[
             CallbackQueryHandler(smart_basket_start, pattern="^smart_basket$"),
+            CallbackQueryHandler(
+                sb_continue_flow, pattern="^sb_continue_disabled$"
+            ),  # Added
             CallbackQueryHandler(start_new_basket_flow, pattern="^sb_new_start$"),
             CallbackQueryHandler(show_basket_review, pattern="^sb_edit_existing$"),
         ],
@@ -185,6 +189,9 @@ def main():
                 MessageHandler(filters.TEXT & ~filters.COMMAND, handle_sb_input)
             ],
             SB_REVIEW: [
+                CallbackQueryHandler(
+                    sb_continue_flow, pattern="^sb_continue_disabled$"
+                ),  # Added to state too
                 CallbackQueryHandler(handle_change_request, pattern="^sb_change_"),
                 CallbackQueryHandler(handle_time_edit, pattern="^sb_edit_time_only$"),
                 CallbackQueryHandler(

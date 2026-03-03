@@ -27,7 +27,7 @@ CURRENCY = "€"
 async def handle_toggle_alerts(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> None:
-    """Toggles price alerts for premium users."""
+    """Toggles price alerts for premium users and handles redirection."""
     query: CallbackQuery = update.callback_query
     user_id = query.from_user.id
 
@@ -42,10 +42,22 @@ async def handle_toggle_alerts(
         await query.answer(limit_text, show_alert=True)
         return
 
+    # Toggle status in DB
     new_status = toggle_notifications(user_id)
     status_text = "enabled ✅" if new_status else "disabled ❌"
     await query.answer(f"Notifications {status_text}!")
 
+    # REDIRECTION LOGIC:
+    # If the user enabled notifications from the Smart Basket warning,
+    # send them back to the basket flow.
+    from handlers.smart_basket import sb_continue_flow
+
+    # We can check if we were in a Smart Basket context or just use the flow
+    # If notifications were just ENABLED, it's a good UX to go back to SB
+    if new_status:
+        return await sb_continue_flow(update, context)
+
+    # Default behavior: update main menu
     try:
         await query.edit_message_reply_markup(reply_markup=main_menu_keyboard(user_id))
     except Exception as e:

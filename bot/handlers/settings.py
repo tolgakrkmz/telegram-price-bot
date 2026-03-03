@@ -19,6 +19,7 @@ async def settings_menu_callback(
     user_id = update.effective_user.id
 
     notif_on = get_notification_state(user_id)
+    # The emoji will now update dynamically
     notif_label = "🔔 Notifications: ON" if notif_on else "🔕 Notifications: OFF"
 
     buttons = [
@@ -36,11 +37,32 @@ async def settings_menu_callback(
 
 async def toggle_notifications_settings_callback(
     update: Update, context: ContextTypes.DEFAULT_TYPE
-) -> None:
-    """Toggles notifications and refreshes the settings menu."""
+):
+    """Toggles notification state and redirects to Smart Basket flow IF the user is there."""
+    query = update.callback_query
     user_id = update.effective_user.id
-    toggle_notifications(user_id)
-    await settings_menu_callback(update, context)
+
+    # 1. Toggle status in DB
+    new_status = toggle_notifications(user_id)
+
+    # 2. SILENT SUCCESS MESSAGE (Toast at the top)
+    status_text = "enabled ✅" if new_status else "disabled ❌"
+    await query.answer(f"Notifications {status_text}!")
+
+    # 3. DIRECT REDIRECTION LOGIC
+    # Check if the user is currently in the Smart Basket flow
+    # We use 'sb_alert_time' or 'sb_matched_items' as indicators
+    if new_status and (
+        context.user_data.get("sb_alert_time")
+        or context.user_data.get("sb_matched_items")
+    ):
+        from handlers.smart_basket import sb_continue_flow
+
+        # Skip settings menu and go straight to the basket
+        return await sb_continue_flow(update, context)
+
+    # 4. DEFAULT: Refresh the settings menu (if user is just browsing settings)
+    return await settings_menu_callback(update, context)
 
 
 async def select_stores_menu_callback(
@@ -50,12 +72,10 @@ async def select_stores_menu_callback(
     query = update.callback_query
     user_id = update.effective_user.id
 
-    # Get current user selections
     user_stores = get_selected_stores(user_id) or ["all"]
 
     try:
         async with httpx.AsyncClient() as client:
-            # Constructing URL with api_key as a parameter as seen in your example
             url = f"{SUPER_API_BASE}/supermarkets"
             params = {"api_key": SUPER_API_KEY}
 
@@ -63,10 +83,8 @@ async def select_stores_menu_callback(
             response.raise_for_status()
 
             result = response.json()
-            # The list is inside the "data" key
             raw_stores = result.get("data", [])
-    except Exception as e:
-        print(f"API Error fetching stores: {e}")
+    except Exception:
         raw_stores = []
 
     buttons = []
@@ -76,14 +94,13 @@ async def select_stores_menu_callback(
     all_label = "✅ All Stores" if is_all else "🌍 All Stores"
     buttons.append([InlineKeyboardButton(all_label, callback_data="store_toggle_all")])
 
-    # Extract store names and create buttons (2 per row)
+    # 2 per row
     row = []
     for store_obj in raw_stores:
         store_name = store_obj.get("name")
         if not store_name:
             continue
 
-        # Check if this specific store is selected
         is_selected = store_name in user_stores and not is_all
         label = f"✅ {store_name}" if is_selected else store_name
 
@@ -115,15 +132,13 @@ async def store_toggle_callback(
     """Handles the logic of selecting/deselecting stores."""
     query = update.callback_query
     user_id = update.effective_user.id
-    data = query.data  # "store_toggle_Lidl" or "store_toggle_all"
+    target = query.data.replace("store_toggle_", "")
 
     current_stores = get_selected_stores(user_id)
-    target = data.replace("store_toggle_", "")
 
     if target == "all":
         new_stores = ["all"]
     else:
-        # If "all" was active, remove it and start fresh with the selected store
         if "all" in current_stores:
             new_stores = [target]
         elif target in current_stores:

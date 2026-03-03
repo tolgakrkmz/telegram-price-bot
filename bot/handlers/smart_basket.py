@@ -25,6 +25,7 @@ async def smart_basket_start(update: Update, context: ContextTypes.DEFAULT_TYPE)
     query = update.callback_query
     user_id = update.effective_user.id
 
+    # 1. Premium Check
     if not is_user_premium(user_id):
         alert_text = (
             "🚀 Smart Basket is a Premium Feature!\n\n"
@@ -36,7 +37,51 @@ async def smart_basket_start(update: Update, context: ContextTypes.DEFAULT_TYPE)
         await query.answer(alert_text, show_alert=True)
         return ConversationHandler.END
 
-    await query.answer()
+    # 2. Notifications Status Check
+    u_status = get_user_subscription_status(user_id)
+    notifications_enabled = (
+        u_status.get("notifications_enabled", True) if u_status else True
+    )
+
+    if not notifications_enabled:
+        text = (
+            "⚠️ *Notifications are Disabled!*\n\n"
+            "Your Smart Basket is active, but you won't receive any price-drop alerts "
+            "because your notifications are turned off in Settings.\n\n"
+            "Would you like to enable them now?"
+        )
+        keyboard = [
+            [
+                InlineKeyboardButton(
+                    "🔔 Enable Notifications", callback_data="toggle_notifs_settings"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "➡️ Continue Anyway", callback_data="sb_continue_disabled"
+                )
+            ],
+            [InlineKeyboardButton("🏠 Main Menu", callback_data="main_menu")],
+        ]
+        msg = await query.message.edit_text(
+            text,
+            parse_mode=constants.ParseMode.MARKDOWN,
+            reply_markup=InlineKeyboardMarkup(keyboard),
+        )
+        add_message(user_id, msg.message_id)
+        return SB_REVIEW
+
+    return await sb_continue_flow(update, context)
+
+
+async def sb_continue_flow(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Entry point after notification check or if notifications are already enabled."""
+    query = update.callback_query
+    user_id = update.effective_user.id
+
+    if query:
+        await query.answer()
+
     response = get_user_basket(user_id)
 
     if response and response.data:
@@ -72,7 +117,10 @@ async def smart_basket_start(update: Update, context: ContextTypes.DEFAULT_TYPE)
                 ],
                 [InlineKeyboardButton("🏠 Main Menu", callback_data="main_menu")],
             ]
-            msg = await query.message.edit_text(
+
+            # Use query message if coming from a callback
+            msg_obj = query.message if query else update.message
+            msg = await msg_obj.edit_text(
                 text,
                 parse_mode=constants.ParseMode.MARKDOWN,
                 reply_markup=InlineKeyboardMarkup(keyboard),
@@ -299,12 +347,10 @@ async def process_replacement_search(
     if update.message:
         add_message(user_id, update.message.message_id)
 
-    # 1. Try Live API
     products = get_product_price(search_query, multiple=True)
     is_from_cache = False
     cache_date = "recently"
 
-    # 2. Fallback to Cache
     if not products:
         from db.repositories.cache_repo import CACHE_TABLE
         from db.supabase_client import supabase
@@ -318,14 +364,14 @@ async def process_replacement_search(
             products = cache_row.get("results", [])
             is_from_cache = True
 
-            # Try to get the date when this search was cached
             try:
                 raw_date = cache_row.get("created_at")
                 if raw_date:
-                    dt = datetime.fromisoformat(raw_date.replace("Z", "+00:00"))
+                    dt = datetime.datetime.fromisoformat(
+                        raw_date.replace("Z", "+00:00")
+                    )
                     cache_date = dt.strftime("%d.%m.%Y")
             except:
-                # Fallback to brochure date if available in the first product
                 if products and "brochure" in products[0]:
                     cache_date = products[0]["brochure"].get(
                         "valid_from", "unknown date"
@@ -338,7 +384,6 @@ async def process_replacement_search(
         add_message(user_id, msg.message_id)
         return SB_CHANGE_SEARCH
 
-    # Process products (sort and calculate units)
     for p in products:
         p["calc_unit_price"], p["base_unit"] = calculate_unit_price(
             p.get("price_eur") or p.get("price"), p.get("quantity") or p.get("unit")
@@ -358,7 +403,6 @@ async def process_replacement_search(
 
         price_val = float(p.get("price_eur") or p.get("price") or 0)
 
-        # Proper caption logic
         prefix = (
             f"⚠️ *Showing last known price* (from {cache_date}):\n"
             if is_from_cache
