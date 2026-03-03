@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, List, Optional, Union
 
 import requests
 from requests.adapters import HTTPAdapter
@@ -6,67 +6,72 @@ from urllib3.util.retry import Retry
 
 from config.settings import SUPER_API_BASE, SUPER_API_KEY
 
-# Setup a global session with retries for resilience
 session = requests.Session()
 retries = Retry(
     total=3,
     backoff_factor=1,
-    status_forcelist=[
-        500,
-        502,
-        503,
-        504,
-    ],  # Fixed from status_for_list to status_forcelist
+    status_forcelist=[500, 502, 503, 504],
 )
 session.mount("https://", HTTPAdapter(max_retries=retries))
 
 
 def get_product_price(
-    product_name: str, multiple: bool = False
-) -> dict[str, Any] | None | list[dict[str, Any]]:
+    product_name: str, multiple: bool = False, stores: Optional[List[str]] = None
+) -> Union[dict[str, Any], None, List[dict[str, Any]]]:
     """
-    Fetches product data from the supermarket API.
-    Increased limit to 10 to utilize the higher daily quota.
+    Fetches product data and strictly filters results by selected stores manually.
     """
     url = f"{SUPER_API_BASE}/products"
-    headers = {"Authorization": f"Bearer {SUPER_API_KEY}"}
+    params = {"search": product_name, "limit": 50, "api_key": SUPER_API_KEY}
 
-    # Increased limit from 5 to 10 to provide more options to users
-    params = {"search": product_name, "limit": 10}
+    active_stores_lower = []
+    if stores:
+        if isinstance(stores, str):
+            active_stores_lower = [
+                s.strip().lower() for s in stores.split(",") if s.strip()
+            ]
+        else:
+            active_stores_lower = [str(s).strip().lower() for s in stores if s]
 
     try:
+        headers = {"Authorization": f"Bearer {SUPER_API_KEY}"}
         response = session.get(url, headers=headers, params=params, timeout=12)
         response.raise_for_status()
 
-        json_response = response.json()
-        data = json_response.get("data", [])
-
+        data = response.json().get("data", [])
         if not data:
             return [] if multiple else None
 
         results = []
         for p in data:
-            # Mapping API response to internal product structure
-            product_info = {
-                "id": p.get("id"),
-                "name": p.get("name", "Unknown Product"),
-                "price": p.get("price_lev", 0.0),
-                "price_eur": p.get("price_eur", 0.0),
-                "unit": p.get("quantity", "n/a"),
-                "quantity": p.get("quantity"),
-                "store": p.get("supermarket", {}).get("name", "Unknown Store"),
-                "supermarket": p.get("supermarket"),
-                "image": p.get("image_url"),
-                "image_url": p.get("image_url"),
-                "discount": p.get("discount"),
-                "brochure": p.get("brochure"),
-            }
-            results.append(product_info)
+            store_data = p.get("supermarket", {})
+            api_store_name = str(store_data.get("name", "")).strip()
+            api_store_name_lower = api_store_name.lower()
+
+            if active_stores_lower and "all" not in active_stores_lower:
+                if api_store_name_lower not in active_stores_lower:
+                    continue
+
+            results.append(
+                {
+                    "id": p.get("id"),
+                    "name": p.get("name", "Unknown Product"),
+                    "price": p.get("price_lev", 0.0),
+                    "price_eur": p.get("price_eur", 0.0),
+                    "unit": p.get("quantity", "n/a"),
+                    "quantity": p.get("quantity"),
+                    "store": api_store_name or "Unknown Store",
+                    "supermarket": store_data,
+                    "image": p.get("image_url"),
+                    "image_url": p.get("image_url"),
+                    "discount": p.get("discount"),
+                    "brochure": p.get("brochure"),
+                }
+            )
 
         if multiple:
             return results
         return results[0] if results else None
 
-    except (requests.exceptions.RequestException, KeyError, ValueError, TypeError) as e:
-        print(f"API Error: {e}")
+    except Exception:
         return [] if multiple else None

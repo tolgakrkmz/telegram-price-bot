@@ -21,6 +21,8 @@ def create_user_if_not_exists(user):
             "is_premium": False,
             "daily_request_count": 0,
             "last_request_date": datetime.now().date().isoformat(),
+            "notifications_enabled": True,
+            "selected_stores": ["all"],  # Default to all stores
         }
 
         response = supabase.table("users").insert(user_data).execute()
@@ -172,3 +174,36 @@ def get_daily_request_count(user_id: int) -> int:
     except Exception as e:
         print(f"Error getting daily count: {e}")
     return 0
+
+
+# --- New Store Filter Functions ---
+
+
+def get_selected_stores(user_id: int) -> list:
+    """Returns a list of stores the user wants to search in."""
+    try:
+        response = (
+            supabase.table("users")
+            .select("selected_stores")
+            .eq("id", user_id)
+            .single()
+            .execute()
+        )
+        if response.data and "selected_stores" in response.data:
+            return response.data["selected_stores"]
+        return ["all"]
+    except Exception as e:
+        print(f"Error fetching selected stores: {e}")
+        return ["all"]
+
+
+def update_selected_stores(user_id: int, stores: list):
+    """Updates the user's preferred stores."""
+    try:
+        supabase.table("users").update({"selected_stores": stores}).eq(
+            "id", user_id
+        ).execute()
+        return True
+    except Exception as e:
+        print(f"Error updating stores: {e}")
+        return False

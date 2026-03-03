@@ -1,16 +1,9 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
-from db.repositories.user_repo import get_notification_state
-
 
 def main_menu_keyboard(user_id: int):
-    """Main navigation menu with dynamic notification toggle."""
-
-    # Check current notification status from storage
-    notifications_on = get_notification_state(user_id)
-    notif_icon = "🔔" if notifications_on else "🔕"
-    notif_text = f"{notif_icon} Notifications: {'ON' if notifications_on else 'OFF'}"
-
+    """Main navigation menu - Cleaned up version."""
+    # We removed notifications from here as they are now in Profile -> Settings
     keyboard = [
         [InlineKeyboardButton("🔍 Search Products", callback_data="search")],
         [InlineKeyboardButton("✨ Smart Basket", callback_data="smart_basket")],
@@ -18,8 +11,11 @@ def main_menu_keyboard(user_id: int):
             InlineKeyboardButton("⭐ Favorites", callback_data="list_favorites"),
             InlineKeyboardButton("🛒 Cart", callback_data="shopping_list"),
         ],
-        [InlineKeyboardButton(notif_text, callback_data="toggle_notifications")],
-        [InlineKeyboardButton("👤 My Profile", callback_data="view_profile")],
+        [
+            InlineKeyboardButton(
+                "👤 My Profile & Settings", callback_data="view_profile"
+            )
+        ],
         [
             InlineKeyboardButton("ℹ️ Info & Help", callback_data="bot_info"),
             InlineKeyboardButton("🧹 Clear Chat", callback_data="clear_chat"),
@@ -31,14 +27,13 @@ def main_menu_keyboard(user_id: int):
 def favorites_keyboard(favorites: dict):
     """
     Generates a keyboard for favorites with history, cart, and delete options.
-    Each product will have its own set of action buttons.
     """
     keyboard = []
 
     for pid, p in favorites.items():
         name = p.get("name", "Product")
 
-        # Row 1: Product Name (Visual separator/label)
+        # Row 1: Product Name (Visual label)
         keyboard.append([InlineKeyboardButton(f"📍 {name}", callback_data="none")])
 
         # Row 2: Actions for this specific product

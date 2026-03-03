@@ -19,7 +19,6 @@ from handlers.alerts import (
     check_expiring_alerts,
     check_expiring_tomorrow_alerts,
     global_price_update,
-    handle_toggle_alerts,
     update_favorites_prices,
 )
 from handlers.clear_chat import clear_chat
@@ -31,6 +30,14 @@ from handlers.favorites import (
 )
 from handlers.info import show_info
 from handlers.profile import view_profile_callback
+
+# Import new settings handlers
+from handlers.settings import (
+    settings_menu_callback,
+    toggle_notifications_settings_callback,
+    select_stores_menu_callback,
+    store_toggle_callback,
+)
 from handlers.search import SEARCH_INPUT, search_input, search_start
 from handlers.shopping import (
     add_to_shopping_callback,
@@ -134,14 +141,25 @@ def main():
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("update_prices", update_favorites_prices))
 
-    # --- Notification Toggle ---
+    # --- Settings & Filter Logic ---
     app.add_handler(
-        CallbackQueryHandler(handle_toggle_alerts, pattern="^toggle_alerts$")
+        CallbackQueryHandler(settings_menu_callback, pattern="^open_settings$")
+    )
+    app.add_handler(
+        CallbackQueryHandler(
+            toggle_notifications_settings_callback, pattern="^toggle_notifs_settings$"
+        )
+    )
+    app.add_handler(
+        CallbackQueryHandler(
+            select_stores_menu_callback, pattern="^select_stores_menu$"
+        )
+    )
+    app.add_handler(
+        CallbackQueryHandler(store_toggle_callback, pattern="^store_toggle_")
     )
 
-    # --- Search Logic (With Limit Check) ---
-    # Note: The actual limit increment should happen inside search_input
-    # after a successful API call to avoid wasting limits on typos.
+    # --- Search Logic ---
     search_conv = ConversationHandler(
         entry_points=[CallbackQueryHandler(search_start, pattern="^search$")],
         states={
@@ -155,7 +173,6 @@ def main():
     app.add_handler(search_conv)
 
     # --- SMART BASKET ---
-
     smart_basket_conv = ConversationHandler(
         entry_points=[
             CallbackQueryHandler(smart_basket_start, pattern="^smart_basket$"),
@@ -220,11 +237,6 @@ def main():
     )
 
     app.add_handler(CallbackQueryHandler(show_info, pattern="^bot_info$"))
-
-    app.add_handler(
-        CallbackQueryHandler(handle_toggle_alerts, pattern="^toggle_notifications$")
-    )
-
     app.add_handler(
         CallbackQueryHandler(view_profile_callback, pattern="^view_profile$")
     )
@@ -235,7 +247,7 @@ def main():
     # --- Generic Buttons ---
     app.add_handler(CallbackQueryHandler(button_handler))
 
-    print("🚀 Master-Class Multi-User Bot is running...")
+    print("🚀 Master-Class Multi-User Bot with Settings is running...")
     app.run_polling()
 
 
